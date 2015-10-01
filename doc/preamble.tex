@@ -56,4 +56,10 @@
 \addtokomafont{disposition}{\rmfamily}
 \setmonofont[Scale=0.9]{Fira Code}
 
+\usepackage{lastpage}
+
+\renewcommand\pagemark{%
+    \usekomafont{pagenumber}\thepage{}~/~\pageref{LastPage}%
+}
+
 \input{pandoc}
