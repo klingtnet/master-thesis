@@ -3,13 +3,14 @@
 % ,bibliography=leveldown
 % ,bibliography=totoc
 %
-\documentclass[	a4paper
-				,fontsize=12pt
-				,oneside
-				,DIV=calc
-				,listof=leveldown
-				,listof=totoc
-				,draft=false]{scrreprt}
+\documentclass[fontsize=12pt,%
+               oneside,%
+               draft=false]{scrreprt}
+
+\KOMAoptions{paper=a4,%
+             DIV=calc,%
+             listof=leveldown,%
+             listof=totoc}
 \input{vars}
 \input{preamble}
 
