@@ -1,0 +1,59 @@
+%
+% XeTeX specific
+%
+\usepackage{xunicode}
+
+% math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% other
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\setotherlanguage{german}
+\usepackage{csquotes}
+\usepackage{graphicx}
+\usepackage[setpagesize=false, % page size defined by xetex
+            unicode=false, % unicode breaks when used with xetex
+            xetex]{hyperref}
+\hypersetup{breaklinks=true,%
+            bookmarks=true,%
+            pdfauthor={\documentAuthor{}},%
+            pdftitle={\documentTitle{}},%
+            colorlinks=true,%
+            citecolor=blue,%
+            urlcolor=blue,%
+            linkcolor=magenta,%
+            pdfborder={0 0 0}}
+
+% color
+\usepackage{color}
+\usepackage{fancyvrb}
+
+%\usepackage[german]{cleveref}
+\usepackage{booktabs}
+% KOMA Script classes should not be used with fancyhdr, instead use scrlayer-scrpage
+\usepackage[automark,%
+            headsepline]{scrlayer-scrpage}
+
+% http://mirrors.ctan.org/biblio/biber/documentation/biber.pdf
+\usepackage[backend=biber,%
+            style=alphabetic-verb%
+            ]{biblatex}
+\bibliography{thesis}
+
+\usepackage[ngerman]{datetime}
+\newdateformat{germanDate}{\THEDAY.\;\monthnamengerman[\THEMONTH],\;\THEYEAR}
+\usepackage{framed}
+
+%
+% Style options
+%
+%\setmainfont{Linux Libertine}
+\setsansfont{Linux Biolinum}
+\addtokomafont{disposition}{\rmfamily}
+\setmonofont[Scale=0.9]{Fira Code}
+
+\input{pandoc}

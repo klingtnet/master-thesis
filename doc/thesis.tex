@@ -1,0 +1,38 @@
+%
+% the following options are document by KOMAScript but have no effect:
+% ,bibliography=leveldown
+% ,bibliography=totoc
+%
+\documentclass[	a4paper
+				,fontsize=12pt
+				,oneside
+				,DIV=calc
+				,listof=leveldown
+				,listof=totoc
+				,draft=false]{scrreprt}
+\input{vars}
+\input{preamble}
+
+% warn on incorrect latex usage
+\RequirePackage[l2tabu, orthodox]{nag}
+
+\begin{document}
+    %\frontmatter
+    \include{title}\cleardoublepage{}
+    \setcounter{page}{1}
+    \pagenumbering{Roman}
+    \tableofcontents\cleardoublepage{}
+    \include{acknowledgements}
+    %\mainmatter
+    \pagenumbering{arabic}
+	\pagestyle{scrheadings}
+    \include{text}
+	\pagestyle{plain}
+    \include{abstract}
+    \appendix % http://mirrors.ctan.org/macros/latex/contrib/koma-script/doc/scrguien.pdf p. 132
+	\addchap{\appendixname}
+    \listoffigures\clearpage{}
+	\listoftables\clearpage{}
+    \printbibliography[heading=subbibintoc]\clearpage{} % http://mirrors.ctan.org/macros/latex/contrib/biblatex/doc/biblatex.pdf
+    \include{statement}\cleardoublepage{}
+\end{document}

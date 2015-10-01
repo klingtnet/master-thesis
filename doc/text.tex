@@ -1,0 +1,123 @@
+\chapter{Experimental Design}\label{experimental-design}
+
+Dyin' ain't much of a livin', boy. Two little mice fell in a bucket of
+cream. The first mouse quickly gave up and drowned. The second mouse,
+wouldn't quit. He struggled so hard that eventually he churned that
+cream into butter and crawled out. Gentlemen, as of this moment, I am
+that second mouse. I'm neglecting my other guests. Enjoy yourself,
+you'll find the young ladies stimulating company. Ever notice how
+sometimes you come across somebody you shouldn't have F**ked with? Well,
+I'm that guy. This is the AK-47 assault rifle, the preferred weapon of
+your enemy; and it makes a distinctive sound when fired at you, so
+remember it. Two little mice fell in a bucket of cream. The first mouse
+quickly gave up and drowned. The second mouse, wouldn't quit. He
+struggled so hard that eventually he churned that cream into butter and
+crawled out. Gentlemen, as of this moment, I am that second mouse. This
+is America, babe, you gotta think big to be big. This is my gun, Clyde!
+He hid it in the one place he knew he could hide something: his ass.
+Five long years, he wore this watch up his ass. Then, when he died of
+dysentery, he gave me the watch. Selina! Selina Kyle, you're fired! And
+Bruce Wayne, why are you dressed up like Batman? I thought about you
+every time I jerked off, dickhead. I don't know what you want, but I
+know I can get it for you, with a minimum of fuss! Money, jewels, a
+\emph{very} big ball of string.
+
+\chapter{Introduction}\label{introduction}
+
+Some go code \cite{placeholder}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{var} \NormalTok{sem = }\FunctionTok{make}\NormalTok{(}\KeywordTok{chan} \DataTypeTok{int}\NormalTok{, MaxOutstanding)}
+
+\KeywordTok{func} \NormalTok{handle(r *Request) \{}
+    \DecValTok{1} \NormalTok{-> sem    }\CommentTok{// Wait for active queue to drain.}
+    \NormalTok{process(r)  }\CommentTok{// May take a long time.}
+    \NormalTok{<-sem       }\CommentTok{// Done; enable next request to run.}
+\NormalTok{\}}
+
+\KeywordTok{func} \NormalTok{Serve(queue }\KeywordTok{chan} \NormalTok{*Request) \{}
+    \KeywordTok{for} \NormalTok{\{}
+        \NormalTok{req := <-queue}
+        \KeywordTok{go} \NormalTok{handle(req)  }\CommentTok{// Don't wait for handle to finish.}
+    \NormalTok{\}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Another example using Rust:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{use} \NormalTok{std::cell::RefCell;}
+\KeywordTok{use} \NormalTok{std::fs::File;}
+\KeywordTok{use} \NormalTok{std::path::Path;}
+\KeywordTok{use} \NormalTok{std::rc::Rc;}
+
+\KeywordTok{fn} \NormalTok{record_fps(last_time: &}\KeywordTok{mut} \DataTypeTok{f64}\NormalTok{, frames: &}\KeywordTok{mut} \DataTypeTok{usize}\NormalTok{) \{}
+    \KeywordTok{if} \PreprocessorTok{cfg!}\NormalTok{(debug) \{}
+        \KeywordTok{let} \NormalTok{now = time::precise_time_s();}
+        \KeywordTok{if} \NormalTok{now >= *last_time + }\DecValTok{1}\NormalTok{f64 \{}
+            \PreprocessorTok{println!}\NormalTok{(}\StringTok{"\{\} FPS"}\NormalTok{, *frames);}
+            \NormalTok{*frames = }\DecValTok{0}\NormalTok{;}
+            \NormalTok{*last_time = now;}
+        \NormalTok{\} }\KeywordTok{else} \NormalTok{\{}
+            \NormalTok{*frames += }\DecValTok{1}\NormalTok{;}
+        \NormalTok{\}}
+    \NormalTok{\}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\chapter{Results and Design}\label{results-and-design}
+
+You're talking to me all wrong\ldots{} It's the wrong tone. You do it
+again and I'll stab you in the face with a soldering iron. Hey, tell me,
+does your mother sew? BOOM. Get her to sew that! This is my gun, Clyde!
+You see, in this world there's two kinds of people, my friend: Those
+with loaded guns and those who dig. You dig. don't p!ss down my back and
+tell me it's raining. Did you hear about the happy Roman? He was ``glad
+he ate her.'' What you have to ask yourself is, do I feel lucky. Well do
+ya' punk? Well, do you have anything to say for yourself? I got a fever,
+and the only prescription is more cowbell. Dyin' ain't much of a livin',
+boy. This is America, babe, you gotta think big to be big. You got the
+wrong guy, ace! What do you want me to say, that I'm sorry? That I
+apologize? Well, people in Hell want ice water, pal.
+
+\chapter{Background}\label{background}
+
+Selina! Selina Kyle, you're fired! And Bruce Wayne, why are you dressed
+up like Batman? When a naked man's chasing a woman through an alley with
+a butcher knife and a hard-on, I figure he's not out collecting for the
+Red Cross. Are you feeling lucky punk When a naked man's chasing a woman
+through an alley with a butcher knife and a hard-on, I figure he's not
+out collecting for the Red Cross. Did you hear about the happy Roman? He
+was ``glad he ate her.'' You know why the Yankees always win, Frank?
+it's 'cause the other teams can't stop staring at those damn pinstripes.
+He hid it in the one place he knew he could hide something: his ass.
+Five long years, he wore this watch up his ass. Then, when he died of
+dysentery, he gave me the watch. You're talking to me all wrong\ldots{}
+It's the wrong tone. You do it again and I'll stab you in the face with
+a soldering iron. Hey, tell me, does your mother sew? BOOM. Get her to
+sew that! I thought about you every time I jerked off, dickhead. Ever
+notice how sometimes you come across somebody you shouldn't have F**ked
+with? Well, I'm that guy. Are you feeling lucky punk Here. Put that in
+your report!" AND ``I may have found a way out of here.
+
+\chapter{Conclusion}\label{conclusion}
+
+I'm neglecting my other guests. Enjoy yourself, you'll find the young
+ladies stimulating company. Here. Put that in your report!" AND ``I may
+have found a way out of here. What do you want me to say, that I'm
+sorry? That I apologize? Well, people in Hell want ice water, pal. Man's
+gotta know his limitations. You see, in this world there's two kinds of
+people, my friend: Those with loaded guns and those who dig. You dig. I
+don't know what you want, but I know I can get it for you, with a
+minimum of fuss! Money, jewels, a \emph{very} big ball of string. This
+is the AK-47 assault rifle, the preferred weapon of your enemy; and it
+makes a distinctive sound when fired at you, so remember it. What you
+have to ask yourself is, do I feel lucky. Well do ya' punk? You want a
+guarantee, buy a toaster. You know why the Yankees always win, Frank?
+it's 'cause the other teams can't stop staring at those damn pinstripes.
+You got the wrong guy, ace! I got a fever, and the only prescription is
+more cowbell.
