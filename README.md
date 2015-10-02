@@ -28,11 +28,9 @@
     1. appendix
     1. statement of originality:
 
-`Ich versichere, dass ich die vorliegende Arbeit selbständig und nur unter
- Verwendung der angegebenen Quellen und Hilfsmittel angefertigt habe,
-insbesondere sind wörtliche oder sinngemäße Zitate als solche gekennzeichnet.
-Mir ist bekannt, dass Zuwiderhandlung auch nachträglich zur Aberkennung
-des Abschlusses führen kann`
+```
+Ich versichere, dass ich die vorliegende Arbeit selbständig und nur unter Verwendung der angegebenen Quellen und Hilfsmittel angefertigt habe, insbesondere sind wörtliche oder sinngemäße Zitate als solche gekennzeichnet. Mir ist bekannt, dass Zuwiderhandlung auch nachträglich zur Aberkennung des Abschlusses führen kann.
+```
 
 ## Further Reading
 
