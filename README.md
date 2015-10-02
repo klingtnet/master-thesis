@@ -38,4 +38,4 @@ Ich versichere, dass ich die vorliegende Arbeit selbständig und nur unter Verwe
 
 ## Example
 
-- see [this](raw/master/out/thesis.pdf)
+- see [this](//github.com/klingtnet/thesis-template/raw/master/out/thesis.pdf)
