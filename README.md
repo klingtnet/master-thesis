@@ -35,3 +35,7 @@ Ich versichere, dass ich die vorliegende Arbeit selbständig und nur unter Verwe
 ## Further Reading
 
 - [Stanford-Thesis Writing Tips](http://web.stanford.edu/~pmcmahon/ThesisWritingTips.pdf)
+
+## Example
+
+- see [this](out/example.pdf)
