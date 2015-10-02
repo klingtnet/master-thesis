@@ -1,6 +1,6 @@
-# thesis-template using pandoc
+# Template for my Masters Thesis Using Pandoc
 
-## build
+## Build
 
 `make`
 
@@ -8,12 +8,12 @@
     - `pandoc` converts the markdown files of the main chapter to latex
     - in a next step the latex files are rendered to pdf using xelatex
 
-## notes
+## Notes
 
 - set KOMAScript option `draft` to false in the documentclass of `doc/thesis.tex` before building a release version
 - add newlines to the end of your markdown chapters, otherwise pandoc will escape the `#` of the following chapter
 
-## notes specific to University of Leipzig
+## Notes Specific to University of Leipzig
 
 - 3 copies
 - paper format: DIN A4
