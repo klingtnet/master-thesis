@@ -1,10 +1,18 @@
-%
-% pandoc
-%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pandocSyntaxHighlighting}[2015/10/09 pandoc syntax highlighting (Andreas Linz)]
+
 % extracted from pandoc run with --standalone flag
 %
-\usepackage{color}
-%\usepackage{fancyvrb}
+
+\makeatletter
+\@ifpackageloaded{color}{}{%
+    \usepackage{color}%
+}
+\@ifpackageloaded{fancyvrb}{}{%
+    \usepackage{fancyvrb}%
+}
+\makeatother
+
 \newcommand{\VerbBar}{|}
 \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}

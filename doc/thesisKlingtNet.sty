@@ -1,0 +1,63 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{thesisKlingtNet}[2015/10/09 thesis template using pandoc (Andreas Linz)]
+
+\usepackage{lastpage}
+\usepackage{ifxetex}
+\ifxetex%
+    \usepackage{amsmath, amssymb}
+    \usepackage{unicode-math}
+    \usepackage{fontspec}
+    \usepackage{polyglossia}
+    \setmainlanguage{english}
+    \setotherlanguage{german}
+    %\setmainfont{Latin Modern Roman} % Latin Modern Roman is used by default
+    \setsansfont{Linux Biolinum}
+    \setmathfont{Latin Modern Math}
+    \setmonofont[Scale=.8]{Fira Code}
+\else
+    \errmessage{Please compile with xelatex!}
+\fi
+
+\addtokomafont{disposition}{\rmfamily}
+%%% KOMA Script classes should not be used with fancyhdr, instead use scrlayer-scrpage
+\usepackage[automark,%
+            headsepline]{scrlayer-scrpage}
+\usepackage{lastpage}
+
+\renewcommand\pagemark{%
+    \usekomafont{pagenumber}\thepage{}~/~\pageref{LastPage}%
+}
+
+%------------------ hyperlinks
+\usepackage[setpagesize=false,  % page size defined by xetex
+            unicode=false,      % unicode breaks when used with xetex
+            xetex]{hyperref}
+\hypersetup{breaklinks=true,%
+            bookmarks=true,%
+            pdfauthor={\documentAuthor{}},%
+            pdftitle={\documentTitle{}},%
+            colorlinks=true,%
+            citecolor=blue,%
+            urlcolor=blue,%
+            linkcolor=magenta,%
+            pdfborder={0 0 0}}
+
+%-------------------- typography
+\usepackage{csquotes}
+\usepackage{booktabs}
+%\usepackage{cleveref}
+\usepackage[ngerman]{datetime}
+\newdateformat{germanDate}{%
+    \THEDAY.\;\monthnamengerman[\THEMONTH],\;\THEYEAR%
+}
+\usepackage{framed}
+
+%-------------------- graphics
+\usepackage{color}
+\usepackage{graphicx}
+
+%-------------------- biliography, etc
+\usepackage[backend=biber,%
+            style=alphabetic-verb%
+            ]{biblatex}
+\bibliography{thesis}
