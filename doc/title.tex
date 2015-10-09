@@ -1,13 +1,16 @@
 \begin{titlepage}
     \begin{center}
-        \includegraphics[width=40mm]{imgs/logo}
-        \\\bigskip
+        %\includegraphics[width=40mm]{imgs/siegel_schwarz}\\
+        %\bigskip
         {\Large%
            \textsc{\university{}}%
         }
         \\\medskip
         {%
-            \universityDepartment{}%
+            \textbf{
+                \universityFaculty{}
+            }\\
+            Department of \universityDepartment{}%
         }
         \\\vfill
         {\Huge%
@@ -28,14 +31,15 @@
 	\rule{\textwidth}{.4pt}
 	\vfill
     \begin{flushright}
-        \textbf{Supervisor}
-        \\\medskip
+        \textbf{Supervisor}\\
+        \medskip
         \researchAdvisor{}\\
-        \secondReader{}
-        \\\bigskip
-        Somewhere, \germanDate{}\today{} submitted by\\
-        \textbf{\documentAuthor{}}\\
-        \href{mailto:\documentAuthorEmail{}}{\documentAuthorEmail}\\
-        Course \universityCourse{}
+        \secondReader{}\\
+        \bigskip
+        %\href{mailto:\documentAuthorEmail{}}{\documentAuthorEmail}\\
+        Submitted by \textbf{\documentAuthor{}} to the \textsl{Department of \universityDepartment{}} in partial fulfillment of the requirements for the degree of\\
+        \textbf{\academicDegree{}}\\
+        \medskip{}
+        \documentPlace{}, \germanDate{}\today{}\\
     \end{flushright}
 \end{titlepage}
