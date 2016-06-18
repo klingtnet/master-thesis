@@ -30,6 +30,7 @@ $(DOC_PATH)/text.tex: $(MD_FILES)
 # This works very well and you can `rm -r` the content of build folder with all the cruft.
 $(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
 	mkdir -p $(OUT_PATH)
+	mkdir -p $(BUILD_PATH)
 	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
 	cd $(BUILD_PATH) &&\
 	xelatex $(XELATEX_CI_OPTS) -no-pdf $(BUILD_PATH)/thesis &&\
