@@ -1,8 +1,16 @@
-# Template for my Masters Thesis Using Pandoc
+# Master Thesis - Andreas Linz
 
 ## Build
 
-`make`
+- dependencies
+- build:
+	- xelatex
+	- biber
+	- pandoc
+
+```sh
+$ make
+```
 
 - the process is as follows:
     - `pandoc` converts the markdown files of the main chapter to latex
