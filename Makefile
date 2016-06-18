@@ -12,7 +12,7 @@ PANDOC_OPTS=--from=markdown\
 			--smart\
 			--chapters
 
-XELATEX_CI_OPTS=-interaction=errorstopmode
+XELATEX_CI_OPTS=-interaction=batchmode
 
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
 MD_FILES := $(wildcard $(DOC_PATH)/chapter*.md | sort)
