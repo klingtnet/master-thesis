@@ -1,0 +1,13 @@
+sudo: required
+dist: xenial
+before_install:
+- sudo apt -qq update &&\
+  sudo apt install -y --no-install-recommends texlive-fonts-recommended\
+    texlive-latex-extra\
+    texlive-fonts-extra\
+    texlive-xetex\
+    pandoc\
+    make
+script:
+- make
+
