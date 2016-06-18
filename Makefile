@@ -37,6 +37,9 @@ $(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
 	cp $(BUILD_PATH)/thesis.pdf $(OUT_PATH)
 	#makeglossaries $(BUILD_PATH)/glossary &&
 
+open: $(OUT_PATH)/thesis.pdf
+	xdg-open $<
+
 clean:
 	rm -f $(DOC_PATH)/text.tex
 	rm -f $(OUT_PATH)/thesis.pdf
