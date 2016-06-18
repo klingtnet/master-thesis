@@ -12,7 +12,7 @@ PANDOC_OPTS=--from=markdown\
 			--smart\
 			--chapters
 
-XELATEX_OPTS=
+XELATEX_CI_OPTS=-interaction=errorstopmode
 
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
 MD_FILES := $(wildcard $(DOC_PATH)/chapter*.md | sort)
@@ -32,9 +32,9 @@ $(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
 	mkdir -p $(OUT_PATH)
 	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
 	cd $(BUILD_PATH) &&\
-	xelatex $(XELATEX_OPTS) -no-pdf $(BUILD_PATH)/thesis &&\
+	xelatex $(XELATEX_CI_OPTS) -no-pdf $(BUILD_PATH)/thesis &&\
 	biber $(BUILD_PATH)/thesis &&\
-	xelatex $(XELATEX_OPTS) $(BUILD_PATH)/thesis &&\
+	xelatex $(XELATEX_CI_OPTS) $(BUILD_PATH)/thesis &&\
 	cp $(BUILD_PATH)/thesis.pdf $(OUT_PATH)
 	#makeglossaries $(BUILD_PATH)/glossary &&
 
