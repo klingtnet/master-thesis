@@ -1,13 +1,14 @@
 sudo: required
 dist: xenial
 before_install:
-- sudo apt -qq update &&\
-  sudo apt install -y --no-install-recommends texlive-fonts-recommended\
-    texlive-latex-extra\
-    texlive-fonts-extra\
-    texlive-xetex\
-    pandoc\
-    make
+- sudo apt -qq update &&\ sudo apt install -y --no-install-recommends texlive-fonts-recommended\
+  texlive-latex-extra\ texlive-fonts-extra\ texlive-xetex\ pandoc\ make
 script:
 - make
-
+deploy:
+  provider: releases
+  api_key:
+    secure: mpmasfqY0vvlJIRYrCOAEYB9Jcztqf+UIkJYKX6coBvKOpb2u6gB2obB10eylx3ihy4i3U8//dW+s8no8LZXrsKFxoGbATvPPTQeUcAcX66jnE/6ZNv4rDCI8ek1LzXP3rXVL4A5c2ydCVNmEBZX7ChDDCK43uZGtZtVUrFAztsJ8vk22bIVm1GUZAmZByM3Umv6bMq67vd81ZOC7DoXXebr68wGBCT8TR+HJHk4Oi1tfoBlONfP8LR+KP1oW7QrzMmoUG2bbgeWDjLc9Uq7A8paXsL/iitZDAHad0R3r6cM99gjaoE0SYnPuTOsyPzrJpbwaiShto5NBB/amRdsTINm9EbjXR0N1FMvpAhbrjAiM96ECoh+IZce6CBfz75t6QGGisuRPwdfbfxQY95jk6vp831l8AlXm12dpogelvQNtdGopxwTNQaFo0RzepNirIFZuH2JWrqhn6NrPwGHdi0ELBGcrg1NBeXg958At++Z9YamGTsLEsu0vG3h/Z2vDFncnrxt3xJuikRANJSjsW2/y8RR9mrSr+JExex9M8A5XRyX8eaQYLaRsoLeVtR36spbmvlaR4SJuQ0uFQ7vnG7+bSaYqDVSW8gXXVrIOIOkMZrAUc+kku2O2c2gljB3yImLNcQI1T5zmUgmHz9ZlvQ/nlKXloz3DPv+roHv8zM=
+  file: out/thesis.pdf
+  on:
+    tags: true
