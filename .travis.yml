@@ -1,5 +1,5 @@
 sudo: required
-dist: xenial
+dist: trusty
 before_install:
 - sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-xetex pandoc make
 script:
