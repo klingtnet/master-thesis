@@ -1,0 +1,8 @@
+dependencies:
+    post:
+        - sudo apt-get -qq update
+        - sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra texlive-fonts-extra texlive-math-extra texlive-xetex biber lmodern fonts-linuxlibertine curl bsdtar pandoc make rsync
+        - mkdir -p ~/.fonts && cp fonts/* ~/.fonts && sudo fc-cache -fsrv
+test:
+    override:
+        - make
