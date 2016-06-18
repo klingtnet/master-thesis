@@ -32,11 +32,11 @@ $(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
 	mkdir -p $(OUT_PATH)
 	mkdir -p $(BUILD_PATH)
 	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
-	cd $(BUILD_PATH) &&\
-	xelatex $(XELATEX_CI_OPTS) -no-pdf $(BUILD_PATH)/thesis &&\
-	biber $(BUILD_PATH)/thesis &&\
-	xelatex $(XELATEX_CI_OPTS) $(BUILD_PATH)/thesis &&\
-	cp $(BUILD_PATH)/thesis.pdf $(OUT_PATH)
+	cd $(BUILD_PATH)\
+	&& xelatex $(XELATEX_CI_OPTS) -no-pdf $(BUILD_PATH)/thesis\
+	&& biber $(BUILD_PATH)/thesis\
+	&& xelatex $(XELATEX_CI_OPTS) $(BUILD_PATH)/thesis\
+	&& cp $(BUILD_PATH)/thesis.pdf $(OUT_PATH)
 	#makeglossaries $(BUILD_PATH)/glossary &&
 
 open: $(OUT_PATH)/thesis.pdf
