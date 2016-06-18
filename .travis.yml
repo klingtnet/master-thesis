@@ -1,7 +1,7 @@
 sudo: required
 dist: trusty
 before_install:
-- sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra texlive-fonts-extra texlive-math-extra texlive-xetex lmodern fonts-linuxlibertine curl bsdtar pandoc make rsync
+- sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-full lmodern fonts-linuxlibertine curl bsdtar pandoc make rsync
 - sudo sh -c 'curl -Lsf "https://github.com/tonsky/FiraCode/releases/download/1.102/FiraCode_1.102.zip" | bsdtar -C /usr/share/fonts --strip-components=1 -xvzf -' && fc-cache -rf
 script:
 - make
