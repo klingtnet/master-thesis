@@ -17,21 +17,19 @@ XELATEX_OPTS=
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
 MD_FILES := $(wildcard $(DOC_PATH)/chapter*.md | sort)
 
-all: thesis.pdf
-
-sync:
-	rsync --quiet --recursive $(DOC_PATH)/ $(BUILD_PATH)
+all: $(OUT_PATH)/thesis.pdf
 
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
-text.tex: $(MD_FILES)
-	pandoc --latex-engine=$(LATEX_ENGINE) $(PANDOC_OPTS) $^ --output $(DOC_PATH)/$@
+$(DOC_PATH)/text.tex: $(MD_FILES)
+	pandoc --latex-engine=$(LATEX_ENGINE) $(PANDOC_OPTS) $^ --output $@
 
 # Setting `-output-directory` to prevent the cruft won't help,
 # because biber and makeglossaries don't have that flag.
 # The current solution is to `rsync` the document into a temporary build folder
 # and to cp the generated `pdf` into the output folder.
 # This works very well and you can `rm -r` the content of build folder with all the cruft.
-thesis.pdf: text.tex sync
+$(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
+	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
 	cd $(BUILD_PATH) &&\
 	xelatex $(XELATEX_OPTS) -no-pdf $(BUILD_PATH)/thesis &&\
 	biber $(BUILD_PATH)/thesis &&\
