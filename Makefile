@@ -26,7 +26,7 @@ $(DOC_PATH)/text.tex: $(MD_FILES)
 # Setting `-output-directory` to prevent the cruft won't help,
 # because biber and makeglossaries don't have that flag.
 # The current solution is to `rsync` the document into a temporary build folder
-# and to cp the generated `pdf` into the output folder.
+# and to copy the generated `pdf` into the output folder.
 # This works very well and you can `rm -r` the content of build folder with all the cruft.
 $(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
 	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
@@ -43,5 +43,5 @@ open: $(OUT_PATH)/thesis.pdf
 clean:
 	rm -f $(DOC_PATH)/text.tex
 	rm -f $(OUT_PATH)/thesis.pdf
-# I could use the $(BUILD_PATH) variable at this point, but if it expands to "" we will be really sad and I am a coward using rm -r with variable arguments
+	# I could use the $(BUILD_PATH) variable at this point, but if it expands to "" we will be really sad :( Also I am a coward because I don't use rm -r with variable arguments
 	rm -r build/*
