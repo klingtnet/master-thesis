@@ -1,5 +1,7 @@
 # Master Thesis - Andreas Linz
 
+[![Build Status](https://travis-ci.com/klingtnet/master-thesis.svg?token=drwE1YPs35oqracubtuf&branch=master)](https://travis-ci.com/klingtnet/master-thesis)
+
 ## Build
 
 - dependencies
