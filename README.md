@@ -6,9 +6,12 @@
 
 - dependencies
 - build:
+	- texlive
+	- [Fira Mono](https://github.com/tonsky/FiraCode)
+	- [Biolinum](http://www.linuxlibertine.org/index.php?id=86&L=1)
 	- xelatex
-	- biber
-	- pandoc
+	- [biber](http://biblatex-biber.sourceforge.net/)
+	- [pandoc](http://pandoc.org/)
 
 ```sh
 $ make
