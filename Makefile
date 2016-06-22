@@ -23,7 +23,6 @@ all: $(OUT_PATH)/thesis.pdf $(OUT_PATH)/thesis.html
 
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
 $(DOC_PATH)/text.md: $(MD_FILES)
-	@echo $^
 	cat $^ > $(DOC_PATH)/text.md
 
 $(DOC_PATH)/text.tex: $(DOC_PATH)/text.md
