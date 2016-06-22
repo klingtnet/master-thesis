@@ -18,11 +18,17 @@ XELATEX_CI_OPTS=-interaction=nonstopmode
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
 MD_FILES := $(wildcard $(DOC_PATH)/chapter*.md | sort)
 
-all: $(OUT_PATH)/thesis.pdf
+all: $(OUT_PATH)/thesis.pdf $(OUT_PATH)/thesis.html
 
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
-$(DOC_PATH)/text.tex: $(MD_FILES)
-	pandoc --latex-engine=$(LATEX_ENGINE) $(PANDOC_OPTS) $^ --output $@
+$(DOC_PATH)/text.md: $(MD_FILES)
+	cat $^ > $(DOC_PATH)/text.md
+
+$(DOC_PATH)/text.tex: $(DOC_PATH)/text.md
+	pandoc --latex-engine=$(LATEX_ENGINE) $(PANDOC_OPTS) $(DOC_PATH)/text.md --output $@
+
+$(OUT_PATH)/thesis.html: $(DOC_PATH)/text.md
+	pandoc --standalone --mathjax --output $@ $<
 
 # Setting `-output-directory` to prevent the cruft won't help,
 # because biber and makeglossaries don't have that flag.

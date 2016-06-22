@@ -1,5 +1,6 @@
 *.swp
 doc/text.tex
+doc/text.md
 build/
 *.sublime-*
 out/*
