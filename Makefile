@@ -17,6 +17,7 @@ XELATEX_CI_OPTS=-interaction=nonstopmode
 
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
 MD_FILES := $(wildcard $(DOC_PATH)/content*.md | sort)
+TEX_FILES := $(wildcard $(DOC_PATH)/*.tex)
 
 all: $(OUT_PATH)/thesis.pdf $(OUT_PATH)/thesis.html
 
@@ -28,7 +29,7 @@ $(DOC_PATH)/text.md: $(MD_FILES)
 $(DOC_PATH)/text.tex: $(DOC_PATH)/text.md
 	pandoc --latex-engine=$(LATEX_ENGINE) $(PANDOC_OPTS) $(DOC_PATH)/text.md --output $@
 
-$(OUT_PATH)/thesis.html: $(DOC_PATH)/text.md
+$(OUT_PATH)/thesis.html: $(DOC_PATH)/text.md $(TEX_FILES)
 	pandoc --standalone --mathjax --output $@ $<
 
 # Setting `-output-directory` to prevent the cruft won't help,
@@ -36,7 +37,7 @@ $(OUT_PATH)/thesis.html: $(DOC_PATH)/text.md
 # The current solution is to `rsync` the document into a temporary build folder
 # and to copy the generated `pdf` into the output folder.
 # This works very well and you can `rm -r` the content of build folder with all the cruft.
-$(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex
+$(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex $(TEX_FILES)
 	mkdir -p $(OUT_PATH)
 	mkdir -p $(BUILD_PATH)
 	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
