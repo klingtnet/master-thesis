@@ -4,6 +4,8 @@
 
 ## Build
 
+There are prebuild versions of the document available in the [release section](https://github.com/klingtnet/master-thesis/releases).
+
 - dependencies
 - build:
 	- texlive
