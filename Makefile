@@ -51,6 +51,7 @@ open: $(OUT_PATH)/thesis.pdf
 
 clean:
 	rm -f $(DOC_PATH)/text.tex
+	rm -f $(DOC_PATH)/text.md
 	rm -f $(OUT_PATH)/thesis.pdf
 	# I could use the $(BUILD_PATH) variable at this point, but if it expands to "" we will be really sad :( Also I am a coward because I don't use rm -r with variable arguments
 	rm -r build/*
