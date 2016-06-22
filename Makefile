@@ -4,6 +4,7 @@ PROJ_ROOT=$(PWD)
 DOC_PATH=$(PROJ_ROOT)/doc
 OUT_PATH=$(PROJ_ROOT)/out
 BUILD_PATH=$(PROJ_ROOT)/build
+DOC_VERSION=$(shell git describe --always)
 
 LATEX_ENGINE=xelatex
 
@@ -40,6 +41,7 @@ $(OUT_PATH)/thesis.pdf: $(DOC_PATH)/text.tex $(TEX_FILES)
 	mkdir -p $(OUT_PATH)
 	mkdir -p $(BUILD_PATH)
 	rsync --quiet --update --recursive $(DOC_PATH)/ $(BUILD_PATH)
+	sed -i -e "s/DOCUMENT-VERSION-PLACEHOLDER/$(DOC_VERSION)/g" $(BUILD_PATH)/title.tex
 	cd $(BUILD_PATH) && xelatex $(XELATEX_CI_OPTS) -no-pdf thesis
 	cd $(BUILD_PATH) && biber thesis
 	cd $(BUILD_PATH) && xelatex $(XELATEX_CI_OPTS) thesis
