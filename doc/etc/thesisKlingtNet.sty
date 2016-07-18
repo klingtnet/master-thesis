@@ -8,6 +8,7 @@
     \usepackage{unicode-math}
     \usepackage{fontspec}
     \usepackage{polyglossia}
+    \usepackage{xcolor}
     \setmainlanguage{english}
     \setotherlanguage{german}
     %\setmainfont{Latin Modern Roman} % Latin Modern Roman is used by default
@@ -36,11 +37,12 @@
             bookmarks=true,%
             pdfauthor={\documentAuthor{}},%
             pdftitle={\documentTitle{}},%
-            colorlinks=true,%
-            citecolor=blue,%
-            urlcolor=blue,%
-            linkcolor=magenta,%
-            pdfborder={0 0 0}}
+            colorlinks=false,%
+            pdfborderstyle={/S/U/W 1},% the option's values are some magic from the PDF specification
+            linkbordercolor=magenta,%
+            urlbordercolor=magenta,%
+            citebordercolor=magenta,%
+}
 
 %-------------------- typography
 \usepackage{csquotes}
