@@ -1,19 +1,36 @@
 # Introduction
 
+## Scope of this Thesis
+
+It's not required for the reader to have any prior knowledge of soft- and hardware tools used in music production environments.
+However, a basic knowledge of signal processing and some familiarity with computer programming is beneficial to grasp the presented concepts.
+
 ## Objectives
 
-The sound of audio synthesizers always fascinated me and ...
+<!-- TODO
+Be more specifif
+-->
+
+The objective of this thesis is to show how to build a realtime audio software application at the example of an audio synthesizer with frequency modulated oscillators.
+
+The amount of problems that arise when building such an application is quite large.
+This includes timing and synchronization problems that occur because the computations made are required to be finished in short time windows.
+Computations must be as fast as possible to ensure a responsive feedback for the player of the instrument, and are needed to avoid sound distortion when the generated signals could not be delivered fast enough to the sound card buffer.
+
+Not every programming language is equally suitable for the development of realtime applications, thus it is explained why Rust was chosen as the implementation language.
+Libraries for the MIDI and Open Sound Control protocol were implemented and released as open-source software.
+Both protocols are supported by the application and are used to polyphonically play notes or remote control all of the synthesizer parameters.
+Common synthesizer architectures and signal generation methods are discussed and evaluated.
+
+Furthermore, some sound shaping techniques and effects are presented in detail.
+The techniques used to reduce the amount of signal distortion are presented.
+Lastly, an outlook on possible optimizations and enhancements, as well as a summary of the achieved results is given.
 
 ## Overview
 
 Provide a quick summary of each chapter.
 
 Chapter 2 gives an overview about common synthesis concepts and evaluates why Rust was choosen as the implementation language.
-
-## Scope of this Thesis
-
-It's not required for the reader to have any prior knowledge of soft- and hardware tools used in music production environments.
-However, a basic knowledge of signal processing and some familiarity with computer programming is beneficial to grasp the presented concepts.
 
 ## Why Rust?
 
@@ -101,19 +118,241 @@ Iterators
 Toolchain
 :	Rust has a standard package manager and build tool called *Cargo*, that is typically used to manage the dependencies of a project but also to run tests and benchmarks.
 
+# Control Input
+
+A list of components that are usually used in an digital, as well as analog, synthesizer user interface:
+
+- buttons
+- keys
+- slider
+- dials or knobs
+
+## Latency
+
+\begin{definition}{Latency} is a time interval between the stimulation and response, or, from a more general point of view, a time delay between the cause and the effect of some physical change in the system being observed
+\end{definition}
+
+> For any audio system, may it be, for example, an analogue electronic circuit, a digital circuit, a whole computer or a physical wave-guide, there will be some time lag between the instant at which the signal enters the audio system and the one at which the signal exits.
+> For a lot of reasons:
+> - finite propagation speed of sound waves
+> - AD/DA conversion times
+
+- temporal resolution of human hearing is $\approx 2\,ms$ \cite{FastlZwicker}
+- only control over some aspects, buffer sizes of the application or the sound backend
+- user of the application should not be able to hear any possible delay between his input action/event and the generated output signal
+
+Spectral artifacts can occur for very low latencies and only when the signal is monitored (comb filter).
+Can be ignored because there is no source signal that is monitored.
+Temporal issues are to be concerned.
+\cite{AES:Latency}
+
+The propagation delay, i.e. time $t$ it takes for a wave of sound to travel from the speaker to the ear of the listener, over a distance of $d = 1.5\,m$, and by a speed of sound of $v = 343.2\,m/s$ at normal temperature [^stdTemp] can be calculated like this:
+
+[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
+
+$$
+\begin{aligned}
+t &= \frac{d}{v}*1\,s\\
+  &= \frac{1.5\,m}{343.2\,m}*1\,s\\
+  &= 0.00437\,s\\
+  &= 4.37\,ms
+\end{aligned}
+$$
+
+The overall latency of the synthesizer is the sum of different latency portions, introduced through a variety of components in the audio output chain.
+At first there is the input latency, that is either $l_{midi}$ or $l_{osc}$ depending on the used input protocol, where the amount of $l_{osc}$ depends highly on the network connection.
+Usually a wifi connection is used to connect an OSC client, like a tablet running [liine's lemur](https://liine.net/de/products/lemur/) or some other OSC capable controller application.
+An ad-hoc wifi network or tethering over USB can be used to get reliable network latencies with wireless clients.
+
+The next latency portion, $l_{dsp}$ is introduced through the synthesizers internal audio output buffer.
+At the time of writing, a small buffer size of [64 samples](https://github.com/klingtnet/ytterbium/blob/master/src/main.rs#L172), or $\approx 1.3\,ms$, was used.
+
+The audio backends output buffer adds a portion $t_{backend}$ of latency, as well.
+It depends on the users buffer size settings how large the added latency is.
+
+At last there is the propagation delay which can be neglected for usual listening distances or is near zero if headphones are used.
+
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[auto]
+\draw
+	node [block](Engine){DSP Engine}
+	node [block, above left of=Engine, node distance=3cm](MIDI){MIDI}
+	node [block, below left of=Engine, node distance=3cm](OSC){OSC}
+	node [block, right of=Engine, node distance=4cm](Soundcard){Audio Backend}
+	node [block, right of=Soundcard, node distance=5cm](Speaker){Speaker}
+	node [block, right of=Speaker, node distance=4cm](Listener){Listener}
+;
+	\draw[->](MIDI) -- node{$l_{midi}$}(Engine);
+	\draw[->](OSC) -- node{$l_{osc}$}(Engine);
+	\draw[->](Engine) -- node{$l_{dsp}$}(Soundcard);
+	\draw[->](Soundcard) -- node{$l_{backend}$}(Speaker);
+	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
+\end{tikzpicture}}
+
 # User Interface
 
-## Midi
+Interaction with the software synthesizer is done through its *user interface*.
+The user interface serves three senses, which are sight, touch and hearing.
+This section concentrates on the first two, the *visual* and the *haptic* component.
+However, a synthesizer can be played solely through haptic controls and audio feedback.
+Visual indicators for the synthesizer's parameters, e.g. through a display, are convenient, but not necessary for the playing musician.
 
-Midi stands for ...
+The application supports the two most common musical control signal protocols, *MIDI* and *Open Sound Control* (OSC).
+Adding MIDI support is highly beneficial, because it enables the synthesizer to be played with any---of the vast amount of available---MIDI hardware controllers.
+On the other hand, Open Sound Control software like [liine's Lemur](https://liine.net/de/products/lemur/) \cite{LiineLemur} provides an editor to create or customize a software defined controller for a multi-touch device like a smartphone or tablet.
 
-## OSC (Open Sound Control)
+<!-- TODO
+- OSC: custom controllers, more modern approach
+- User interface must work in realtime (latency)
 
-A standard
+MIDI support is a basic requirement for nearly all types of music hard- and software because it allows to use controller hardware
+User input, if it is a played note or a parameter change, must be processed in real-time to give the player direct feedback without perceived *latency* (see \nameref{latency}).
+-->
+
+## MIDI
+
+The Musical Instrument Digital Interface (MIDI) specification stipulates a hardware interconnection scheme and a method for data communication \cite[p.\~972]{Roads:CMT}, but only the protocol specification is of interest for this work.
+Most modern MIDI hardware is connected via USB anyway.
+The *MIDI 1.0 Specification* \cite{MIDI10} provides a high level description of the MIDI protocol:
+
+> The Musical Instrument Digital Interface (MIDI) protocol provides a standardized and efficient means of conveying musical performance information as electronic data.
+> MIDI information is transmitted in \enquote{MIDI messages}, which can be thought of as instructions which tell a music synthesizer how to play a piece of music. \cite[p.\~1]{MIDI10}
+
+Transmitting *control data* is the purpose of the MIDI protocol, and not, like it is sometimes confused, to transmit audio data[^midi-audio].
+Control data can be thought of as the press of a key, turning a knob, or an instruction to change the clock speed of a song.
+
+[^midi-audio]: It is possible to transmit audio data over MIDI by using *System Exclusive* (SysEx) messages, but this can't be done in real-time and is mostly used to replace or update samples or wavetables in hardware synthesizers.
+
+The work on the MIDI specification began in 1981 by a consortium of Japanese and American synthesizer manufacturers, the MIDI Manufacturers Association (MMA).
+In August 1983, the version 1.0 was published \cite[p.\~974]{Roads:CMT}.
+This year, 2016, the MMA established The MIDI Association (TMA).
+The TMA should support the global community of MIDI users and establish [midi.org](https://www.midi.org/) \cite{MidiOrg} as a central source for information about MIDI.
+MIDI is used in nearly every music electronic device, like synthesizers, samplers, digital audio effects, and music software, due to its simple protocol structure and long time of existence.
+
+### MIDI Protocol
+
+The MIDI protocol specifies a standard transmission rate of 31.250 baud.
+This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of 1MHz by 32 \cite[p.\~976]{Roads:CMT}.
+It uses an 8b/10b encoding, i.e. 8 bits of data are transmitted as a 10 bit word.
+A data byte is enclosed by a start- and stop bit which in turn results in the 10 bit encoding.
+Asynchronous serial communication is used to transfer *MIDI messages*, thus the start and stop bit.
+
+A MIDI message is composed of a *status byte* which is followed by up to two[^sysex] *data byte*(s).
+Both types are differentiated by their most significant bit (MSB), `1` for status- and `0` for data bytes.
+Consequently, the usable payload size is reduced to 7 bit, in other words, values can range from 0 to 127.
+
+[^sysex]: System Exclusive (SysEx) messages can be made up of more than two data-bytes, in fact they are build by a sequence of data bytes followed by an *End of Exclusive* (EOX) message to mark the end of the stream. This type of message does not contain any musical control data, in general it is used to upload binary data, like firmware updates or samples, to a MIDI device.
+
+\Cref{fig:midi-status} shows the structure of a status byte.
+The message type is denoted by three bits (`T`) and the remaining four bits are used to denote the channel number (`C`), hence there are sixteen different channels.
+MIDI channels allow to route different logical streams over one physical MIDI connection, e.g. to reach a different, daisy-chained, MIDI device or to control different timbres of a multitimbral synthesizer.
+
+\begin{figure}
+	\begin{center}
+	$0\quad\underbrace{T\quad{}T\quad{}T}_{\text{message type}}\quad\overbrace{C\quad{}C\quad{}C\quad{}C}^{\text{channel number}}$
+	\end{center}
+	\caption{Structure of a MIDI status byte.}
+	\label{fig:midi-status}
+\end{figure}
+
+MIDI messages are divided in two categories, *channel* and *system* messages.
+Only the latter ones contain musical control information and are therefore of interest for this thesis.
+\Cref{fig:midi-classification} illustrates the classification.
+*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.\~36]{MIDI10}, i.a. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
+
+
+\begin{figure}
+\tikzset{
+	msg/.style = {align=center, rectangle, rounded corners, draw, font={\sffamily\footnotesize}},
+}
+	\resizebox{\textwidth}{!}{
+	\begin{tikzpicture}
+[
+	grow = right,
+	every node/.style = {font=\footnotesize},
+	sibling distance = 1cm,
+	level distance = 1cm,
+	level 1/.style = {sibling distance = 5cm, level distance = 3cm},
+	level 2/.style = {sibling distance = 2cm, level distance = 5cm},
+	sloped
+]
+\node[msg]{MIDI Message}
+	child { node [msg]{System Message}
+		child { node [msg]{System Exclusive\\Message}
+			edge from parent node [above] {\texttt{F0}}
+		}
+		child { node [msg]{System Common\\Message}
+			edge from parent node [above] {\texttt{F1-F7}}
+		}
+		child { node [msg]{System Real-Time\\Message}
+			edge from parent node [above] {\texttt{F8-FF}}
+		}
+		edge from parent node [above] {\texttt{F0-FF}}
+	}
+	child { node [msg]{Channel Message}
+		child { node [msg]{Channel Voice\\Message}
+			edge from parent node [above] {\texttt{8x-Ex}}
+		}
+		child { node [msg]{Channel Mode\\Message}
+			edge from parent node [above] {\texttt{Bx}}
+			edge from parent node [below] {\texttt{Data1: 79-7F}}
+		}
+		edge from parent node [above] {\texttt{8x-Ex}}
+	}
+	;
+	\end{tikzpicture}}
+	\caption{Classification of MIDI messages. Status byte values are shown as edge labels where \texttt{x} symbolizes don't care.}
+	\label{fig:midi-classification}
+\end{figure}
+
+- how does a message look like?
+- what types of messages are there?
+- timing problems
+- bandwidth
+- midi message, midi event
+- \cite{Github:portmidi-rs}
+
+### MIDI Controller
+
+![Edirol PCR-300 MIDI controller keyboard\label{PCR300}](imgs/pcr_300_angle.jpg){ width=100% }
+
+- controller (musical keyboard), sequencer, combination of all (masterkeyboard)
+- does not transmit audio data
+- controller
+- masterkeyboard
+- combination
+
+## OSC
+
+- high-speed network replacement for MIDI
+
+## Latency
+
+The *responsiveness* of an electronic musical instrument is mainly determined by its latency.
+
+\theoremstyle{definition}
+\begin{definition}
+\label{def:latency}
+Latency is the time delay between two causally connected events.
+\end{definition}
+
+An instrument is the more responsive, the less latency between an input event and the corresponding sound output it has.
+The latency is imperceptible for the user if the delay between the input event and audio output stimuli is $< 24ms$ \cite{NasaLatency}.
+Furthermore, there is an even stronger latency limit of $\approx 2$ms, that is the *temporal resolution* of the human hearing, as shown by \cite[p.\~294]{FastlZwicker} using psychoacoustic measurements.
+However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = 343.2 m/s$ and a common listening distance of $d = 2m$ is $\approx$ 3 times larger than the temporal resolution: $d/v = 2m/343.2\frac{m}{s} = 5.82ms$.
+Therefore, achieving a system latency of less than $24ms$ is favorable.
+
+Latency (see \nameref{latency}) is the time difference between an input action and the corresponding output from a system, in this case the synthesizer.
+
+- reduce latency with custom kernel (linux-ck)
+
+### Requirements
 
 ### Lemur
 
-App
+![View of the piano section](imgs/lemur-piano.png){ width=100% }
+
+![View of the oscillator contol section](imgs/lemur-oscillator.png){ width=100% }
 
 # Synthesizer Basics
 
