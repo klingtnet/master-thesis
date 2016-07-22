@@ -4,3 +4,4 @@ doc/text.md
 build/
 *.sublime-*
 out/*
+*.vscode
