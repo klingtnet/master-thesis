@@ -13,6 +13,7 @@
              listof=totoc}
 \input{vars}
 \input{./etc/preamble}
+\usepackage{setspace}
 
 % warn on incorrect latex usage
 \RequirePackage[l2tabu, orthodox]{nag}
@@ -27,7 +28,11 @@
     %\mainmatter
     \pagenumbering{arabic}
 	\pagestyle{scrheadings}
+	\setstretch{1.2}
+	\setlength{\parskip}{.35\baselineskip}%
+	\setlength{\parindent}{0pt}%
     \include{text}
+	\setstretch{1.0}
 	\pagestyle{plain}
     \include{abstract}
     \appendix % http://mirrors.ctan.org/macros/latex/contrib/koma-script/doc/scrguien.pdf p. 132
