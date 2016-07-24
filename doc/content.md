@@ -211,12 +211,12 @@ User input, if it is a played note or a parameter change, must be processed in r
 
 ## MIDI
 
-The Musical Instrument Digital Interface (MIDI) specification stipulates a hardware interconnection scheme and a method for data communication \cite[p.\~972]{Roads:CMT}, but only the protocol specification is of interest for this work.
+The Musical Instrument Digital Interface (MIDI) specification stipulates a hardware interconnection scheme and a method for data communication \cite[p.~972]{Roads:CMT}, but only the protocol specification is of interest for this work.
 Most modern MIDI hardware is connected via USB anyway.
 The *MIDI 1.0 Specification* \cite{MIDI10} provides a high level description of the MIDI protocol:
 
 > The Musical Instrument Digital Interface (MIDI) protocol provides a standardized and efficient means of conveying musical performance information as electronic data.
-> MIDI information is transmitted in \enquote{MIDI messages}, which can be thought of as instructions which tell a music synthesizer how to play a piece of music. \cite[p.\~1]{MIDI10}
+> MIDI information is transmitted in \enquote{MIDI messages}, which can be thought of as instructions which tell a music synthesizer how to play a piece of music. \cite[p.~1]{MIDI10}
 
 Transmitting *control data* is the purpose of the MIDI protocol, and not, like it is sometimes confused, to transmit audio data[^midi-audio].
 Control data can be thought of as the press of a key, turning a knob, or an instruction to change the clock speed of a song.
@@ -224,7 +224,7 @@ Control data can be thought of as the press of a key, turning a knob, or an inst
 [^midi-audio]: It is possible to transmit audio data over MIDI by using *System Exclusive* (SysEx) messages, but this can't be done in real-time and is mostly used to replace or update samples or wavetables in hardware synthesizers.
 
 The work on the MIDI specification began in 1981 by a consortium of Japanese and American synthesizer manufacturers, the MIDI Manufacturers Association (MMA).
-In August 1983, the version 1.0 was published \cite[p.\~974]{Roads:CMT}.
+In August 1983, the version 1.0 was published \cite[p.~974]{Roads:CMT}.
 This year, 2016, the MMA established The MIDI Association (TMA).
 The TMA should support the global community of MIDI users and establish [midi.org](https://www.midi.org/) \cite{MidiOrg} as a central source for information about MIDI.
 MIDI is used in nearly every music electronic device, like synthesizers, samplers, digital audio effects, and music software, due to its simple protocol structure and long time of existence.
@@ -232,7 +232,7 @@ MIDI is used in nearly every music electronic device, like synthesizers, sampler
 ### MIDI Protocol
 
 The MIDI protocol specifies a standard transmission rate of 31.250 baud.
-This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of 1MHz by 32 \cite[p.\~976]{Roads:CMT}.
+This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of 1MHz by 32 \cite[p.~976]{Roads:CMT}.
 It uses an 8b/10b encoding, i.e. 8 bits of data are transmitted as a 10 bit word.
 A data byte is enclosed by a start- and stop bit which in turn results in the 10 bit encoding.
 Asynchronous serial communication is used to transfer *MIDI messages*, thus the start and stop bit.
@@ -256,9 +256,9 @@ MIDI channels allow to route different logical streams over one physical MIDI co
 \end{figure}
 
 MIDI messages are divided in two categories, *channel* and *system* messages.
-Only the latter ones contain musical control information and are therefore of interest for this thesis.
-\Cref{fig:midi-classification} illustrates the classification.
-*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.\~36]{MIDI10}, i.a. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
+Only the latter ones contain musical control information and therefore are of interest for this thesis.
+\Cref{fig:midi-classification} illustrates the classification, status byte values are shown as edge labels where \texttt{x} symbolizes don't care.
+*Channel Mode Messages* define the instrument's response to Voice Messages cite[p.~36]{MIDI10}, i.a. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
 
 
 \begin{figure}
