@@ -10,7 +10,11 @@
     minimum width = 3em},
   sum/.style      = {draw, circle, node distance = 2cm}, % Adder
   input/.style    = {coordinate}, % Input
-  output/.style   = {coordinate} % Output
+  output/.style   = {coordinate}, % Output
+  % MIDI
+  msg/.style 	    = {align=center, rectangle, rounded corners, draw, font={\sffamily\footnotesize}},
+  % OSC
+  osc-method/.style = {font={\ttfamily\itshape}}
 }
 % addition
 \providecommand{\suma}{\Large$+$}
