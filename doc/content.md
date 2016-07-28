@@ -118,77 +118,6 @@ Iterators
 Toolchain
 :	Rust has a standard package manager and build tool called *Cargo*, that is typically used to manage the dependencies of a project but also to run tests and benchmarks.
 
-# Control Input
-
-A list of components that are usually used in an digital, as well as analog, synthesizer user interface:
-
-- buttons
-- keys
-- slider
-- dials or knobs
-
-## Latency
-
-\begin{definition}{Latency} is a time interval between the stimulation and response, or, from a more general point of view, a time delay between the cause and the effect of some physical change in the system being observed
-\end{definition}
-
-> For any audio system, may it be, for example, an analogue electronic circuit, a digital circuit, a whole computer or a physical wave-guide, there will be some time lag between the instant at which the signal enters the audio system and the one at which the signal exits.
-> For a lot of reasons:
-> - finite propagation speed of sound waves
-> - AD/DA conversion times
-
-- temporal resolution of human hearing is $\approx 2\,ms$ \cite{FastlZwicker}
-- only control over some aspects, buffer sizes of the application or the sound backend
-- user of the application should not be able to hear any possible delay between his input action/event and the generated output signal
-
-Spectral artifacts can occur for very low latencies and only when the signal is monitored (comb filter).
-Can be ignored because there is no source signal that is monitored.
-Temporal issues are to be concerned.
-\cite{AES:Latency}
-
-The propagation delay, i.e. time $t$ it takes for a wave of sound to travel from the speaker to the ear of the listener, over a distance of $d = 1.5\,m$, and by a speed of sound of $v = 343.2\,m/s$ at normal temperature [^stdTemp] can be calculated like this:
-
-[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
-
-$$
-\begin{aligned}
-t &= \frac{d}{v}*1\,s\\
-  &= \frac{1.5\,m}{343.2\,m}*1\,s\\
-  &= 0.00437\,s\\
-  &= 4.37\,ms
-\end{aligned}
-$$
-
-The overall latency of the synthesizer is the sum of different latency portions, introduced through a variety of components in the audio output chain.
-At first there is the input latency, that is either $l_{midi}$ or $l_{osc}$ depending on the used input protocol, where the amount of $l_{osc}$ depends highly on the network connection.
-Usually a wifi connection is used to connect an OSC client, like a tablet running [liine's lemur](https://liine.net/de/products/lemur/) or some other OSC capable controller application.
-An ad-hoc wifi network or tethering over USB can be used to get reliable network latencies with wireless clients.
-
-The next latency portion, $l_{dsp}$ is introduced through the synthesizers internal audio output buffer.
-At the time of writing, a small buffer size of [64 samples](https://github.com/klingtnet/ytterbium/blob/master/src/main.rs#L172), or $\approx 1.3\,ms$, was used.
-
-The audio backends output buffer adds a portion $t_{backend}$ of latency, as well.
-It depends on the users buffer size settings how large the added latency is.
-
-At last there is the propagation delay which can be neglected for usual listening distances or is near zero if headphones are used.
-
-\resizebox{\textwidth}{!}{
-\begin{tikzpicture}[auto]
-\draw
-	node [block](Engine){DSP Engine}
-	node [block, above left of=Engine, node distance=3cm](MIDI){MIDI}
-	node [block, below left of=Engine, node distance=3cm](OSC){OSC}
-	node [block, right of=Engine, node distance=4cm](Soundcard){Audio Backend}
-	node [block, right of=Soundcard, node distance=5cm](Speaker){Speaker}
-	node [block, right of=Speaker, node distance=4cm](Listener){Listener}
-;
-	\draw[->](MIDI) -- node{$l_{midi}$}(Engine);
-	\draw[->](OSC) -- node{$l_{osc}$}(Engine);
-	\draw[->](Engine) -- node{$l_{dsp}$}(Soundcard);
-	\draw[->](Soundcard) -- node{$l_{backend}$}(Speaker);
-	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
-\end{tikzpicture}}
-
 # User Interface
 
 Interaction with the software synthesizer is done through its *user interface*.
@@ -198,8 +127,10 @@ However, a synthesizer can be played solely through haptic controls and audio fe
 Visual indicators for the synthesizer's parameters, e.g. through a display, are convenient, but not necessary for the playing musician.
 
 The application supports the two most common musical control signal protocols, *MIDI* and *Open Sound Control* (OSC).
-Adding MIDI support is highly beneficial, because it enables the synthesizer to be played with any---of the vast amount of available---MIDI hardware controllers.
+Adding MIDI support is highly beneficial, because it enables the synthesizer to be played with any---of the vast amount of available---MIDI hardware controllers (\cref{midi:edirol} shows an example of such a device).
 On the other hand, Open Sound Control software like [liine's Lemur](https://liine.net/de/products/lemur/) \cite{LiineLemur} provides an editor to create or customize a software defined controller for a multi-touch device like a smartphone or tablet.
+
+![Edirol PCR-300 MIDI controller keyboard\label{midi:edirol}](imgs/pcr_300_angle.jpg){ width=100% }
 
 <!-- TODO
 - OSC: custom controllers, more modern approach
@@ -258,14 +189,10 @@ MIDI channels allow to route different logical streams over one physical MIDI co
 MIDI messages are divided in two categories, *channel* and *system* messages.
 Only the latter ones contain musical control information and therefore are of interest for this thesis.
 \Cref{fig:midi-classification} illustrates the classification, status byte values are shown as edge labels where \texttt{x} symbolizes don't care.
-*Channel Mode Messages* define the instrument's response to Voice Messages cite[p.~36]{MIDI10}, i.a. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
-
+*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.~36]{MIDI10}, i.a. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
 
 \begin{figure}
-\tikzset{
-	msg/.style = {align=center, rectangle, rounded corners, draw, font={\sffamily\footnotesize}},
-}
-	\resizebox{\textwidth}{!}{
+	\centering
 	\begin{tikzpicture}
 [
 	grow = right,
@@ -300,31 +227,202 @@ Only the latter ones contain musical control information and therefore are of in
 		edge from parent node [above] {\texttt{8x-Ex}}
 	}
 	;
-	\end{tikzpicture}}
-	\caption{Classification of MIDI messages. Status byte values are shown as edge labels where \texttt{x} symbolizes don't care.}
+	\end{tikzpicture}
+	\caption{Classification of MIDI messages.}
 	\label{fig:midi-classification}
 \end{figure}
 
-- how does a message look like?
-- what types of messages are there?
-- timing problems
-- bandwidth
-- midi message, midi event
-- \cite{Github:portmidi-rs}
+### MIDI Pitch
 
-### MIDI Controller
+\begin{table}[]
+\centering
+\caption{Types of MIDI Voice Messages.}
+\label{tab:voice-messages}
+\begin{tabular}{@{}llllp{3.5cm}@{}}
+\toprule
+Type                    & Status & Data1      & Data2    & Description                                                \\ \midrule
+Note-Off                & 8x     & Key \#     & Velocity & Key released.                                              \\
+Note-On                 & 9x     & Key \#     & Velocity & Key press from a triggering device.                        \\
+Polyphonic Key Pressure & Ax     & Key \#     & Pressure & Aftertouch event.                                          \\
+Control Change          & Bx     & Ctrl. \#	  & Value    & Move of a controller other than a key (e.g. Knob, Slider). \\
+Program Change          & Cx     & Program \# & ---      & Instruction to load specified preset.                      \\
+Channel Pressure        & Dx     & Pressure   & ---      & Aftertouch event.                                          \\
+Pitch Bend              & Ex     & MSB        & LSB      & Altering pitch (14-bit resolution).                        \\ \bottomrule
+\end{tabular}
+\end{table}
 
-![Edirol PCR-300 MIDI controller keyboard\label{PCR300}](imgs/pcr_300_angle.jpg){ width=100% }
+\Cref{tab:voice-messages} gives an overview of the types on voice messages.
+Corresponding Note-On and Off messages do not necessarily follow one after another, therefore, to relate associated messages, pitch information is contained in the Note-Off as well.
+Pitch is encoded as a 7-bit value in note messages, hence there is a range of 128 pitches or about 10 octaves.
+MIDI's pitch representation was designed with an *chromatic western music scale* in mind.
+A *chromatic scale* has 12 pitches per octave with one semitone difference between each pitch.
+An interval of one octave is equivalent to a doubling or halving (in the negative case) in frequency.
+Instruments in *western music* are usually *equal-tempered*, i.e. all semitones have the same size.
+MIDI pitches are considered to be equal-tempered and range from C0 (*c* in the lowest octave) to a G10 (*g* in the 10th octave).
+Middle C, pitch number 60 (C5), is used as reference.
 
-- controller (musical keyboard), sequencer, combination of all (masterkeyboard)
-- does not transmit audio data
-- controller
-- masterkeyboard
-- combination
+\begin{equation}
+	\label{eq:midi-pitch}
+	f = f_\text{tune}\cdot 2^{\displaystyle\left(p-p_\text{ref}\right)/12}
+\end{equation}
 
-## OSC
+\Cref{eq:midi-pitch} shows how to calculate the frequency $f$ for a given MIDI pitch where $f_\text{tune}$ is the tuning frequency and $p_\text{ref}$ is the reference pitch number.
+Musical instruments are commonly tuned to the *Concert A*, the note A above middle C or MIDI pitch 69.
+The default tuning of Concert A is 440 Hz \cite{ISO16:1975}.
+The following example shows how to calculate the frequency for middle C by using the *Concert A* tuned to 440 Hz as reference pitch in \cref{eq:midi-pitch}:
 
-- high-speed network replacement for MIDI
+$$
+\begin{aligned}
+f	&= 440\,\text{Hz}\cdot 2^{(60-69)/12}\\
+	&= 440\,\text{Hz}\cdot 2^{-9/12}\\
+	&\approx 261.626\,\text{Hz}
+\end{aligned}
+$$
+
+### Timing Problems
+
+Playing two or more notes a the same time, i.e. playing a chord, can lead to timing problems because of MIDI's low bandwidth.
+
+$$
+\begin{aligned}
+t_\text{Note-On}	&= 3\cdot\left(31250\,\frac{\text{bit}}{\text{s}}/10\,{\text{bit}}\right)^{-1}\\
+					&= 0.0096\,\text{s} = 0.96\,\text{ms}
+\end{aligned}
+$$
+
+The time to transmit a single note-on event $t_\text{Note-On}$ takes $\approx 1\,\text{ms}$, this means that the last trasnmitted note of an $n$-key chord arrives with $n \cdot 0.96\,\text{ms}$ delay, e.g. the last note of a pentachord (5 keys) will be received $5 \cdot 0.96\,\text{ms} = 4.8\,\text{ms}$ later than the first one.
+This may result in a *comb filter*[^comb-filter] like distortion of the synthesized chord sound.
+
+[^comb-filter]: A comb filter adds a delayed copy of the signal to itself causing addition or subtraction in the signal. The filters frequency response shows regularly spaced notches, might resemble the shape of a comb.
+
+## Open Sound Control
+
+The *UC Berkeley Center for New Music and Audio Technology* (CNMAT) originally developed, and continues to research, Open Sound Control.
+In 2002, OSC's 1.0 specification was released.
+It provides the following definition \cite{OSC:10}:
+
+> Open Sound Control (OSC) is an open, transport-independent, message-based protocol developed for communication among computers, sound synthesizers, and other multimedia devices.
+
+The protocol is not limited to being used with audio or multimedia devices, however, it is often used as a high-speed network replacement for MIDI.
+Referring to OSC as a *message format* is more accurate, since error-handling, synchronization or negotiation methods are not specified.
+Therefore, OSC can be compared to formats like JSON or XML.
+A draft of the OSC 1.1 specification was published in a 2009 paper \cite{OSC:11} only adding minor, backward compatible changes.
+UDP is often used as the transport layer to avoid the time needed to establish a connection by TCP's three-way handshake.
+A connection less transport is sufficient because OSC sender and receiver are almost always in physical proximity and connected through the same LAN.
+
+### OSC Data Types
+
+\begin{table}[]
+\centering
+\caption{Overview of OSC 1.0 and 1.1 data types.}
+\label{tab:osc-data-types}
+\begin{tabular}{@{}cp{7.5cm}cc@{}}
+\toprule
+Tag     & Description                                                      & 1.0 Required & 1.1 Required \\ \midrule
+i       & 32-bit two's complement integer                                  & ✔            & ✔            \\
+f       & IEEE 754 single precision (32-bit)                               & ✔            & ✔            \\
+s       & null-terminated sequence of ASCII characters                     & ✔            & ✔            \\
+b       & binary blob with size information                                & ✔            & ✔            \\
+h       & 64-bit big-endian two's complement integer                       &              &              \\
+t       & OSC-timetag in NTP format                                        &              & ✔            \\
+d       & IEEE 754 double precision (64-bit)                               &              &              \\
+S       & alternate string type                                            &              &              \\
+c       & ASCII character                                                  &              &              \\
+r       & RGBA color (8-bit per channel)                                   &              &              \\
+m       & 4 byte MIDI message. From MSB to LSB: port, status, data1, data2 &              &              \\
+T/F     & true, false boolean values                                       &              & ✔            \\
+N       & Nil                                                              &              & ✔            \\
+I       & Infinitum (1.0)/Impulse(1.1) used as event trigger               &              & ✔            \\
+{[},{]} & Array delimiters                                                 &              &              \\ \bottomrule
+\end{tabular}
+\end{table}
+
+An overview of the predefined data types for both, OSC 1.0 and 1.1, is shown in \cref{tab:osc-data-types}.
+The byte order of OSC's integer, float and timetags is big-endian.
+OSC's unit of transmission is called *OSC Packet*.
+The EBNF grammar for OSC packets is described by \cref{osc:grammar}.
+Fields of an OSC packet have to be aligned to multiples of 4-byte and are zero-padded, thus the size of such a packet is also a multiple of four.
+The packets contents can either be an *OSC Message* or *OSC Bundle*.
+An OSC message starts with an *address pattern*  followed by zero or more *arguments* to be applied to the *OSC Method* matched by the pattern.
+Address pattern can contain basic regular expression with single-/multi-character `?/*` wildcards, range `[A-Z]` and list matches `{foo, bar}`, hence multiple OSC Methods can be triggered with a single OSC Message.
+An OSC Receiver's[^osc-naming] address space forms a tree structure with branch nodes called *OSC Containers* and leaves are named *OSC Methods*.
+Methods are *`italicized`* in the tree structure example of \cref{fig:osc-address-space-example}.
+The address of an OSC method starts with a `/`, followed by any container name along the path in order from the root of the tree, joined by forward slashes `/` and the method's name, e.g. `/oscillator/1/phase`.
+
+[^osc-naming]:
+	The term *OSC Receiver* and *OSC Server* is interchangeable.
+	This also applies to *OSC Sender* and *OSC Client*.
+	OSC applications often act as server and receiver, hence no clear distinction between those roles can be made.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+[
+	every node/.style = {font=\footnotesize\ttfamily},
+	level 1/.style = {sibling distance = 5cm},
+	level 2/.style = {sibling distance = 2cm},
+	sloped
+]
+\node{/}
+	child { node {oscillator/}
+		child { node {1/}
+			child { node [osc-method]{freq} }
+			child { node [osc-method]{phase} }
+		}
+		child [sibling distance=20mm]{ node {2/}
+			child { node {\ldots} }
+		}
+	}
+	child { node {filter/}
+		child { node [osc-method]{mode} }
+		child { node [osc-method]{cutoff} }
+		child { node [osc-method]{resonance} }
+	}
+	;
+	\end{tikzpicture}
+	\caption{OSC Address Space example.}
+	\label{fig:osc-address-space-example}
+\end{figure}
+
+\begin{figure}
+\caption{Grammar of an OSC packet described as EBNF (ISO14977 syntax \cite[p.~14]{ISO14977})}
+\label{osc:grammar}
+\begin{verbatim}
+packet			= size, content ;
+size			= (* 4-byte aligned packet content field length *) ;
+content			= message | bundle ;
+message			= address, ",", { type-tag }, { argument } ;
+address			= "/", osc-string - ( "'" | "#" | "*" | "," | "/" |
+									  "?" | "[" | "]" | "{" | "}" ) ;
+osc-string		= { ASCII }, "0" ;
+type-tag		= "i" | "f" | "s" | "b" | "h" | "t" | "d" | "S" |
+				  "c" | "r" | "m" | "T" | "F" | "N" | "I" | 
+				  "{", {type-tag}, "}" ;
+argument		= (* binary representation of the argument *) ;
+bundle			= "#bundle", OSC-timetag , { bundle-element } ;
+bundle-element	= size, content ;
+\end{verbatim}
+\end{figure}
+
+### Comparison to MIDI
+
+MIDI, as well as OSC, provide a number of benefits and limitations in comparison to each other.
+The following list shows them for OSC compared to MIDI:
+
+\begin{enumerate}
+	\item[$+$] OSC's data-types allow a much higher resolution for control values.
+	They also provide symbolic types like booleans or *Nil* to represent an empty value.
+	\item[$+$] The definition of *custom data-types* is allowed, therefore OSC applications must be robusted against unknown ones.
+	\item[$+$] The *bandwidth* is orders of magnitudes larger than MIDI's, but it depends on the type of network used.
+	A common choice are ad-hoc WiFi connections between OSC receiver and sender because the player (sender) and the instrument (receiver) are in local proximity to each other.
+	This, in turn, results in an acceptable network *latency* in the single digit millisecond range.
+	\item[$+$] Control events can be send simultaenously as an OSC bundle, e.g. note events of a chord.
+	\item[$+$] Events can be timed with an resolution of $\approx 200$ picoseconds \cite{OSC:10}.
+	\item[$+$] OSC can be used to tunnel MIDI messages over a network connection.
+	\item[$-$] There is no standard for discovering OSC devices in a network, thus addresses must be configured manually which is cumbersome.
+	\item[$-$] Unlike MIDI, there is no standard namespace for interfacing with an OSC device, altough, a proposal for a standard exists \cite{synoscopy}.
+	\item[$-$] The number of applications that support OSC is very limited.
+\end{enumerate}
 
 ## Latency
 
@@ -346,13 +444,65 @@ Latency (see \nameref{latency}) is the time difference between an input action a
 
 - reduce latency with custom kernel (linux-ck)
 
-### Requirements
+\begin{definition}{Latency} is a time interval between the stimulation and response, or, from a more general point of view, a time delay between the cause and the effect of some physical change in the system being observed
+\end{definition}
 
-### Lemur
+> For any audio system, may it be, for example, an analogue electronic circuit, a digital circuit, a whole computer or a physical wave-guide, there will be some time lag between the instant at which the signal enters the audio system and the one at which the signal exits.
+> For a lot of reasons:
+> - finite propagation speed of sound waves
+> - AD/DA conversion times
 
-![View of the piano section](imgs/lemur-piano.png){ width=100% }
+- temporal resolution of human hearing is $\approx 2\,ms$ \cite{FastlZwicker}
+- only control over some aspects, buffer sizes of the application or the sound backend
+- user of the application should not be able to hear any possible delay between his input action/event and the generated output signal
 
-![View of the oscillator contol section](imgs/lemur-oscillator.png){ width=100% }
+Spectral artifacts can occur for very low latencies and only when the signal is monitored (comb filter).
+Can be ignored because there is no source signal that is monitored.
+Temporal issues are to be concerned.
+\cite{AES:Latency}
+
+The propagation delay, i.e. time $t$ it takes for a wave of sound to travel from the speaker to the ear of the listener, over a distance of $d = 1.5\,m$, and by a speed of sound of $v = 343.2\,m/s$ at normal temperature [^stdTemp] can be calculated like this:
+
+[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
+
+$$
+\begin{aligned}
+t &= \frac{d}{v}\cdot 1\,s\\
+  &= \frac{1.5\,m}{343.2\,m}\cdot 1\,s\\
+  &= 0.00437\,s\\
+  &= 4.37\,ms
+\end{aligned}
+$$
+
+The overall latency of the synthesizer is the sum of different latency portions, introduced through a variety of components in the audio output chain.
+At first there is the input latency, that is either $l_{midi}$ or $l_{osc}$ depending on the used input protocol, where the amount of $l_{osc}$ depends highly on the network connection.
+Usually a wifi connection is used to connect an OSC client, like a tablet running [liine's lemur](https://liine.net/de/products/lemur/) or some other OSC capable controller application.
+An ad-hoc wifi network or tethering over USB can be used to get reliable network latencies with wireless clients.
+
+The next latency portion, $l_{dsp}$ is introduced through the synthesizers internal audio output buffer.
+At the time of writing, a small buffer size of [64 samples](https://github.com/klingtnet/ytterbium/blob/master/src/main.rs#L172), or $\approx 1.3\,ms$, was used.
+
+The audio backends output buffer adds a portion $t_{backend}$ of latency, as well.
+It depends on the users buffer size settings how large the added latency is.
+
+At last there is the propagation delay which can be neglected for usual listening distances or is near zero if headphones are used.
+
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[auto]
+\draw
+	node [block](Engine){DSP Engine}
+	node [block, above left of=Engine, node distance=3cm](MIDI){MIDI}
+	node [block, below left of=Engine, node distance=3cm](OSC){OSC}
+	node [block, right of=Engine, node distance=4cm](Soundcard){Audio Backend}
+	node [block, right of=Soundcard, node distance=5cm](Speaker){Speaker}
+	node [block, right of=Speaker, node distance=4cm](Listener){Listener}
+;
+	\draw[->](MIDI) -- node{$l_{midi}$}(Engine);
+	\draw[->](OSC) -- node{$l_{osc}$}(Engine);
+	\draw[->](Engine) -- node{$l_{dsp}$}(Soundcard);
+	\draw[->](Soundcard) -- node{$l_{backend}$}(Speaker);
+	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
+\end{tikzpicture}}
 
 # Synthesizer Basics
 
