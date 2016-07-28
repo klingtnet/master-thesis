@@ -554,6 +554,13 @@ At last there is the propagation delay which can be neglected for usual listenin
 
 ## Control Input
 
+### Lemur
+
+![View of the piano section](imgs/lemur-piano.png){ width=100% }
+![View of the oscillator contol section](imgs/lemur-oscillator.png){ width=100% }
+![View of the fm section](imgs/lemur-fm.png){ width=100% }
+![View of the mixer section](imgs/lemur-mix.png){ width=100% }
+
 ## Audio Output
 
 # Outlook
