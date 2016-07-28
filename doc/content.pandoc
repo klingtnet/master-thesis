@@ -234,20 +234,20 @@ Only the latter ones contain musical control information and therefore are of in
 ### MIDI Pitch
 
 \begin{table}[]
-\centering
-\caption{Types of MIDI Voice Messages.}
-\label{tab:voice-messages}
-\begin{tabular}{@{}llllp{3.5cm}@{}}
-\toprule
-Type                    & Status & Data1      & Data2    & Description                                                \\ \midrule
-Note-Off                & 8x     & Key \#     & Velocity & Key released.                                              \\
-Note-On                 & 9x     & Key \#     & Velocity & Key press from a triggering device.                        \\
-Polyphonic Key Pressure & Ax     & Key \#     & Pressure & Aftertouch event.                                          \\
-Control Change          & Bx     & Ctrl. \#	  & Value    & Move of a controller other than a key (e.g. Knob, Slider). \\
-Program Change          & Cx     & Program \# & ---      & Instruction to load specified preset.                      \\
-Channel Pressure        & Dx     & Pressure   & ---      & Aftertouch event.                                          \\
-Pitch Bend              & Ex     & MSB        & LSB      & Altering pitch (14-bit resolution).                        \\ \bottomrule
-\end{tabular}
+    \centering
+    \caption{Types of MIDI Voice Messages.}
+    \label{tab:voice-messages}
+    \begin{tabular}{@{}llllp{3.5cm}@{}}
+    \toprule
+    Type                    & Status & Data1      & Data2    & Description                                                \\ \midrule
+    Note-Off                & 8x     & Key \#     & Velocity & Key released.                                              \\
+    Note-On                 & 9x     & Key \#     & Velocity & Key press from a triggering device.                        \\
+    Polyphonic Key Pressure & Ax     & Key \#     & Pressure & Aftertouch event.                                          \\
+    Control Change          & Bx     & Ctrl. \#	  & Value    & Move of a controller other than a key (e.g. Knob, Slider). \\
+    Program Change          & Cx     & Program \# & ---      & Instruction to load specified preset.                      \\
+    Channel Pressure        & Dx     & Pressure   & ---      & Aftertouch event.                                          \\
+    Pitch Bend              & Ex     & MSB        & LSB      & Altering pitch (14-bit resolution).                        \\ \bottomrule
+    \end{tabular}
 \end{table}
 
 \Cref{tab:voice-messages} gives an overview of the types on voice messages.
@@ -312,28 +312,28 @@ A connection less transport is sufficient because OSC sender and receiver are al
 ### OSC Data Types
 
 \begin{table}[]
-\centering
-\caption{Overview of OSC 1.0 and 1.1 data types.}
-\label{tab:osc-data-types}
-\begin{tabular}{@{}cp{7.5cm}cc@{}}
-\toprule
-Tag     & Description                                                      & 1.0 Required & 1.1 Required \\ \midrule
-i       & 32-bit two's complement integer                                  & ✔            & ✔            \\
-f       & IEEE 754 single precision (32-bit)                               & ✔            & ✔            \\
-s       & null-terminated sequence of ASCII characters                     & ✔            & ✔            \\
-b       & binary blob with size information                                & ✔            & ✔            \\
-h       & 64-bit big-endian two's complement integer                       &              &              \\
-t       & OSC-timetag in NTP format                                        &              & ✔            \\
-d       & IEEE 754 double precision (64-bit)                               &              &              \\
-S       & alternate string type                                            &              &              \\
-c       & ASCII character                                                  &              &              \\
-r       & RGBA color (8-bit per channel)                                   &              &              \\
-m       & 4 byte MIDI message. From MSB to LSB: port, status, data1, data2 &              &              \\
-T/F     & true, false boolean values                                       &              & ✔            \\
-N       & Nil                                                              &              & ✔            \\
-I       & Infinitum (1.0)/Impulse(1.1) used as event trigger               &              & ✔            \\
-{[},{]} & Array delimiters                                                 &              &              \\ \bottomrule
-\end{tabular}
+    \centering
+    \caption{Overview of OSC 1.0 and 1.1 data types.}
+    \label{tab:osc-data-types}
+    \begin{tabular}{@{}cp{7.5cm}cc@{}}
+    \toprule
+    Tag     & Description                                                      & 1.0 Required & 1.1 Required \\ \midrule
+    i       & 32-bit two's complement integer                                  & ✔            & ✔            \\
+    f       & IEEE 754 single precision (32-bit)                               & ✔            & ✔            \\
+    s       & null-terminated sequence of ASCII characters                     & ✔            & ✔            \\
+    b       & binary blob with size information                                & ✔            & ✔            \\
+    h       & 64-bit big-endian two's complement integer                       &              &              \\
+    t       & OSC-timetag in NTP format                                        &              & ✔            \\
+    d       & IEEE 754 double precision (64-bit)                               &              &              \\
+    S       & alternate string type                                            &              &              \\
+    c       & ASCII character                                                  &              &              \\
+    r       & RGBA color (8-bit per channel)                                   &              &              \\
+    m       & 4 byte MIDI message. From MSB to LSB: port, status, data1, data2 &              &              \\
+    T/F     & true, false boolean values                                       &              & ✔            \\
+    N       & Nil                                                              &              & ✔            \\
+    I       & Infinitum (1.0)/Impulse(1.1) used as event trigger               &              & ✔            \\
+    {[},{]} & Array delimiters                                                 &              &              \\ \bottomrule
+    \end{tabular}
 \end{table}
 
 An overview of the predefined data types for both, OSC 1.0 and 1.1, is shown in \cref{tab:osc-data-types}.
