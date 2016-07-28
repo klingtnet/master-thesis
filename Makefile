@@ -17,7 +17,7 @@ PANDOC_OPTS=--from=markdown\
 XELATEX_CI_OPTS=-interaction=nonstopmode
 
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
-MD_FILES := $(wildcard $(DOC_PATH)/content*.md | sort)
+MD_FILES := $(wildcard $(DOC_PATH)/content*.pandoc | sort)
 TEX_FILES := $(wildcard $(DOC_PATH)/*.tex)
 
 all: $(OUT_PATH)/thesis.pdf $(OUT_PATH)/thesis.html
