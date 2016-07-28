@@ -179,9 +179,8 @@ The message type is denoted by three bits (`T`) and the remaining four bits are 
 MIDI channels allow to route different logical streams over one physical MIDI connection, e.g. to reach a different, daisy-chained, MIDI device or to control different timbres of a multitimbral synthesizer.
 
 \begin{figure}
-	\begin{center}
+    \centering
 	$0\quad\underbrace{T\quad{}T\quad{}T}_{\text{message type}}\quad\overbrace{C\quad{}C\quad{}C\quad{}C}^{\text{channel number}}$
-	\end{center}
 	\caption{Structure of a MIDI status byte.}
 	\label{fig:midi-status}
 \end{figure}
