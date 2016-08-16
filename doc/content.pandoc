@@ -19,11 +19,11 @@ Computations must be as fast as possible to ensure a responsive feedback for the
 
 Not every programming language is equally suitable for the development of realtime applications, thus it is explained why Rust was chosen as the implementation language.
 Libraries for the MIDI and Open Sound Control protocol were implemented and released as open-source software.
-Both protocols are supported by the application and are used to polyphonically play notes or remote control all of the synthesizer parameters.
+Both protocols are supported by the application and are used to polyphonically play notes or remote control all parameters of the synthesizer.
 Common synthesizer architectures and signal generation methods are discussed and evaluated.
 
-Furthermore, some sound shaping techniques and effects are presented in detail.
-The techniques used to reduce the amount of signal distortion are presented.
+Furthermore, sound shaping techniques and effects are presented in detail.
+The precautions taken to reduce the amount of signal distortion are shown as well.
 Lastly, an outlook on possible optimizations and enhancements, as well as a summary of the achieved results is given.
 
 ## Overview
@@ -45,7 +45,7 @@ This comes with a downside in memory safety and introduces a whole new class of 
 Those bugs are very likely to cause *undefined behaviour* or to crash the program. Unfortunately, they are also very hard to debug.
 
 One of the major selling points of [Rust](https://rust-lang.org) is guaranteed memory safety *without* garbage collection and *data race freedom*while providing the same level of control over memory as C/C++.
-These goals are achieved through a variety of concepts like ownership, lifetimes and borrowing to know at compile when memory can be safely freed, and to enforce that there's only a single mutable access to any variable at any given time in the run of the program.
+These goals are achieved through a variety of concepts like ownership, lifetimes and borrowing to know at compile when memory can be safely freed, and to enforce that there is only a single mutable access to any variable at any given time in the run of the program.
 Explaining these concepts is outside the scope of this thesis and the official [Rust Book](https://doc.rust-lang.org/book/ownership.html) \cite{RustBook} does a great job doing this in detail, hence, this is left as an exercise for the interested reader.
 The [Max Planck Institute for Software Systems](http://plv.mpi-sws.org/) has started the \cite{RustBelt} RustBelt research project in 2015 to develop formal foundations for the Rust programming language.
 One of the main goals of the research group is to formally investigate if the claims made about data-race freedom, memory and type safety actually hold.
@@ -101,8 +101,8 @@ Algebraic data types and pattern matching
 Iterators
 :	Rust provides conventional `for` loops but additionally has *iterators*.
 	An iterator is something that provides a sequence of things where you can loop over.
-	The great benefit of using iterators over index based access in traditional `for` loops is, that it avoids the, mostly unintended, access of elements that are outside the iterators range.
-	In addition, iterators provide a vast amount of methods to combine them, filter elements, do map-reduce like operations and in many cases even parallelize the computation \cite{Rayon}.
+	The great benefit of using iterators over index based access in traditional `for` loops is, that it avoids the, often unintended, access of elements that are outside the iterators range.
+	In addition, iterators provide a vast amount of methods to combine them, filter elements, perform map-reduce like operations and in many cases even parallelize the computation \cite{Rayon}.
 
 	Example: $\sum_{x\,\in\,v_1, v_2\;\wedge\;x > 3}$
 
@@ -152,7 +152,7 @@ The *MIDI 1.0 Specification* \cite{MIDI10} provides a high level description of 
 Transmitting *control data* is the purpose of the MIDI protocol, and not, like it is sometimes confused, to transmit audio data[^midi-audio].
 Control data can be thought of as the press of a key, turning a knob, or an instruction to change the clock speed of a song.
 
-[^midi-audio]: It is possible to transmit audio data over MIDI by using *System Exclusive* (SysEx) messages, but this can't be done in real-time and is mostly used to replace or update samples or wavetables in hardware synthesizers.
+[^midi-audio]: It is possible to transmit audio data over MIDI by using *System Exclusive* (SysEx) messages, but this can not be done in real-time and is often used to replace or update samples or wavetables in hardware synthesizers.
 
 The work on the MIDI specification began in 1981 by a consortium of Japanese and American synthesizer manufacturers, the MIDI Manufacturers Association (MMA).
 In August 1983, the version 1.0 was published \cite[p.~974]{Roads:CMT}.
@@ -186,9 +186,9 @@ MIDI channels allow to route different logical streams over one physical MIDI co
 \end{figure}
 
 MIDI messages are divided in two categories, *channel* and *system* messages.
-Only the latter ones contain musical control information and therefore are of interest for this thesis.
-\Cref{fig:midi-classification} illustrates the classification, status byte values are shown as edge labels where \texttt{x} symbolizes don't care.
-*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.~36]{MIDI10}, i.a. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
+Only the latter contain musical control information and therefore are of interest for this thesis.
+\Cref{fig:midi-classification} illustrates the classification, status byte values are shown as edge labels where \texttt{x} illustrates *don't care*.
+*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.~36]{MIDI10}, i.e. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
 
 \begin{figure}
 	\centering
@@ -289,7 +289,7 @@ t_\text{Note-On}	&= 3\cdot\left(31250\,\frac{\text{bit}}{\text{s}}/10\,{\text{bi
 \end{aligned}
 $$
 
-The time to transmit a single note-on event $t_\text{Note-On}$ takes $\approx 1\,\text{ms}$, this means that the last trasnmitted note of an $n$-key chord arrives with $n \cdot 0.96\,\text{ms}$ delay, e.g. the last note of a pentachord (5 keys) will be received $5 \cdot 0.96\,\text{ms} = 4.8\,\text{ms}$ later than the first one.
+The time to transmit a single note-on event $t_\text{Note-On}$ takes $\approx 1\,\text{ms}$, this means that the last transmitted note of an $n$-key chord arrives with $n \cdot 0.96\,\text{ms}$ delay, e.g. the last note of a pentachord (5 keys) will be received $5 \cdot 0.96\,\text{ms} = 4.8\,\text{ms}$ later than the first one.
 This may result in a *comb filter*[^comb-filter] like distortion of the synthesized chord sound.
 
 [^comb-filter]: A comb filter adds a delayed copy of the signal to itself causing addition or subtraction in the signal. The filters frequency response shows regularly spaced notches, might resemble the shape of a comb.
@@ -306,8 +306,8 @@ The protocol is not limited to being used with audio or multimedia devices, howe
 Referring to OSC as a *message format* is more accurate, since error-handling, synchronization or negotiation methods are not specified.
 Therefore, OSC can be compared to formats like JSON or XML.
 A draft of the OSC 1.1 specification was published in a 2009 paper \cite{OSC:11} only adding minor, backward compatible changes.
-UDP is often used as the transport layer to avoid the time needed to establish a connection by TCP's three-way handshake.
-A connection less transport is sufficient because OSC sender and receiver are almost always in physical proximity and connected through the same LAN.
+UDP is often used as the transport layer to avoid the time required to establish a connection by TCP's three-way handshake.
+A connectionless transport is sufficient because OSC sender and receiver are almost always in physical proximity and connected through the same LAN.
 
 ### OSC Data Types
 
@@ -405,7 +405,7 @@ bundle-element	= size, content ;
 
 ### Comparison to MIDI
 
-MIDI, as well as OSC, provide a number of benefits and limitations in comparison to each other.
+Both protocols provide a number of benefits and limitations in comparison to each other.
 The following list shows them for OSC compared to MIDI:
 
 \begin{enumerate}
