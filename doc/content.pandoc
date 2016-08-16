@@ -28,7 +28,7 @@ Lastly, an outlook on possible optimizations and enhancements, as well as a summ
 
 ## Overview
 
-Provide a quick summary of each chapter.
+<!-- TODO: provide a quick summary of each chapter. -->
 
 Chapter 2 gives an overview about common synthesis concepts and evaluates why Rust was choosen as the implementation language.
 
@@ -424,6 +424,7 @@ The following list shows them for OSC compared to MIDI:
 \end{enumerate}
 
 ## Latency
+<!-- TODO: unsure where to put this chapter -->
 
 The *responsiveness* of an electronic musical instrument is mainly determined by its latency.
 
@@ -563,6 +564,7 @@ At last there is the propagation delay which can be neglected for usual listenin
 ## Audio Output
 
 # Outlook
+<!-- TODO: rename this to future work? -->
 
 ## Optimizations
 
