@@ -550,6 +550,12 @@ At last there is the propagation delay which can be neglected for usual listenin
 
 # Implementation Details
 
+![Frequency sweep from 20Hz to 20kHz in the sawtooth wavetable](imgs/ytterbium-0.1.0-Saw-sweep.png){ width=100% }
+
+![Frequency sweep from 20Hz to 20kHz in the square wave wavetable](imgs/ytterbium-0.1.0-Square-sweep.png){ width=100% }
+
+![Sweep using sine modulator and carrier with increasing modulation amount](imgs/ytterbium-0.1.0-fm.png){ width=100% }
+
 ## Ring Buffer
 
 ## Control Input
