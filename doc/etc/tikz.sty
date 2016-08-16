@@ -6,11 +6,11 @@
 \tikzset{%
   >=latex,
   font=\sffamily,
-  block/.style    = {draw, thick, rectangle, line width=1.5pt, minimum height = 3em,
+  block/.style    = {draw, thick, rectangle, line width=1pt, minimum height = 3em,
     minimum width = 3em},
   sum/.style      = {draw, circle, node distance = 2cm}, % Adder
-  input/.style    = {coordinate}, % Input
-  output/.style   = {coordinate}, % Output
+  input/.style    = {draw=none, fill=none}, % Input
+  output/.style   = {draw=none, fill=none}, % Output
   % MIDI
   msg/.style 	    = {align=center, rectangle, rounded corners, draw, font={\sffamily\footnotesize}},
   % OSC
