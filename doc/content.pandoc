@@ -168,7 +168,7 @@ It uses an 8b/10b encoding, i.e. 8 bits of data are transmitted as a 10 bit word
 A data byte is enclosed by a start- and stop bit which in turn results in the 10 bit encoding.
 Asynchronous serial communication is used to transfer *MIDI messages*, thus the start and stop bit.
 
-A MIDI message is composed of a *status byte* which is followed by up to two[^sysex] *data byte*(s).
+A MIDI message is composed of a *status byte* which is followed by up to two[^sysex] *data byte*s.
 Both types are differentiated by their most significant bit (MSB), `1` for status- and `0` for data bytes.
 Consequently, the usable payload size is reduced to 7 bit, in other words, values can range from 0 to 127.
 
@@ -176,7 +176,7 @@ Consequently, the usable payload size is reduced to 7 bit, in other words, value
 
 \Cref{fig:midi-status} shows the structure of a status byte.
 The message type is denoted by three bits (`T`) and the remaining four bits are used to denote the channel number (`C`), hence there are sixteen different channels.
-MIDI channels allow to route different logical streams over one physical MIDI connection, e.g. to reach a different, daisy-chained, MIDI device or to control different timbres of a multitimbral synthesizer.
+MIDI channels allow to route different logical streams over one physical MIDI connection, e.g. to reach a different, daisy-chained MIDI device or to control different timbres of a multitimbral synthesizer.
 
 \begin{figure}
     \centering
@@ -410,11 +410,11 @@ The following list shows them for OSC compared to MIDI:
 
 \begin{enumerate}
 	\item[$+$] OSC's data-types allow a much higher resolution for control values.
-	They also provide symbolic types like booleans or *Nil* to represent an empty value.
-	\item[$+$] The definition of *custom data-types* is allowed, therefore OSC applications must be robusted against unknown ones.
-	\item[$+$] The *bandwidth* is orders of magnitudes larger than MIDI's, but it depends on the type of network used.
+	They also provide symbolic types like booleans or \emph{Nil} to represent an empty value.
+	\item[$+$] The definition of \emph{custom data-types} is allowed, therefore OSC applications must be robusted against unknown ones.
+	\item[$+$] The \emph{bandwidth} is orders of magnitudes larger than MIDI's, but it depends on the type of network used.
 	A common choice are ad-hoc WiFi connections between OSC receiver and sender because the player (sender) and the instrument (receiver) are in local proximity to each other.
-	This, in turn, results in an acceptable network *latency* in the single digit millisecond range.
+	This, in turn, results in an acceptable network \emph{latency} in the single digit millisecond range.
 	\item[$+$] Control events can be send simultaenously as an OSC bundle, e.g. note events of a chord.
 	\item[$+$] Events can be timed with an resolution of $\approx 200$ picoseconds \cite{OSC:10}.
 	\item[$+$] OSC can be used to tunnel MIDI messages over a network connection.
