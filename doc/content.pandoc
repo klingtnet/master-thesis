@@ -86,7 +86,7 @@ Algebraic data types and pattern matching
 :	An algebraic data type is formed by combination of other types.
 	The term *algebraic* refers to the operations that are used to form the type, which is either *sum*, i.e., the type is $A$ or $B$, or *product*, i.e., it is a combination of $A$ and $B$, where $A$ and $B$ are different types.
 	Rust's `enum`s are formed as *sum* types whereas `tuple`s are formed by a *product* of types.
-	A classic example for the former kind is the `Option` type, which can be either `None` or have `Some` value of type $T$:
+	A classic example for the former kind is the `Option` type, which can either be `None` or have `Some` value of type $T$:
 
 	```rust
 	enum Option<T> {
