@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    575419,      10989]
-NotebookOptionsPosition[    571700,      10875]
-NotebookOutlinePosition[    572036,      10890]
-CellTagsIndexPosition[    571993,      10887]
+NotebookDataLength[    578353,      11053]
+NotebookOptionsPosition[    574633,      10939]
+NotebookOutlinePosition[    574969,      10954]
+CellTagsIndexPosition[    574926,      10951]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -10525,28 +10525,73 @@ Cell[BoxData[{
                 RowBox[{
                  SubscriptBox["w", "stop"], ",", ".5"}], "}"}], ",", 
                RowBox[{"{", 
-                RowBox[{"xmax", ",", ".5"}], "}"}]}], "}"}], "]"}]}], "}"}], 
+                RowBox[{"xmax", ",", ".5"}], "}"}]}], "}"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"Arrow", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 SubscriptBox["w", "pass"], ",", "1"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{
+                 SubscriptBox["w", "pass"], ",", 
+                 SubscriptBox["g", "pass"]}], "}"}]}], "}"}], "]"}], ",", 
+            RowBox[{"Arrow", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 SubscriptBox["w", "stop"], ",", "0"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{
+                 SubscriptBox["w", "stop"], ",", 
+                 SubscriptBox["g", "stop"]}], "}"}]}], "}"}], "]"}]}], "}"}], 
           ",", "\[IndentingNewLine]", 
           RowBox[{"Text", "[", 
            RowBox[{"\"\<\!\(\*SubscriptBox[\(b\), \(pass\)]\)\>\"", ",", 
             RowBox[{"{", 
              RowBox[{
               RowBox[{
-               SubscriptBox["w", "pass"], "/", "2"}], ",", ".6"}], "}"}]}], 
+               SubscriptBox["w", "pass"], "/", "2"}], ",", ".55"}], "}"}]}], 
            "]"}], ",", 
           RowBox[{"Text", "[", 
            RowBox[{"\"\<\!\(\*SubscriptBox[\(b\), \(trans\)]\)\>\"", ",", 
             RowBox[{"{", 
              RowBox[{
-              RowBox[{"xmax", "/", "2"}], ",", ".6"}], "}"}]}], "]"}], ",", 
+              RowBox[{"xmax", "/", "2"}], ",", ".55"}], "}"}]}], "]"}], ",", 
           RowBox[{"Text", "[", 
            RowBox[{"\"\<\!\(\*SubscriptBox[\(b\), \(stop\)]\)\>\"", ",", 
             RowBox[{"{", 
              RowBox[{
-              RowBox[{"xmax", "-", 
+              RowBox[{
+               SubscriptBox["w", "stop"], "+", 
                RowBox[{
-                SubscriptBox["w", "stop"], "/", "2"}]}], ",", ".6"}], "}"}]}],
-            "]"}]}], "\[IndentingNewLine]", "}"}]}], ",", 
+                RowBox[{"(", 
+                 RowBox[{"xmax", "-", 
+                  SubscriptBox["w", "stop"]}], ")"}], "/", "2"}]}], ",", 
+              ".55"}], "}"}]}], "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"Text", "[", 
+           RowBox[{"\"\<\!\(\*SubscriptBox[\(a\), \(pass\)]\)\>\"", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               SubscriptBox["w", "pass"], "+", "0.15"}], ",", 
+              RowBox[{"1", "-", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{"1", "-", 
+                  SubscriptBox["g", "pass"]}], ")"}], "/", "2"}]}]}], "}"}]}],
+            "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"Text", "[", 
+           RowBox[{"\"\<\!\(\*SubscriptBox[\(a\), \(stop\)]\)\>\"", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               SubscriptBox["w", "stop"], "+", "0.15"}], ",", 
+              RowBox[{
+               SubscriptBox["g", "stop"], "/", "2"}]}], "}"}]}], "]"}]}], 
+         "\[IndentingNewLine]", "}"}]}], ",", 
        RowBox[{"Evaluate", "@", "baseStyle"}], ",", 
        RowBox[{"Frame", "\[Rule]", 
         RowBox[{"{", 
@@ -10570,7 +10615,10 @@ filter-bands.pdf\>\"", ",", "bandPlot", ",", "\"\<PDF\>\""}], "]"}]}], "Input",\
   3.681904719789957*^9, 3.68190491135471*^9}, {3.6819049584525967`*^9, 
   3.6819050163896923`*^9}, {3.6819050745276814`*^9, 3.68190513647442*^9}, {
   3.681905193793984*^9, 3.6819052054748793`*^9}, {3.681905245146268*^9, 
-  3.681905265856462*^9}}],
+  3.681905265856462*^9}, {3.681905635064402*^9, 3.681905911950192*^9}, {
+  3.681906002402886*^9, 3.681906003418648*^9}, {3.6819060606031857`*^9, 
+  3.681906082491028*^9}, {3.681906174181027*^9, 3.6819061919633503`*^9}, {
+  3.6819062296388073`*^9, 3.681906238005939*^9}}],
 
 Cell[BoxData[
  GraphicsBox[{{{}, {}, 
@@ -10820,20 +10868,30 @@ FqkeoLSByhG5Ky1rLBhL2zYZD3IbuGt67x/fYMH8Hosdrie2QaFRy9LWFgt2
      Arrowheads[{-Small, Small}], 
      ArrowBox[{{0, 0.5}, {1.2, 0.5}}], 
      ArrowBox[{{1.2, 0.5}, {1.8, 0.5}}], 
-     ArrowBox[{{1.8, 0.5}, {3, 0.5}}]}, 
+     ArrowBox[{{1.8, 0.5}, {3, 0.5}}], 
+     ArrowBox[{{1.2, 1}, {1.2, 0.8912509381337456}}], 
+     ArrowBox[{{1.8, 0}, {1.8, 0.251188643150958}}]}, 
     InsetBox[
      FormBox[
      "\"\\!\\(\\*SubscriptBox[\\(b\\), \\(pass\\)]\\)\"", TraditionalForm], {
-     0.6, 0.6}], 
+     0.6, 0.55}], 
     InsetBox[
      FormBox[
      "\"\\!\\(\\*SubscriptBox[\\(b\\), \\(trans\\)]\\)\"", TraditionalForm], 
      NCache[{
-       Rational[3, 2], 0.6}, {1.5, 0.6}]], 
+       Rational[3, 2], 0.55}, {1.5, 0.55}]], 
     InsetBox[
      FormBox[
      "\"\\!\\(\\*SubscriptBox[\\(b\\), \\(stop\\)]\\)\"", TraditionalForm], {
-     2.1, 0.6}]},
+     2.4, 0.55}], 
+    InsetBox[
+     FormBox[
+     "\"\\!\\(\\*SubscriptBox[\\(a\\), \\(pass\\)]\\)\"", TraditionalForm], {
+     1.3499999999999999`, 0.9456254690668728}], 
+    InsetBox[
+     FormBox[
+     "\"\\!\\(\\*SubscriptBox[\\(a\\), \\(stop\\)]\\)\"", TraditionalForm], {
+     1.95, 0.125594321575479}]},
   Frame->{{True, False}, {True, False}},
   FrameLabel->{{
      FormBox["\"magnitude\"", TraditionalForm], None}, {
@@ -10859,7 +10917,10 @@ FqkeoLSByhG5Ky1rLBhL2zYZD3IbuGt67x/fYMH8Hosdrie2QaFRy9LWFgt2
    3.681904875131216*^9}, 3.681904912994111*^9, {3.681904962401868*^9, 
    3.681905017740531*^9}, {3.681905105914865*^9, 3.681905150476182*^9}, {
    3.681905187923143*^9, 3.681905212637877*^9}, {3.681905247675261*^9, 
-   3.681905271457217*^9}}],
+   3.681905271457217*^9}, 3.681905643783889*^9, {3.6819057494411993`*^9, 
+   3.681905778121442*^9}, {3.6819058444479237`*^9, 3.681905913747141*^9}, 
+   3.681906005425974*^9, {3.68190606586094*^9, 3.681906083875918*^9}, {
+   3.681906226398624*^9, 3.6819062395716553`*^9}}],
 
 Cell[BoxData["\<\"/home/andreas/personal/edu/Uni-Leipzig/Masterarbeit/thesis/\
 doc/imgs/filter-bands.pdf\"\>"], "Output",
@@ -10868,7 +10929,10 @@ doc/imgs/filter-bands.pdf\"\>"], "Output",
    3.681904875131216*^9}, 3.681904912994111*^9, {3.681904962401868*^9, 
    3.681905017740531*^9}, {3.681905105914865*^9, 3.681905150476182*^9}, {
    3.681905187923143*^9, 3.681905212637877*^9}, {3.681905247675261*^9, 
-   3.6819052716428432`*^9}}]
+   3.681905271457217*^9}, 3.681905643783889*^9, {3.6819057494411993`*^9, 
+   3.681905778121442*^9}, {3.6819058444479237`*^9, 3.681905913747141*^9}, 
+   3.681906005425974*^9, {3.68190606586094*^9, 3.681906083875918*^9}, {
+   3.681906226398624*^9, 3.681906239761907*^9}}]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -10985,9 +11049,9 @@ Cell[CellGroupData[{
 Cell[548580, 10394, 135, 1, 43, "Subsection"],
 Cell[548718, 10397, 101, 1, 31, "Text"],
 Cell[CellGroupData[{
-Cell[548844, 10402, 6209, 170, 495, "Input"],
-Cell[555056, 10574, 16090, 287, 249, "Output"],
-Cell[571149, 10863, 511, 7, 32, "Output"]
+Cell[548844, 10402, 8249, 218, 564, "Input"],
+Cell[557096, 10622, 16742, 300, 249, "Output"],
+Cell[573841, 10924, 752, 10, 89, "Output"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
