@@ -491,11 +491,11 @@ At last there is the propagation delay which can be neglected for usual listenin
 \begin{tikzpicture}[auto]
 \draw
 	node [block](Engine){DSP Engine}
-	node [block, above left of=Engine, node distance=3cm](MIDI){MIDI}
-	node [block, below left of=Engine, node distance=3cm](OSC){OSC}
-	node [block, right of=Engine, node distance=4cm](Soundcard){Audio Backend}
-	node [block, right of=Soundcard, node distance=5cm](Speaker){Speaker}
-	node [block, right of=Speaker, node distance=4cm](Listener){Listener}
+	node [block, above left=of Engine, node distance=3cm](MIDI){MIDI}
+	node [block, below left=of Engine, node distance=3cm](OSC){OSC}
+	node [block, right=of Engine, node distance=4cm](Soundcard){Audio Backend}
+	node [block, right=of Soundcard, node distance=5cm](Speaker){Speaker}
+	node [block, right=of Speaker, node distance=4cm](Listener){Listener}
 ;
 	\draw[->](MIDI) -- node{$l_{midi}$}(Engine);
 	\draw[->](OSC) -- node{$l_{osc}$}(Engine);
