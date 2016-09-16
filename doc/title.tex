@@ -13,6 +13,10 @@
             Department of \universityDepartment{}%
         }
         \\\vfill
+        {\Large%
+            \textbf{\shortTitle{}}%
+        }
+		\\\bigskip
         {\Huge%
             \sffamily{%
                 \textbf\documentTitle{}%
@@ -23,25 +27,24 @@
             \textsl{%
                 \documentSubtitle{}%
             }
+			\\\vfill
+			\textbf{Author}\\
+			%\medskip
+			\documentAuthor{}\\
+			\bigskip
+			\textbf{Supervisor}\\
+			%\medskip
+			\researchAdvisor{}\\
         }
-        \\\vfill
-        {\Large%
-            \textbf{\shortTitle{}}%
-        }
-    \end{center}
-	\vfill
-	\rule{\textwidth}{.4pt}
-	\vfill
-    \begin{flushleft}
-        \textbf{Supervisor}\\
-        \medskip
-        \researchAdvisor{}\\
-        \bigskip
+        %\bigskip
         %\href{mailto:\documentAuthorEmail{}}{\documentAuthorEmail}\\
-        Submitted by \textbf{\documentAuthor{}} to the \textsl{Department of \universityDepartment{}} in partial fulfilment of the requirements for the degree of\\
-        \textbf{\academicDegree{}}\\
-        \medskip{}
-        \documentPlace{}, \germanDate{}\today{}\\
-        Version: \texttt{DOCUMENT-VERSION-PLACEHOLDER}\\
-    \end{flushleft}
+    \end{center}
+	\newpage
+	\pagestyle{empty}\vspace*{\fill}%
+	\noindent%
+	Submitted by \textbf{\documentAuthor{}} to the \textsl{Department of \universityDepartment{}} in partial fulfilment of the requirements for the degree of\\
+	\textbf{\academicDegree{}}\\
+	\medskip{}
+	\documentPlace{}, \germanDate{}\today{}\\
+	Version: \texttt{DOCUMENT-VERSION-PLACEHOLDER}\\
 \end{titlepage}
