@@ -8,7 +8,7 @@ However, a basic knowledge of signal processing and some familiarity with comput
 ## Objectives
 
 <!-- TODO
-Be more specifif
+Be more specific
 -->
 
 The objective of this thesis is to show how to build a realtime audio software application at the example of an audio synthesizer with frequency modulated oscillators.
@@ -34,7 +34,7 @@ Chapter 2 gives an overview about common synthesis concepts and evaluates why Ru
 
 ## Why Rust?
 
-Realtime audio applications must finish their signal processing in tight time bounds to ensure that the sound card can output a continious audio stream.
+Realtime audio applications must finish their signal processing in tight time bounds to ensure that the sound card can output a continiuous audio stream.
 Missing such a bound will result in unpleasant sound glitches, and---in the worst case---renders a whole song recording useless.
 Additionally, the time bounds must be as tight as possible to reduce the latency between the user input (playing a note) and the output of the calculated signal in the speaker.
 Therefore, (memory-)managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce undeterministic program stops while examining the state of variable references, will not receive any further consideration.
@@ -44,7 +44,7 @@ Unmanaged languages like [C](https://en.wikipedia.org/wiki/C_(programming_langua
 This comes with a downside in memory safety and introduces a whole new class of possible bugs compared to managed languages.
 Those bugs are very likely to cause *undefined behaviour* or to crash the program. Unfortunately, they are also very hard to debug.
 
-One of the major selling points of [Rust](https://rust-lang.org) is guaranteed memory safety *without* garbage collection and *data race freedom*while providing the same level of control over memory as C/C++.
+One of the major selling points of [Rust](https://rust-lang.org) is guaranteed memory safety *without* garbage collection and *data race freedom* while providing the same level of control over memory as C/C++.
 These goals are achieved through a variety of concepts like ownership, lifetimes and borrowing to know at compile when memory can be safely freed, and to enforce that there is only a single mutable access to any variable at any given time in the run of the program.
 Explaining these concepts is outside the scope of this thesis and the official [Rust Book](https://doc.rust-lang.org/book/ownership.html) \cite{RustBook} does a great job doing this in detail, hence, this is left as an exercise for the interested reader.
 The [Max Planck Institute for Software Systems](http://plv.mpi-sws.org/) has started the \cite{RustBelt} RustBelt research project in 2015 to develop formal foundations for the Rust programming language.
@@ -254,18 +254,21 @@ Only the latter contain musical control information and therefore are of interes
 Corresponding Note-On and Off messages do not necessarily follow one after another, therefore, to relate associated messages, pitch information is contained in the Note-Off as well.
 Pitch is encoded as a 7-bit value in note messages, hence there is a range of 128 pitches or about 10 octaves.
 MIDI's pitch representation was designed with an *chromatic western music scale* in mind.
-A *chromatic scale* has 12 pitches per octave with one semitone difference between each pitch.
+A *chromatic scale* has 12 pitches per octave with one semitone difference between each pitch, that is a ratio of $2^{1/12}$ between successive notes.
 An interval of one octave is equivalent to a doubling or halving (in the negative case) in frequency.
 Instruments in *western music* are usually *equal-tempered*, i.e. all semitones have the same size.
 MIDI pitches are considered to be equal-tempered and range from C0 (*c* in the lowest octave) to a G10 (*g* in the 10th octave).
 Middle C, pitch number 60 (C5), is used as reference.
 
-\begin{equation}
-	\label{eq:midi-pitch}
-	f = f_\text{tune}\cdot 2^{\displaystyle\left(p-p_\text{ref}\right)/12}
-\end{equation}
+\begin{align}
+\begin{split} % creates only a single equation number
+	f &= f_\text{tune}\cdot 2^{\displaystyle\left(p-p_\text{ref}\right)/12}\\
+    p &= p_\text{ref}+12\cdot\log_2(f/f_\text{tune})
+\end{split}
+\label{eq:midi-pitch}
+\end{align}
 
-\Cref{eq:midi-pitch} shows how to calculate the frequency $f$ for a given MIDI pitch where $f_\text{tune}$ is the tuning frequency and $p_\text{ref}$ is the reference pitch number.
+\Cref{eq:midi-pitch} shows how to calculate the frequency $f$ for a given MIDI pitch $p$, and vice versa, where $f_\text{tune}$ is the tuning frequency and $p_\text{ref}$ is the reference pitch number.
 Musical instruments are commonly tuned to the *Concert A*, the note A above middle C or MIDI pitch 69.
 The default tuning of Concert A is 440 Hz \cite{ISO16:1975}.
 The following example shows how to calculate the frequency for middle C by using the *Concert A* tuned to 440 Hz as reference pitch in \cref{eq:midi-pitch}:
@@ -423,6 +426,399 @@ The following list shows them for OSC compared to MIDI:
 	\item[$-$] The number of applications that support OSC is very limited.
 \end{enumerate}
 
+# Synthesizer Fundamentals 
+
+This chapter outlines the fundamental elements of a synthesizer and briefly describes the fundamental methods of sound generation.
+
+## Oscillator
+
+Oscillators are the fundamental building blocks of a synthesizer's sound generation engine.
+They serve the purpose of emitting a periodic waveform.
+An oscillator is controlled through its *frequency* and *amplitude* parameters.
+In the context of a synthesizer there are additional controls for starting *phase*, the point at which the waveforms begins, and *type of waveform* to emit.
+
+The amplitude parameter sets the *peak amplitude* for the signal, i.e. the absolute value of the waveforms highest amplitude.
+Frequency is usually specified as number of waveform cycles per second (Hz) but in the software implementation stored as *phase increment* (angular frequency) for each sample step.
+The software oscillators output is a sequence of samples at equidistant intervals $T$.
+Let $f_s=1/T$ be the sample rate and $f$ the frequency in Hz ($s^{-1}$), then the phase increment $\omega$ is calculated like this:
+
+\begin{equation}
+\omega = \frac{2\pi\,f}{f_s}
+\label{eq:phase-incr}
+\end{equation}
+
+The oscillators highest frequency is limited to $f_s/2$ or $\omega = \pi$, which is called *Nyquist frequency*.
+In general, the (Nyquist-Shannon) *sampling-theorem* states that a signal can be exactly reconstructed from its digitization if its entire frequency spectrum lies below the Nyquist frequency \cite[p.~244]{Benson2008}.
+In other words, it ensures that there are at least two sample points for any frequency contained in the sampled signal.
+
+### Aliasing
+\label{sec:aliasing}
+
+\begin{figure}
+\resizebox{\textwidth}{!}{
+\includegraphics[width=\textwidth]{imgs/aliasing.pdf}}
+\caption{Two sinusoids with angular frequencies $\omega_1 = \pi/2,\,\omega_2 = 3/2\,\pi$ sampled in intervals of $T=\pi/2$. Both sinusoids produce the same sampled signal due to aliasing.}
+\label{fig:aliasing}
+\end{figure}
+
+\Cref{fig:aliasing} shows two sinusoids with frequencies $\omega_1=\pi/2$ and $\omega_2=3/2\,\pi$ that are sampled at sample rate $\omega_s=\pi/2$.
+Clearly, $\omega_2$ is above the Nyquist frequency $\omega_{\text{Ny}}=\pi$, thus $\omega_2$ is *foldover* at $\omega_{\text{Ny}}$ which results in a frequency of $\omega_2\mod\omega_{\text{Ny}} = \pi/2$ that is equal to $\omega_1$, therefore $\omega_2$ is an *alias* of $\omega_1$, so both signals are indistinguishable after the sampling process.
+This effect is called *aliasing* or *foldover* and is an inevitable result of sampling or sample rate conversion, hence signal components with frequencies above Nyquist must be removed or reduced before fed into the sampling process.
+The alias $f_a$ for a frequency $f$ and a sampling frequency $f_s$ can be calculated as shown in \cref{eq:aliasing-frequency}\footnote{\citeauthor{Dashow1978} presented a method for generating non-harmonic spectra using foldover frequencies \cite[p.~82]{Dashow1978}.}.
+
+\begin{equation}
+f_a =
+\begin{cases}
+|N\,f_s - f|,& \text{if }N\text{ is even}\\
+|(N+1)f_s - f|,& \text{otherwise}
+\end{cases}
+\text{, where }N = \lfloor{}f/f_s\rfloor{}
+\label{eq:aliasing-frequency}
+\end{equation}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/foldover}
+\caption{Spectra for waveforms sampled at a) $f_{\text{Ny}}=30$ and b) $f_{\text{Ny}}=10$ which is $1/3$ of the highest frequency contained, hence foldover (aliasing) occurs.}
+\label{fig:foldover}
+\end{figure}
+
+### Waveforms
+\label{sec:waveforms}
+
+Synthesis techniques like subtractive or FM synthesis (see \cref{sec:synthesis-techniques}) require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
+Oscillator waveforms that are commonly available in most synthesizers are *triangle*, *sawtooth* and *square wave*.
+Non bandlimited versions of those waveforms are shown in \cref{fig:waveforms}.
+To prevent aliasing artifacts it is required to create bandlimited versions of those waveforms.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/basic-waveforms}
+\caption{Common (non band-limited) waveforms supported by most synthesizers: a) sine wave, b) triangle wave, c) ramp/sawtooth, d) square wave}
+\label{fig:waveforms}
+\end{figure}
+
+#### Fourier Synthesis
+
+*Fourier synthesis* is used to create bandlimited versions of those complex waveforms.
+It uses the properties of *Fourier series* representation of arbitrary but periodic waveforms \cite[p.~103]{LoyMusimathics2}:
+
+> Any periodic vibration, \ldots, can be built up from sinusoids whose frequencies are integer multiplies of a fundamental frequency, by choosing the proper amplitudes and phases.
+
+This means that any periodic waveform can be constructed by specifying the power of each its *harmonics*, where a *harmonic* is an integer multiple of the waveforms fundamental frequency.
+The Fourier series is defined as (\cref{eq:fourier-series})
+
+\begin{equation}
+f(t) = a_0/2 + \sum^\infty_{k=1}a_k \cos(2\pi k t + \phi_k) + \sum^\infty_{k=1}b_k \sin(2\pi k t + \phi_k)
+\label{eq:fourier-series}
+\end{equation}
+
+where $a_k$ and $b_k$ are coefficients for the strength of the k-th harmonic. The harmonics phase is specified $\phi_k$ and $\omega_k=2\pi{}k$ sets its angular frequency.
+By substituting\footnote{Eulers identities: $\cos = (e^{i\phi} + e^{-i\phi})/2$ and $\sin = (e\,i^{i\phi} + e\,i^{-i\phi})/2$} eulers equation (\cref{eq:eulers-equation})
+
+\begin{equation}
+e^{i\phi} = \cos(\phi)+i\sin(\phi)
+\label{eq:eulers-equation}
+\end{equation}
+
+into \cref{eq:fourier-series} it can be written in complex form:
+
+\begin{equation}
+f(t) = \sum_{k=-\infty}^\infty c_n e^{i\,2\pi\,k\,t+\phi_k}.
+\label{eq:fourier-series-complex}
+\end{equation}
+
+The summation range has changed for the complex fourier series \cref{eq:fourier-series-complex} to $-\infty$ and $\infty$, thus there are now negative frequencies.
+To retrieve a real valued signal from the complex fourier series it is required to take the conjugate transpose of each value, i.e. to specify the coefficients $c_k$ as pairs with a $-c_k$ for each positive coefficient.
+
+The complex coefficients $c_k$ can be converted from the $a_k$, $b_k$'s with the following equation:
+
+\begin{equation}
+c_{\pm{}k}=1/2\left(a_k\pm{}i\,b_k\right)
+\label{eq:fourier-coeff-conversion}
+\end{equation}
+
+<!-- conversion from complex to real
+a_n = c_k + c_{-k} = 2\Re(c_k)
+b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
+-->
+
+#### Bandlimited Waveforms
+
+Fourier Synthesis is used to create one bandlimited cycle versions for sawtooth, triangle and square waves.
+Sawtooth contains in contrast to square and triangle waves odd and even harmonics which makes them a great source signal because of their rich harmonic content.
+Square and triangle waves consist solely of odd harmonic partials.
+The complex fourier series for sawtooth, triangle and square waves is shown in \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series} where the sum is zero for $n=0$.
+The number of harmonics contained in the waveform is determined by summation limits and \cref{fig:waveforms} illustrates evaluated fourier series for sawtooth (a) and square wave (b) at increasing numbers of harmonics partials.
+
+\begin{equation}
+x_\text{saw}(t) = \sum^{\infty}_{n=-\infty,\;n\neq{}0} -1^n \frac{e^{-i\,2\pi\,n\,t}}{n\pi}
+\label{eq:sawtooth-series}
+\end{equation}
+
+\begin{equation}
+x_\text{square}(t) = 2 \sum^{\infty}_{n=-\infty,\;n\neq{}0}\frac{e^{-i\,2\pi\,(2n - 1)\,t}}{n\pi}
+\label{eq:squarewave-series}
+\end{equation}
+
+\begin{equation}
+x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,(2n-1)\,t}}{(n\pi)^2}
+\label{eq:triangle-series}
+\end{equation}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/fourier-series.pdf}
+\caption{One cycle of bandlimited a) sawtooth and b) square waveforms with increasing number of harmonics.}
+\label{fig:waveforms}
+\end{figure}
+
+## Non linearity of hearing
+\label{sec:hearing}
+
+The intensity of a sound is perceived logarithmically by human hearing \cite[p.~27]{West1986}.
+Therefore, the *ratio* between two sound intensities is important and *not* the difference as in the case of linear perceived phenomenons.
+The ratio of two physical quantities, e.g. signal amplitudes, is measured in decibel \[\si{\decibel}\], a unitless logarithmic unit.
+Distinction should be made between the ratio of signal energy which is expressed by
+
+\begin{equation}
+10\log_{10}{}\left(\frac{a}{b}\right)
+\label{eq:db-energy}
+\end{equation}
+
+and the ratio of signal power
+
+\begin{equation}
+20\log_{10}{}\left(\frac{a}{b}\right)
+\label{eq:db}
+\end{equation}.
+The difference in the scaling factors is based on the definition of signal energy where the square of the signals amplitude is taken:
+\begin{equation}
+\int^{\infty}_{-\infty} \left|x(t)\right|^2 dt
+\label{eq:signal-energy}
+\end{equation}.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/db.pdf}
+\caption{Relationship between \si{\decibel} and corresponding amplitude ratios on a logarithmically scaled y-axis.}
+\label{fig:db}
+\end{figure}
+\Cref{fig:db} illustrates the relationship between \si{\decibel} levels (x-axis) and corresponding amplitude ratios on a logarithmically scaled y-axis.
+The pressure levels audible by human ears range from 0.00002 \si{\newton\per\meter\squared} to 200 \si{\newton\per\meter\squared} \cite[p.~26]{West1986}, which is seven orders of magnitude larger than the audability threshold and clearly shows that logarithmic scale is better suited than a linear one to represent sound level ratios.
+
+## Envelope Generators
+
+The sound produced by an musical instrument is usually not static and changes in amplitude or spectral content over time.
+To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizers sound engine, e.g. the cutoff of a frequency filter.
+In \cref{fig:piano-c4} the time-varying behaviour of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
+
+<!-- Replace this by the high resolution image -->
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/piano_c4_small.png}
+\caption{Waveform plot of sampled C\textsubscript{4} note played on a piano \cite{freesound:piano}.}
+\label{fig:piano-c4}
+\end{figure}
+
+There are various types of envelope generators that range from simple two stage models, for fading the sound in and out, to ones which have an arbitrary number of stages and envelope shapes.
+A commonly used model with a reasonable amount of controllable parameters is the so called ADSR envelope generator, where the abbreviation stands for the four different stages of the envelope which are *Attack*, *Decay*, *Sustain* and *Release*.
+Because of the non-linearity of human hearing, as discussed in \cref{sec:hearing}, it is not sufficient to linearly ramp values between those four stages because this would not yield a smooth change in perceived loudness.
+
+\Citeauthor{Puckette2006a} proposes three different amplitude envelope transfer functions \cite[p.~94]{Puckette2006a} where $10^{2(x-1)}$ converts from \si{\decibel} to linear and the quartic curve $x^4$ approximates the exponential \si{\decibel} curve while being computationally less expensive and reaching true zero at $x=0$.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/adsr-transfer-functions}
+\caption{Three amplitude envelope transfer functions for input values in the range of [0, 1] as proposed by \cite[p.~94]{Puckette2006a}.}
+\label{fig:transfer-functions}
+\end{figure}
+
+An ADSR generator's output is fully determined by five parameters, that are the output *level* and *duration* of the attack stage, decay durration, sustain level and duration of release.
+\Cref{fig:adsr} shows the output and stages for an envelope generator with exponential transfer function.
+The generator will start the output on an event like a key press and will reside in the sustain stage as long as the key is still pressed, if the key is released the generator will switch to the release stage independent of its state at the time of the event.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/adsr}
+\caption{An ADSR envelope with equal duration of 0.5\si{\second} for each stage and attack and sustain levels of 1 and 0.5.}
+\label{fig:adsr}
+\end{figure}
+
+
+## Synthesis Techniques
+\cref{sec:synthesis-techniques}
+
+- Additive Synthesis
+- Subtractive Synthesis
+- FM
+
+
+\begin{figure}
+	\centering
+    \resizebox{\textwidth}{!}{
+	\begin{tikzpicture}
+[
+    auto,
+    >=latex',
+    node distance = 1cm
+]
+\node[align=center](control){Control\\Input};
+\node[matrix, row sep=5mm, right=of control](voices){
+    \node[draw](voice1){
+        $\text{voice}_1$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+    \node[draw](voice2){
+        $\text{voice}_2$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+    \node[](voiceX){\vdots};\\
+    \node[draw](voiceN1){
+        $\text{voice}_{n-1}$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+    \node[draw](voiceN){
+        $\text{voice}_n$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+};
+\draw[->](control.north)|-(voice1.west);
+\draw[->](control.north)|-(voice2.west);
+\draw[->](control.south)|-(voiceN1.west);
+\draw[->](control.south)|-(voiceN.west);
+\node[sum, right=of voices](sum){$+$};
+\draw[->](voice1.east)-|(sum.north);
+\draw[->](voice2.east)-|(sum.north);
+\draw[->](voiceN1.east)-|(sum.south);
+\draw[->](voiceN.east)-|(sum.south);
+\node[block, right=of sum, align=center](filter){Multimode\\Filter};
+\draw[->](sum)--(filter);
+\node[right=of filter,align=center](out){Output\\Device};
+\draw[->](filter)--(out);
+	\end{tikzpicture}}
+	\caption{Building blocks/structure of a basic polyphonic subtractive synthesizer.}
+	\label{fig:midi-classification}
+\end{figure}
+
+- first synthesizer 1897 Telharmonium
+- first experiments with synthesis of sound by computers (computer music) in 1957 at Bell Telephone Laboratories
+- first concert with *computer music* in 1958 in New York City
+- Music V the first written in a general purpose programming language, namely Fortran IV
+
+<!-- TODO -->
+- amplitude (db)
+- dynamic range of human hearing about 100\si{\decibel}
+- sinusoid
+- pitch (see MIDI pitch, log. scale)
+- periodic signals $x[n+\tau] = x[n]$
+- angular frequency $\omega = 2\pi f = 2\pi \frac{1}{N}$
+
+# Oscillators Methods
+
+- primitive waveforms not suitable because they are not bandlimited
+- example: ramp for sawtooth and -1,1 for perfect square, unlimited harmonics to generate hard step (discontinuity) in waveform
+- aliasing problems
+- anti-aliasing not possible after sampling
+- simple: oversample -> antialias (low-pass, brickwall) -> resample
+- fold back: sr = 48kHz, harmonic 30kHz -> 24kHz - (30kHz - 24khz) = 18kHz ...
+
+## BLITs
+
+## Wavetables
+
+- one cycle of a periodic waveform
+- pitch: read wavetable at different speeds (index increments)
+- increment = (length * frequency)/sampling_frequency
+- zero-degree polynomial floor (round), linear interpolation (first-degree polynomial)
+     - $y_\text{Lin}(x) = y[x_0] + \left(y[x_0 + 1]-y[x_0]\right)\cdot(x-x_0)$
+     - two error components: change in amplitude (barely perceptible) and distortion of waveshape (very perceptible)
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/table-lookup.pdf}
+\caption{Wavetable for a single period of a sine wave sampled at 24 equidistant points. The bottom x-axis shows the index of the sample in the wavetable and the top shows angle in radians.}
+\label{fig:table-lookup}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=.9\textwidth]{imgs/saw-table.pdf}
+\caption{Harmonic spectra and time domain representation for a sawtooth waveform}
+\label{fig:saw-table}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=.9\textwidth]{imgs/sqr-table.pdf}
+\caption{Harmonic spectra and time domain representation for a square waveform}
+\label{fig:sqr-table}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/interpolation-error.pdf}
+\caption{Error of zero-degree (floor) and first-degree (linear) interpolation for a wavetable of 64 samples}
+\label{fig:interpolation-error}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/harmonic-spectrum.pdf}
+\includegraphics[width=\textwidth]{imgs/inharmonic-spectrum.pdf}
+\caption{Spectrum of a signal with only harmonic content (a) and solely inharmonic content (b)}
+\label{fig:spectra}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+[
+    auto,
+    >=latex',
+    node distance = 1cm
+]
+\node[block](modulator){$∿$};
+\node[input, above=of modulator, xshift=-4mm](fm){$f_m$};
+\node[input, above=of modulator, xshift=4mm](am){$a_m$};
+\draw[->](fm)--([xshift=-4mm]modulator.north);
+\draw[->](am)--([xshift=4mm]modulator.north);
+\node[sum, below=of modulator](sum){$+$};
+\node[input, right=of sum](fc){$f_c$};
+\draw[->](modulator)--(sum);
+\draw[->](fc)->(sum);
+\node[block, below left=of sum](carrier){$∿$};
+\draw[->](sum)-|([xshift=4mm]carrier.north);
+\node[input, above=of carrier, xshift=-4mm](An){$A(n)$};
+\draw[->](An)--([xshift=-4mm]carrier.north);
+\node[output, below=of carrier](out){$y_n$};
+\draw[->](carrier)--(out);
+	\end{tikzpicture}
+	\caption{A simple FM operator.}
+	\label{fig:midi-classification}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/fm-wave}
+\includegraphics[width=\textwidth]{imgs/fm-spectrum}
+\caption{Plot and Spectrum of a frequency modulated sinusoid.}
+\label{fig:fm}
+\end{figure}
+
+## Polyphony
+
 ## Latency
 <!-- TODO: unsure where to put this chapter -->
 
@@ -504,26 +900,6 @@ At last there is the propagation delay which can be neglected for usual listenin
 	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
 \end{tikzpicture}}
 
-# Synthesizer Basics
-
-## Oscillators
-
-### BLITs
-
-### Wavetables
-
-## Synthesizing Methods
-
-### Subtractive
-
-### Additive
-
-### FM
-
-## Envelopes
-
-## Polyphony
-
 # Signal Generation
 
 ## Aliasing
@@ -540,6 +916,24 @@ At last there is the propagation delay which can be neglected for usual listenin
 
 ## Filter
 
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/filter-bands.pdf}
+\caption{Terminology for describing the frequency response of a low-pass filter.}
+\label{fig:bands}
+\end{figure}
+
+\begin{equation}
+H(z) = \frac{Y(z)}{X(z)} = \frac{\sum^M_{k=0}b_k z^{-k}}{\sum^N_{k=0}a_k z^{-k}}
+\label{eq:iir-transfer-function}
+\end{equation}
+
+<!-- http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt -->
+\begin{align}
+H(z) &= \frac{b_0 + b_1\,z^{-1} + b_2\,z^{-2}}{a_0 + a_1\,z^{-1} + a_2\,z^{-2}}\\
+    &= \frac{b_0}{a_0}\cdot\frac{1 + (b_1/b_0)\,z^{-1} + (b_2/b_0)\,z^{-2}}{1 + (a_1/a_0)\,z^{-1} + (a_2/a_0)\,z^{-2}}
+\label{eq:biquad}
+\end{align}
+
 ## Waveshaper
 
 # Effects
@@ -550,9 +944,13 @@ At last there is the propagation delay which can be neglected for usual listenin
 
 # Implementation Details
 
-![Frequency sweep from 20Hz to 20kHz in the sawtooth wavetable](imgs/ytterbium-0.1.0-Saw-sweep.png){ width=100% }
-
-![Frequency sweep from 20Hz to 20kHz in the square wave wavetable](imgs/ytterbium-0.1.0-Square-sweep.png){ width=100% }
+\begin{figure}
+\includegraphics[width=.8\textwidth,angle=180]{imgs/ytterbium-spectrum-legend.png}
+\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Saw-sweep.png}
+\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Square-sweep.png}
+\caption{Frequency sweep from 20Hz to 20kHz in the sawtooth and square (below wavetable}
+\label{fig:sweep}
+\end{figure}
 
 ![Sweep using sine modulator and carrier with increasing modulation amount](imgs/ytterbium-0.1.0-fm.png){ width=100% }
 
@@ -563,9 +961,14 @@ At last there is the propagation delay which can be neglected for usual listenin
 ### Lemur
 
 ![View of the piano section](imgs/lemur-piano.png){ width=100% }
+
 ![View of the oscillator contol section](imgs/lemur-oscillator.png){ width=100% }
+
 ![View of the fm section](imgs/lemur-fm.png){ width=100% }
+
 ![View of the mixer section](imgs/lemur-mix.png){ width=100% }
+
+![View of the mixer section](imgs/lemur-filter.png){ width=100% }
 
 ## Audio Output
 
