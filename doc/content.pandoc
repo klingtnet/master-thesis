@@ -640,12 +640,32 @@ The generator will start the output on an event like a key press and will reside
 
 
 ## Synthesis Techniques
-\cref{sec:synthesis-techniques}
+\label{sec:synthesis-techniques}
 
-- Additive Synthesis
-- Subtractive Synthesis
-- FM
+Since the invention of the first electrical organ in 1894 \cite[p.~83]{Roads:CMT}, the *Telharmonium* built by Thaddeus Cahill, a lot of different synthesizing techniques have been developed.
+Those techniques can be roughly divided into two broad categories, techniques for *mimicing the sound of traditional instruments*, like
 
+- Karplus-Strong synthesis \cite{KarplusStrong}, a simple technique for simulating plucked-string or drum sounds
+- physical modeling synthesis which uses a mathematical model of an instrument to generate sounds
+
+or techniques for generating arbitrary sounds, possibly not reproducible by a physical instrument, like *Additive*, *Subtractive* and *FM* synthesis.
+The latter techniques will be described in this section.
+
+### Additive Synthesis
+
+### Subtractive Synthesis
+
+### Frequency Modulation (FM) Synthesis
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/fm-grid}
+\label{fig:fm-table}
+\caption{One cycle of a FM modulated sine wave for different modulation intensities $a_m$ and modulator frequencies $f_m$}
+\end{figure}
+
+## Harmonies
+
+### Polyphony
 
 \begin{figure}
 	\centering
@@ -718,15 +738,6 @@ The generator will start the output on an event like a key press and will reside
 	\label{fig:midi-classification}
 \end{figure}
 
-- first synthesizer 1897 Telharmonium
-- first experiments with synthesis of sound by computers (computer music) in 1957 at Bell Telephone Laboratories
-- first concert with *computer music* in 1958 in New York City
-- Music V the first written in a general purpose programming language, namely Fortran IV
-
-<!-- TODO -->
-- amplitude (db)
-- dynamic range of human hearing about 100\si{\decibel}
-- sinusoid
 - pitch (see MIDI pitch, log. scale)
 - periodic signals $x[n+\tau] = x[n]$
 - angular frequency $\omega = 2\pi f = 2\pi \frac{1}{N}$
