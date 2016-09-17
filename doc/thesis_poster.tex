@@ -1,0 +1,9 @@
+% http://tex.stackexchange.com/questions/166418/put-entire-thesis-on-one-a0-poster/166426#166426
+\documentclass{article}
+\usepackage[a0paper,margin=0cm]{geometry}
+
+\usepackage{pdfpages}
+
+\begin{document}
+\includepdf[pages=-,nup=8x8,delta=-2cm -3cm]{../out/thesis.pdf}
+\end{document}
