@@ -497,6 +497,7 @@ To prevent aliasing artifacts it is required to create bandlimited versions of t
 \end{figure}
 
 #### Fourier Synthesis
+\label{sec:fourier-synthesis}
 
 *Fourier synthesis* is used to create bandlimited versions of those complex waveforms.
 It uses the properties of *Fourier series* representation of arbitrary but periodic waveforms \cite[p.~103]{LoyMusimathics2}:
@@ -735,7 +736,7 @@ The latter techniques will be described in this section.
 \draw[->](filter)--(out);
 	\end{tikzpicture}}
 	\caption{Building blocks/structure of a basic polyphonic subtractive synthesizer.}
-	\label{fig:midi-classification}
+	\label{fig:basic-synth-structure}
 \end{figure}
 
 - pitch (see MIDI pitch, log. scale)
@@ -818,7 +819,7 @@ The latter techniques will be described in this section.
 \draw[->](carrier)--(out);
 	\end{tikzpicture}
 	\caption{A simple FM operator.}
-	\label{fig:midi-classification}
+	\label{fig:fm-operator}
 \end{figure}
 
 \begin{figure}
