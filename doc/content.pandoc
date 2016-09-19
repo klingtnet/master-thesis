@@ -665,13 +665,13 @@ It uses seperate sinusoidal oscillators for each partial of a complex sounds spe
     >=latex',
     node distance = 1cm
 ]
-\node[block](osc1){$∿$};
+\node[block](osc1){$∿_1$};
 \node[input, above=of osc1, xshift=-4mm](f1){$f_1$};
 \node[input, above=of osc1, xshift=4mm](a1){$a_1$};
 \draw[->](f1)--([xshift=-4mm]osc1.north);
 \draw[->](a1)--([xshift=4mm]osc1.north);
 
-\node[block, right=of osc1](osc2){$∿$};
+\node[block, right=of osc1](osc2){$∿_2$};
 \node[input, above=of osc2, xshift=-4mm](f2){$f_2$};
 \node[input, above=of osc2, xshift=4mm](a2){$a_2$};
 \draw[->](f2)--([xshift=-4mm]osc2.north);
@@ -679,13 +679,13 @@ It uses seperate sinusoidal oscillators for each partial of a complex sounds spe
 
 \node[right=of osc2](oscX){\ldots};
 
-\node[block, right=of oscX](oscN1){$∿$};
+\node[block, right=of oscX](oscN1){$∿_{n-1}$};
 \node[input, above=of oscN1, xshift=-4mm](fN1){$f_{n-1}$};
 \node[input, above=of oscN1, xshift=4mm](aN1){$a_{n-1}$};
 \draw[->](fN1)--([xshift=-4mm]oscN1.north);
 \draw[->](aN1)--([xshift=4mm]oscN1.north);
 
-\node[block, right=of oscN1](oscN){$∿$};
+\node[block, right=of oscN1](oscN){$∿_n$};
 \node[input, above=of oscN, xshift=-4mm](fN){$f_n$};
 \node[input, above=of oscN, xshift=4mm](aN){$a_n$};
 \draw[->](fN)--([xshift=-4mm]oscN.north);
