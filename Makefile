@@ -37,7 +37,7 @@ $(OUT_PATH)/thesis.html: $(DOC_PATH)/text.md $(TEX_FILES)
 	pandoc --standalone --mathjax --output $@ $<
 
 $(OUT_PATH)/thesis_poster.pdf: $(OUT_PATH)/thesis.pdf
-	pdflatex $(BUILD_PATH)/thesis_poster.tex
+	cd $(BUILD_PATH) && pdflatex $(BUILD_PATH)/thesis_poster.tex
 	cp $(BUILD_PATH)/thesis_poster.pdf $(OUT_PATH)
 
 # Setting `-output-directory` to prevent the cruft won't help,
