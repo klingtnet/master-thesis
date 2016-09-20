@@ -655,14 +655,21 @@ The latter techniques will be described in this section.
 ### Additive Synthesis
 
 Additive synthesis is one of the oldest sound synthesizing techniques.
-It uses seperate sinusoidal oscillators for each partial of a complex sounds spectrum.
+It uses seperate sinusoidal oscillators to generate a complex sound from its partials.
+As the name suggests, the output of each oscillator is summed to obtain the resulting output signal.
+The basic structure of an additive synthesizer is shown in \cref{fig:additive-synthesizer}, where $∿_i$ denotes a sinusoidal oscillator with frequency input $f_i$ and amplitute input $a_i$.
+
+An advantage of additive synthesis is its great versatility, because virtually any sound can be synthesized, given a sufficient amount of oscillators.
+This comes with two major downsides, first, this method is computationally expensive and second, it is hard to control because there are at least as twice as much parameters as there are oscillators.
+Additionally, to be able to simulate real or time-varying artificial sounds there must be functions that control those parameters over time, e.g. to reduce the amplitude of higher frequency partials when the sound decays.
+The coefficients obtained by a the fourier analysis of a real sound (e.g. a sample of played key on a piano) can be used as parameters to reconstruct this sound through additive synthesis, this process is sometimes called *Fourier recomposition* \cite[p.~88]{West1986}.
 
 \begin{figure}
 	\centering
 	\begin{tikzpicture}
 [
     auto,
-    >=latex',
+    >=latex,
     node distance = 1cm
 ]
 \node[block](osc1){$∿_1$};
