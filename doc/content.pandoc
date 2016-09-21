@@ -566,7 +566,8 @@ x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,
 \end{equation}
 
 \begin{figure}
-\includegraphics[width=\textwidth]{imgs/fourier-series.pdf}
+\includegraphics[width=\textwidth]{imgs/fourier-series-saw.pdf}
+\includegraphics[width=\textwidth]{imgs/fourier-series-sqr.pdf}
 \caption{One cycle of bandlimited a) sawtooth and b) square waveforms with increasing number of harmonics.}
 \label{fig:waveforms}
 \end{figure}
