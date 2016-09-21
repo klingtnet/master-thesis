@@ -11,15 +11,15 @@ However, a basic knowledge of signal processing and some familiarity with comput
 Be more specific
 -->
 
-The objective of this thesis is to show how to build a realtime audio software application at the example of an audio synthesizer with frequency modulated oscillators.
+The objective of this thesis is to show how to build a real time audio software application at the example of an audio synthesizer with frequency modulated oscillators.
 
 The amount of problems that arise when building such an application is quite large.
 This includes timing and synchronization problems that occur because the computations made are required to be finished in short time windows.
 Computations must be as fast as possible to ensure a responsive feedback for the player of the instrument, and are needed to avoid sound distortion when the generated signals could not be delivered fast enough to the sound card buffer.
 
-Not every programming language is equally suitable for the development of realtime applications, thus it is explained why Rust was chosen as the implementation language.
+Not every programming language is equally suitable for the development of real time applications, thus it is explained why Rust was chosen as the implementation language.
 Libraries for the MIDI and Open Sound Control protocol were implemented and released as open-source software.
-Both protocols are supported by the application and are used to polyphonically play notes or remote control all parameters of the synthesizer.
+Both protocols are supported by the application and are used to play polyphonic\footnote{More than one at a time.} notes or remote control all parameters of the synthesizer.
 Common synthesizer architectures and signal generation methods are discussed and evaluated.
 
 Furthermore, sound shaping techniques and effects are presented in detail.
@@ -30,19 +30,19 @@ Lastly, an outlook on possible optimizations and enhancements, as well as a summ
 
 <!-- TODO: provide a quick summary of each chapter. -->
 
-Chapter 2 gives an overview about common synthesis concepts and evaluates why Rust was choosen as the implementation language.
+Chapter 2 gives an overview about common synthesis concepts and evaluates why Rust was chosen as the implementation language.
 
 ## Why Rust?
 
-Realtime audio applications must finish their signal processing in tight time bounds to ensure that the sound card can output a continiuous audio stream.
+Real time audio applications must finish their signal processing in tight time bounds to ensure that the sound card can output a continuous audio stream.
 Missing such a bound will result in unpleasant sound glitches, and---in the worst case---renders a whole song recording useless.
 Additionally, the time bounds must be as tight as possible to reduce the latency between the user input (playing a note) and the output of the calculated signal in the speaker.
-Therefore, (memory-)managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce undeterministic program stops while examining the state of variable references, will not receive any further consideration.
+Therefore, (memory-)managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce non deterministic program stops while examining the state of variable references, will not receive any further consideration.
 Interpreted languages like [Python](https://www.python.org/) or [Ruby](https://www.ruby-lang.org/en/) face the same problems as compiled managed languages by also having increased runtime costs.
 Audio application development in those languages is still possible but commonly requires to write the signal processing as C modules and interface with them through the languages foreign function interface (FFI) (e.g. pyo \cite{pyo} uses this approach). 
 Unmanaged languages like [C](https://en.wikipedia.org/wiki/C_(programming_language)) and [C++](https://en.wikipedia.org/wiki/C%2B%2B) offer the control over memory that is needed to make reliable claims about the runtime behaviour while avoiding the overhead of an additional runtime environment.
 This comes with a downside in memory safety and introduces a whole new class of possible bugs compared to managed languages.
-Those bugs are very likely to cause *undefined behaviour* or to crash the program. Unfortunately, they are also very hard to debug.
+Those bugs are very likely to cause *undefined behavior* or to crash the program. Unfortunately, they are also very hard to debug.
 
 One of the major selling points of [Rust](https://rust-lang.org) is guaranteed memory safety *without* garbage collection and *data race freedom* while providing the same level of control over memory as C/C++.
 These goals are achieved through a variety of concepts like ownership, lifetimes and borrowing to know at compile when memory can be safely freed, and to enforce that there is only a single mutable access to any variable at any given time in the run of the program.
@@ -69,7 +69,7 @@ Generics (parametric polymorphism)
 	```
 
 Cross compilation
-:	Cross compilation is the ability to compile statically linked binaries for different target platforms on a single machine, e.g. one can compile a windows executable on a linux machine.
+:	Cross compilation is the ability to compile statically linked binaries for different target platforms on a single machine, e.g. one can compile a windows executable on a Linux machine.
 
 Abstractions without overhead
 :	The Rust compiler will create a separate implementation for each type that a generic function is used with in the code.
@@ -134,7 +134,7 @@ On the other hand, Open Sound Control software like [liine's Lemur](https://liin
 
 <!-- TODO
 - OSC: custom controllers, more modern approach
-- User interface must work in realtime (latency)
+- User interface must work in real time (latency)
 
 MIDI support is a basic requirement for nearly all types of music hard- and software because it allows to use controller hardware
 User input, if it is a played note or a parameter change, must be processed in real-time to give the player direct feedback without perceived *latency* (see \nameref{latency}).
@@ -188,7 +188,7 @@ MIDI channels allow to route different logical streams over one physical MIDI co
 MIDI messages are divided in two categories, *channel* and *system* messages.
 Only the latter contain musical control information and therefore are of interest for this thesis.
 \Cref{fig:midi-classification} illustrates the classification, status byte values are shown as edge labels where \texttt{x} illustrates *don't care*.
-*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.~36]{MIDI10}, i.e. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaenous voices).
+*Channel Mode Messages* define the instrument's response to Voice Messages \cite[p.~36]{MIDI10}, i.e. listen on all channels (omni mode), or switch between mono- and polyphonic mode (multiple simultaneous voices).
 
 \begin{figure}
 	\centering
@@ -310,7 +310,7 @@ Referring to OSC as a *message format* is more accurate, since error-handling, s
 Therefore, OSC can be compared to formats like JSON or XML.
 A draft of the OSC 1.1 specification was published in a 2009 paper \cite{OSC:11} only adding minor, backward compatible changes.
 UDP is often used as the transport layer to avoid the time required to establish a connection by TCP's three-way handshake.
-A connectionless transport is sufficient because OSC sender and receiver are almost always in physical proximity and connected through the same LAN.
+A connection less transport is sufficient because OSC sender and receiver are almost always in physical proximity and connected through the same LAN.
 
 ### OSC Data Types
 
@@ -414,15 +414,15 @@ The following list shows them for OSC compared to MIDI:
 \begin{enumerate}
 	\item[$+$] OSC's data-types allow a much higher resolution for control values.
 	They also provide symbolic types like booleans or \emph{Nil} to represent an empty value.
-	\item[$+$] The definition of \emph{custom data-types} is allowed, therefore OSC applications must be robusted against unknown ones.
+	\item[$+$] The definition of \emph{custom data-types} is allowed, therefore OSC applications must be made robust against unknown ones.
 	\item[$+$] The \emph{bandwidth} is orders of magnitudes larger than MIDI's, but it depends on the type of network used.
 	A common choice are ad-hoc WiFi connections between OSC receiver and sender because the player (sender) and the instrument (receiver) are in local proximity to each other.
 	This, in turn, results in an acceptable network \emph{latency} in the single digit millisecond range.
-	\item[$+$] Control events can be send simultaenously as an OSC bundle, e.g. note events of a chord.
+	\item[$+$] Control events can be send simultaneously as an OSC bundle, e.g. note events of a chord.
 	\item[$+$] Events can be timed with an resolution of $\approx 200$ picoseconds \cite{OSC:10}.
 	\item[$+$] OSC can be used to tunnel MIDI messages over a network connection.
 	\item[$-$] There is no standard for discovering OSC devices in a network, thus addresses must be configured manually which is cumbersome.
-	\item[$-$] Unlike MIDI, there is no standard namespace for interfacing with an OSC device, altough, a proposal for a standard exists \cite{synoscopy}.
+	\item[$-$] Unlike MIDI, there is no standard namespace for interfacing with an OSC device, although, a proposal for a standard exists \cite{synoscopy}.
 	\item[$-$] The number of applications that support OSC is very limited.
 \end{enumerate}
 
@@ -487,8 +487,8 @@ f_a =
 
 Synthesis techniques like subtractive or FM synthesis (see \cref{sec:synthesis-techniques}) require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
 Oscillator waveforms that are commonly available in most synthesizers are *triangle*, *sawtooth* and *square wave*.
-Non bandlimited versions of those waveforms are shown in \cref{fig:waveforms}.
-To prevent aliasing artifacts it is required to create bandlimited versions of those waveforms.
+Non band limited versions of those waveforms are shown in \cref{fig:waveforms}.
+To prevent aliasing artifacts it is required to create band limited versions of those waveforms.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/basic-waveforms}
@@ -499,7 +499,7 @@ To prevent aliasing artifacts it is required to create bandlimited versions of t
 #### Fourier Synthesis
 \label{sec:fourier-synthesis}
 
-*Fourier synthesis* is used to create bandlimited versions of those complex waveforms.
+*Fourier synthesis* is used to create band limited versions of those complex waveforms.
 It uses the properties of *Fourier series* representation of arbitrary but periodic waveforms \cite[p.~103]{LoyMusimathics2}:
 
 > Any periodic vibration, \ldots, can be built up from sinusoids whose frequencies are integer multiplies of a fundamental frequency, by choosing the proper amplitudes and phases.
@@ -527,8 +527,8 @@ f(t) = \sum_{k=-\infty}^\infty c_n e^{i\,2\pi\,k\,t+\phi_k}.
 \label{eq:fourier-series-complex}
 \end{equation}
 
-The summation range has changed for the complex fourier series \cref{eq:fourier-series-complex} to $-\infty$ and $\infty$, thus there are now negative frequencies.
-To retrieve a real valued signal from the complex fourier series it is required to take the conjugate transpose of each value, i.e. to specify the coefficients $c_k$ as pairs with a $-c_k$ for each positive coefficient.
+The summation range has changed for the complex Fourier series \cref{eq:fourier-series-complex} to $-\infty$ and $\infty$, thus there are now negative frequencies.
+To retrieve a real valued signal from the complex Fourier series it is required to take the conjugate transpose of each value, i.e. to specify the coefficients $c_k$ as pairs with a $-c_k$ for each positive coefficient.
 
 The complex coefficients $c_k$ can be converted from the $a_k$, $b_k$'s with the following equation:
 
@@ -542,13 +542,13 @@ a_n = c_k + c_{-k} = 2\Re(c_k)
 b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
 -->
 
-#### Bandlimited Waveforms
+#### Band limited Waveforms
 
-Fourier Synthesis is used to create one bandlimited cycle versions for sawtooth, triangle and square waves.
+Fourier Synthesis is used to create one band limited cycle versions for sawtooth, triangle and square waves.
 Sawtooth contains in contrast to square and triangle waves odd and even harmonics which makes them a great source signal because of their rich harmonic content.
 Square and triangle waves consist solely of odd harmonic partials.
-The complex fourier series for sawtooth, triangle and square waves is shown in \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series} where the sum is zero for $n=0$.
-The number of harmonics contained in the waveform is determined by summation limits and \cref{fig:waveforms} illustrates evaluated fourier series for sawtooth (a) and square wave (b) at increasing numbers of harmonics partials.
+The complex Fourier series for sawtooth, triangle and square waves is shown in \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series} where the sum is zero for $n=0$.
+The number of harmonics contained in the waveform is determined by summation limits and \cref{fig:waveforms} illustrates evaluated Fourier series for sawtooth (a) and square wave (b) at increasing numbers of harmonics partials.
 
 \begin{equation}
 x_\text{saw}(t) = \sum^{\infty}_{n=-\infty,\;n\neq{}0} -1^n \frac{e^{-i\,2\pi\,n\,t}}{n\pi}
@@ -568,7 +568,7 @@ x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/fourier-series-saw.pdf}
 \includegraphics[width=\textwidth]{imgs/fourier-series-sqr.pdf}
-\caption{One cycle of bandlimited a) sawtooth and b) square waveforms with increasing number of harmonics.}
+\caption{One cycle of band limited a) sawtooth and b) square waveforms with increasing number of harmonics.}
 \label{fig:waveforms}
 \end{figure}
 
@@ -577,7 +577,7 @@ x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,
 
 The intensity of a sound is perceived logarithmically by human hearing \cite[p.~27]{West1986}.
 Therefore, the *ratio* between two sound intensities is important and *not* the difference as in the case of linear perceived phenomenons.
-The ratio of two physical quantities, e.g. signal amplitudes, is measured in decibel \[\si{\decibel}\], a unitless logarithmic unit.
+The ratio of two physical quantities, e.g. signal amplitudes, is measured in decibel \[\si{\decibel}\], a unit less logarithmic unit.
 Distinction should be made between the ratio of signal energy which is expressed by
 
 \begin{equation}
@@ -603,13 +603,13 @@ The difference in the scaling factors is based on the definition of signal energ
 \label{fig:db}
 \end{figure}
 \Cref{fig:db} illustrates the relationship between \si{\decibel} levels (x-axis) and corresponding amplitude ratios on a logarithmically scaled y-axis.
-The pressure levels audible by human ears range from 0.00002 \si{\newton\per\meter\squared} to 200 \si{\newton\per\meter\squared} \cite[p.~26]{West1986}, which is seven orders of magnitude larger than the audability threshold and clearly shows that logarithmic scale is better suited than a linear one to represent sound level ratios.
+The pressure levels audible by human ears range from 0.00002 \si{\newton\per\meter\squared} to 200 \si{\newton\per\meter\squared} \cite[p.~26]{West1986}, which is seven orders of magnitude larger than the audibility threshold and clearly shows that logarithmic scale is better suited than a linear one to represent sound level ratios.
 
 ## Envelope Generators
 
 The sound produced by an musical instrument is usually not static and changes in amplitude or spectral content over time.
 To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizers sound engine, e.g. the cutoff of a frequency filter.
-In \cref{fig:piano-c4} the time-varying behaviour of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
+In \cref{fig:piano-c4} the time-varying behavior of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
 
 <!-- Replace this by the high resolution image -->
 \begin{figure}
@@ -630,7 +630,7 @@ Because of the non-linearity of human hearing, as discussed in \cref{sec:hearing
 \label{fig:transfer-functions}
 \end{figure}
 
-An ADSR generator's output is fully determined by five parameters, that are the output *level* and *duration* of the attack stage, decay durration, sustain level and duration of release.
+An ADSR generator's output is fully determined by five parameters, that are the output *level* and *duration* of the attack stage, decay duration, sustain level and duration of release.
 \Cref{fig:adsr} shows the output and stages for an envelope generator with exponential transfer function.
 The generator will start the output on an event like a key press and will reside in the sustain stage as long as the key is still pressed, if the key is released the generator will switch to the release stage independent of its state at the time of the event.
 
@@ -645,7 +645,7 @@ The generator will start the output on an event like a key press and will reside
 \label{sec:synthesis-techniques}
 
 Since the invention of the first electrical organ in 1894 \cite[p.~83]{Roads:CMT}, the *Telharmonium* built by Thaddeus Cahill, a lot of different synthesizing techniques have been developed.
-Those techniques can be roughly divided into two broad categories, techniques for *mimicing the sound of traditional instruments*, like
+Those techniques can be roughly divided into two broad categories, techniques for *mimicking the sound of traditional instruments*, like
 
 - Karplus-Strong synthesis \cite{KarplusStrong}, a simple technique for simulating plucked-string or drum sounds
 - physical modeling synthesis which uses a mathematical model of an instrument to generate sounds
@@ -656,14 +656,14 @@ The latter techniques will be described in this section.
 ### Additive Synthesis
 
 Additive synthesis is one of the oldest sound synthesizing techniques.
-It uses seperate sinusoidal oscillators to generate a complex sound from its partials.
+It uses separate sinusoidal oscillators to generate a complex sound from its partials.
 As the name suggests, the output of each oscillator is summed to obtain the resulting output signal.
-The basic structure of an additive synthesizer is shown in \cref{fig:additive-synthesizer}, where $∿_i$ denotes a sinusoidal oscillator with frequency input $f_i$ and amplitute input $a_i$.
+The basic structure of an additive synthesizer is shown in \cref{fig:additive-synthesizer}, where $∿_i$ denotes a sinusoidal oscillator with frequency input $f_i$ and amplitude input $a_i$.
 
 An advantage of additive synthesis is its great versatility, because virtually any sound can be synthesized, given a sufficient amount of oscillators.
 This comes with two major downsides, first, this method is computationally expensive and second, it is hard to control because there are at least as twice as much parameters as there are oscillators.
 Additionally, to be able to simulate real or time-varying artificial sounds there must be functions that control those parameters over time, e.g. to reduce the amplitude of higher frequency partials when the sound decays.
-The coefficients obtained by a the fourier analysis of a real sound (e.g. a sample of played key on a piano) can be used as parameters to reconstruct this sound through additive synthesis, this process is sometimes called *Fourier recomposition* \cite[p.~88]{West1986}.
+The coefficients obtained by a the Fourier analysis of a real sound (e.g. a sample of played key on a piano) can be used as parameters to reconstruct this sound through additive synthesis, this process is sometimes called *Fourier recomposition* \cite[p.~88]{West1986}.
 
 \begin{figure}
 	\centering
@@ -738,12 +738,12 @@ A table of waveforms generated by different values of $m_f$ and $m_a$ is shown i
 \label{fig:fm-table}
 \end{figure}
 
-For $I=0$ there is no modulation but non-zero values will result in frequencies occuring below and above the carrier frequency at intervals of the modulating frequency.
-\citeauthor{Chowning:FM} describes the relation of modulation index and occurence of side frequencies like this \cite[p.~2]{Chowning:FM}:
+For $I=0$ there is no modulation but non-zero values will result in frequencies occurring below and above the carrier frequency at intervals of the modulating frequency.
+\citeauthor{Chowning:FM} describes the relation of modulation index and occurrence of side frequencies like this \cite[p.~2]{Chowning:FM}:
 
 > The number of side frequencies which occur is related to the modulation index in such a way that as $I$ increases from zero, energy is \enquote{stolen} from the carrier and distributed among an increasing number of side frequencies.
 
-This behaviour is shown in \cref{fig:fm-bandwidth} for different modulation indices by constant modulation and carrier frequency. Negative amplitudes for frequency components indicate *phase inversion*\footnote{$-\sin(\phi)=\sin(-\phi)$}.
+This behavior is shown in \cref{fig:fm-bandwidth} for different modulation indices by constant modulation and carrier frequency. Negative amplitudes for frequency components indicate *phase inversion*\footnote{$-\sin(\phi)=\sin(-\phi)$}.
 
 \begin{figure}
 \begin{center}
@@ -758,7 +758,7 @@ Those negative frequency components will be reflected (aliased) around $\SI{0}{\
 Reflected sideband components will either increase or---if they are phase inverted---decrease the energy the energy in the spectrum.
 
 Harmonic spectra\footnote{Overtones are an integer multiple of waves the fundamental frequency.} will be generated if the ratio of carrier and modulation frequency is a rational number.
-Ratios that are irrational numbers, e.g. $1/\sqrt{2}$, will result in inharmonic spectra because the reflected sideband frequencies will fall inbetween the positive frequency components.
+Ratios that are irrational numbers, e.g. $1/\sqrt{2}$, will result in inharmonic spectra because the reflected sideband frequencies will fall in-between the positive frequency components.
 
 Carrier and sideband component amplitudes can be determined analytically by evaluating n-th order Bessel functions $J_i$ of the first kind with the modulation index as argument.
 A quick estimation for the resulting bandwidth of different modulation indices is shown in \cref{fig:fm-bessel} by evaluating Bessel functions $J_0$ through $J_{15}$ for those indices.
@@ -871,7 +871,7 @@ On the other hand, FM synthesis is likely to introduce undesirable aliasing of h
 \draw[->](voice2.east)-|(sum.north);
 \draw[->](voiceN1.east)-|(sum.south);
 \draw[->](voiceN.east)-|(sum.south);
-\node[block, right=of sum, align=center](filter){Multimode\\Filter};
+\node[block, right=of sum, align=center](filter){Multi mode\\Filter};
 \draw[->](sum)--(filter);
 \node[right=of filter,align=center](out){Output\\Device};
 \draw[->](filter)--(out);
@@ -886,7 +886,7 @@ On the other hand, FM synthesis is likely to introduce undesirable aliasing of h
 
 # Oscillators Methods
 
-- primitive waveforms not suitable because they are not bandlimited
+- primitive waveforms not suitable because they are not band limited
 - example: ramp for sawtooth and -1,1 for perfect square, unlimited harmonics to generate hard step (discontinuity) in waveform
 - aliasing problems
 - anti-aliasing not possible after sampling
@@ -950,7 +950,7 @@ Latency is the time delay between two causally connected events.
 
 An instrument is the more responsive, the less latency between an input event and the corresponding sound output it has.
 The latency is imperceptible for the user if the delay between the input event and audio output stimuli is $< 24ms$ \cite{NasaLatency}.
-Furthermore, there is an even stronger latency limit of $\approx 2$ms, that is the *temporal resolution* of the human hearing, as shown by \cite[p.\~294]{FastlZwicker} using psychoacoustic measurements.
+Furthermore, there is an even stronger latency limit of $\approx 2$ms, that is the *temporal resolution* of the human hearing, as shown by \cite[p.\~294]{FastlZwicker} using psycho acoustic measurements.
 However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = 343.2 m/s$ and a common listening distance of $d = 2m$ is $\approx$ 3 times larger than the temporal resolution: $d/v = 2m/343.2\frac{m}{s} = 5.82ms$.
 Therefore, achieving a system latency of less than $24ms$ is favorable.
 
