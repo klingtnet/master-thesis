@@ -807,9 +807,7 @@ On the other hand, FM synthesis is likely to introduce undesirable aliasing of h
 
 ### Subtractive Synthesis
 
-## Harmonies
 
-### Polyphony
 
 \begin{figure}
 	\centering
@@ -1019,20 +1017,6 @@ At last there is the propagation delay which can be neglected for usual listenin
 	\draw[->](Soundcard) -- node{$l_{backend}$}(Speaker);
 	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
 \end{tikzpicture}}
-
-# Signal Generation
-
-## Aliasing
-
-## FFT
-
-## Band-Limited Wavetables
-
-## Limiting
-
-## Mixing/Panning
-
-# Sound Shaping
 
 ## Filter
 
