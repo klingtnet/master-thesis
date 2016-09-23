@@ -530,7 +530,7 @@ f(t) = \sum_{k=-\infty}^\infty c_n e^{i\,2\pi\,k\,t+\phi_k}.
 \end{equation}
 
 The summation range has changed for the complex Fourier series \cref{eq:fourier-series-complex} to $-\infty$ and $\infty$, thus there are now negative frequencies.
-To retrieve a real valued signal from the complex Fourier series it is required to take the conjugate transpose of each value, i.e. to specify the coefficients $c_k$ as pairs with a $-c_k$ for each positive coefficient.
+To retrieve a real-valued signal from the complex Fourier series it is required to take the conjugate transpose of each value, i.e. to specify the coefficients $c_k$ as pairs with a $-c_k$ for each positive coefficient.
 
 The complex coefficients $c_k$ can be converted from the $a_k$, $b_k$'s with the following equation:
 
@@ -547,7 +547,7 @@ b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
 #### Band limited Waveforms
 
 Fourier Synthesis is used to create one band limited cycle versions for sawtooth, triangle and square waves.
-Sawtooth contains in contrast to square and triangle waves odd and even harmonics which makes them a great source signal because of their rich harmonic content.
+Sawtooth, in contrast to square and triangle waves, contains odd and even harmonics which makes them a great source signal because of their rich harmonic content.
 Square and triangle waves consist solely of odd harmonic partials.
 The complex Fourier series for sawtooth, triangle and square waves is shown in \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series} where the sum is zero for $n=0$.
 The number of harmonics contained in the waveform is determined by summation limits and \cref{fig:waveforms} illustrates evaluated Fourier series for sawtooth (a) and square wave (b) at increasing numbers of harmonics partials.
@@ -579,7 +579,7 @@ x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,
 
 The intensity of a sound is perceived logarithmically by human hearing \cite[p.~27]{West1986}.
 Therefore, the *ratio* between two sound intensities is important and *not* the difference as in the case of linear perceived phenomenons.
-The ratio of two physical quantities, e.g. signal amplitudes, is measured in decibel \[\si{\decibel}\], a unit less logarithmic unit.
+The ratio of two physical quantities, e.g. signal amplitudes, is measured in \si{\decibel} (decibel), a dimensionless logarithmic unit.
 Distinction should be made between the ratio of signal energy which is expressed by
 
 \begin{equation}
@@ -587,17 +587,17 @@ Distinction should be made between the ratio of signal energy which is expressed
 \label{eq:db-energy}
 \end{equation}
 
-and the ratio of signal power
+and the ratio of signal power \cref{eq:db}.
 
 \begin{equation}
 20\log_{10}{}\left(\frac{a}{b}\right)
 \label{eq:db}
-\end{equation}.
-The difference in the scaling factors is based on the definition of signal energy where the square of the signals amplitude is taken:
+\end{equation}
+The difference in the scaling factors is based on the definition of signal energy where the square of the signals amplitude is taken, see \cref{eq:signal-energy}.
 \begin{equation}
 \int^{\infty}_{-\infty} \left|x(t)\right|^2 dt
 \label{eq:signal-energy}
-\end{equation}.
+\end{equation}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/db.pdf}
@@ -621,7 +621,7 @@ In \cref{fig:piano-c4} the time-varying behavior of sounds produced by musical i
 \end{figure}
 
 There are various types of envelope generators that range from simple two stage models, for fading the sound in and out, to ones which have an arbitrary number of stages and envelope shapes.
-A commonly used model with a reasonable amount of controllable parameters is the so called ADSR envelope generator, where the abbreviation stands for the four different stages of the envelope which are *Attack*, *Decay*, *Sustain* and *Release*.
+A commonly used model with a reasonable amount of controllable parameters is the so called ADSR envelope, which stands for the four different stages of the envelope which are *Attack*, *Decay*, *Sustain* and *Release*.
 Because of the non-linearity of human hearing, as discussed in \cref{sec:hearing}, it is not sufficient to linearly ramp values between those four stages because this would not yield a smooth change in perceived loudness.
 
 \Citeauthor{Puckette2006a} proposes three different amplitude envelope transfer functions \cite[p.~94]{Puckette2006a} where $10^{2(x-1)}$ converts from \si{\decibel} to linear and the quartic curve $x^4$ approximates the exponential \si{\decibel} curve while being computationally less expensive and reaching true zero at $x=0$.
@@ -634,7 +634,8 @@ Because of the non-linearity of human hearing, as discussed in \cref{sec:hearing
 
 An ADSR generator's output is fully determined by five parameters, that are the output *level* and *duration* of the attack stage, decay duration, sustain level and duration of release.
 \Cref{fig:adsr} shows the output and stages for an envelope generator with exponential transfer function.
-The generator will start the output on an event like a key press and will reside in the sustain stage as long as the key is still pressed, if the key is released the generator will switch to the release stage independent of its state at the time of the event.
+The generator will start the output on an event like a key press and will reside in the sustain stage as long as the key is still pressed.
+If the key is released the generator will switch to the release stage independent of its state at the time of the event.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/adsr}
@@ -653,17 +654,21 @@ Those techniques can be roughly divided into two broad categories, techniques fo
 - physical modeling synthesis which uses a mathematical model of an instrument to generate sounds
 
 or techniques for generating arbitrary sounds, possibly not reproducible by a physical instrument, like *Additive*, *Subtractive* and *FM* synthesis.
-The latter techniques will be described in this section.
+Developing a physical simulation of a traditional instrument is not the aim of this thesis, therefore the latter techniques will be described in this section.
 
 ### Additive Synthesis
 
 Additive synthesis is one of the oldest sound synthesizing techniques.
 It uses separate sinusoidal oscillators to generate a complex sound from its partials.
-As the name suggests, the output of each oscillator is summed to obtain the resulting output signal.
+As the name suggests, the output of each oscillator is added up to obtain the resulting output signal.
 The basic structure of an additive synthesizer is shown in \cref{fig:additive-synthesizer}, where $∿_i$ denotes a sinusoidal oscillator with frequency input $f_i$ and amplitude input $a_i$.
 
 An advantage of additive synthesis is its great versatility, because virtually any sound can be synthesized, given a sufficient amount of oscillators.
-This comes with two major downsides, first, this method is computationally expensive and second, it is hard to control because there are at least as twice as much parameters as there are oscillators.
+This comes with two major downsides:
+
+1. this method is computationally expensive.
+2. it is hard to control because there are at least as twice as much parameters as there are oscillators.
+
 Additionally, to be able to simulate real or time-varying artificial sounds there must be functions that control those parameters over time, e.g. to reduce the amplitude of higher frequency partials when the sound decays.
 The coefficients obtained by a the Fourier analysis of a real sound (e.g. a sample of played key on a piano) can be used as parameters to reconstruct this sound through additive synthesis, this process is sometimes called *Fourier recomposition* \cite[p.~88]{West1986}.
 
@@ -724,14 +729,14 @@ Modulation of the carrier wave is determined by two factors:
 - the *frequency of the modulating wave* $m_f$ sets rate at which the instantaneous frequency of the carrier varies.
 - the *amount of modulation* $m_a$ which is equal to the modulating waves amplitude.
 
-If both, the carrier as well as the modulator, are sinusoids then the instantaneous frequency maybe be calculated as follows \cite[p.~2]{Chowning:FM}:
+If both the carrier as well as the modulator, are sinusoids then the instantaneous frequency maybe be calculated as follows \cite[p.~2]{Chowning:FM}:
 
 \begin{equation}
 y(t) = A \sin\left(c_f t + I \sin(m_f t)\right)
 \label{eq:fm}
 \end{equation}
 
-where $A$ is the *peak amplitude*, $c_f$ is the carrier waves frequency and $I = m_a/m_f$ is the ratio of modulation amount to modulation frequency also called *modulation index*. 
+where $A$ is the *peak amplitude*, $c_f$ is the carrier wave's frequency and $I = m_a/m_f$ is the ratio of modulation amount to modulation frequency also called *modulation index*. 
 A table of waveforms generated by different values of $m_f$ and $m_a$ is shown in \cref{fig:fm-table}.
 
 \begin{figure}
