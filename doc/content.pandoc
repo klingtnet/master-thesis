@@ -754,7 +754,7 @@ This behavior is shown in \cref{fig:fm-bandwidth} for different modulation indic
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=.8\textheight]{imgs/fm-bandwidth}
+\includegraphics[width=\textwidth]{imgs/fm-bandwidth}
 \end{center}
 \caption{Magnitude spectra for frequency modulated carrier frequency $c_f$ at different modulation indices $I$ and constant modulation frequency $m_f$. Bandwidth increases symmetrically around $c_f$ with $I$.}
 \label{fig:fm-bandwidth}
