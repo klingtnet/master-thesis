@@ -464,6 +464,8 @@ In other words, it ensures that there are at least two sample points for any fre
 \Cref{fig:aliasing} shows two sinusoids with frequencies $\omega_1=\pi/2$ and $\omega_2=3/2\,\pi$ that are sampled at sample rate $\omega_s=\pi/2$.
 Clearly, $\omega_2$ is above the Nyquist frequency $\omega_{\text{Ny}}=\pi$, thus $\omega_2$ is *foldover* at $\omega_{\text{Ny}}$ which results in a frequency of $\omega_2\mod\omega_{\text{Ny}} = \pi/2$ that is equal to $\omega_1$, therefore $\omega_2$ is an *alias* of $\omega_1$, so both signals are indistinguishable after the sampling process.
 This effect is called *aliasing* or *foldover* and is an inevitable result of sampling or sample rate conversion, hence signal components with frequencies above Nyquist must be removed or reduced before fed into the sampling process.
+The effect of foldover in the frequency spectrum is shown in \cref{fig:foldover}.
+
 The alias $f_a$ for a frequency $f$ and a sampling frequency $f_s$ can be calculated as shown in \cref{eq:aliasing-frequency}\footnote{\citeauthor{Dashow1978} presented a method for generating non-harmonic spectra using foldover frequencies \cite[p.~82]{Dashow1978}.}.
 
 \begin{equation}
