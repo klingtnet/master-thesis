@@ -644,7 +644,7 @@ If the key is released the generator will switch to the release stage independen
 \end{figure}
 
 
-## Synthesis Techniques
+# Synthesis Techniques
 \label{sec:synthesis-techniques}
 
 Since the invention of the first electrical organ in 1894 \cite[p.~83]{Roads:CMT}, the *Telharmonium* built by Thaddeus Cahill, a lot of different synthesizing techniques have been developed.
@@ -656,7 +656,7 @@ Those techniques can be roughly divided into two broad categories, techniques fo
 or techniques for generating arbitrary sounds, possibly not reproducible by a physical instrument, like *Additive*, *Subtractive* and *FM* synthesis.
 Developing a physical simulation of a traditional instrument is not the aim of this thesis, therefore the latter techniques will be described in this section.
 
-### Additive Synthesis
+## Additive Synthesis
 
 Additive synthesis is one of the oldest sound synthesizing techniques.
 It uses separate sinusoidal oscillators to generate a complex sound from its partials.
@@ -718,7 +718,7 @@ The coefficients obtained by a the Fourier analysis of a real sound (e.g. a samp
 	\label{fig:additive-synthesizer}
 \end{figure}
 
-### Frequency Modulation (FM) Synthesis
+## Frequency Modulation (FM) Synthesis
 
 Frequency Modulation (FM) was originally used in telecommunications to encode information on a carrier wave by modulating the waves instantaneous frequency, e.g. for radio broadcast.
 In \citeyear{Chowning:FM}, \citeauthor{Chowning:FM} presented a new application of this well-known process to control spectral components of an audio signal with great simplicity \cite[p.~1]{Chowning:FM}.
@@ -812,7 +812,8 @@ An FM algorithm is described by how its operators are connected among each other
 FM's advantages lies in the simplicity of control, the small computational effort that is required and the great amount of flexibility that is given arranging operators in different algorithms.
 On the other hand, FM synthesis is likely to introduce undesirable aliasing of higher frequencies which must be taken into account when implementing the algorithm.
 
-### Subtractive Synthesis
+## Subtractive Synthesis
+\label{sec:subtractive-synthesis}
 
 
 
