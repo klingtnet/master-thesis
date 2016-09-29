@@ -809,8 +809,8 @@ An FM algorithm is described by how its operators are connected among each other
 	\label{fig:fm-operator}
 \end{figure}
 
-FM's advantages lies in the simplicity of control, the small computational effort that is required and the great amount of flexibility that is given arranging operators in different algorithms.
-On the other hand, FM synthesis is likely to introduce undesirable aliasing of higher frequencies which must be taken into account when implementing the algorithm.
+FM's advantages lie in the simplicity of control, the small computational effort that is required and the great amount of flexibility, given by arranging operators in different algorithms.
+On the other hand, FM synthesis is likely to introduce undesirable aliasing of higher frequencies which should be taken into account when implementing the algorithm.
 
 ## Subtractive Synthesis
 \label{sec:subtractive-synthesis}
