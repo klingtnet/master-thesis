@@ -815,7 +815,168 @@ On the other hand, FM synthesis is likely to introduce undesirable aliasing of h
 ## Subtractive Synthesis
 \label{sec:subtractive-synthesis}
 
+Subtractive Synthesis is---like the name implies---the opposite of *Additive Synthesis* and creates musical tones by *removing* parts of the frequency spectrum of a source signal.
+A *filter* thereby amplifies or attenuates regions of the spectrum while the source signal passes through.
+Spectrally rich signals like noise, sawtooth or square waves are well suited for the use as sound sources.
+This section will introduce filters by means of audio signal processing, describes commonly used filter types in musical synthesizers and discusses FIR and IIR filters.
 
+# Digital Filters
+\label{sec:digital-filters}
+
+Filter is a broad term that has many different and often very general definitions.
+Such a general definition is given by \citeauthor{Smith:FilterTheory} in \cite{Smith:FilterTheory}:
+
+> Any medium through which the music signal passes, whatever its form, can be regarded as a filter.
+
+Surprisingly, even \citetitle{Rabiner1972} (\cite{Rabiner1972}) uses the term without prior specification.
+In this thesis a more specific definition will be used \cite[p.~326]{Proakis:DSP}:
+
+> The linear time-invariant system, through its frequency response function, attenuates some frequency components of the input signal and amplifies other frequency components. Thus the system acts as a filter to the input signal.
+
+This is analog to the description given in \cref{sec:subtractive-synthesis}, despite the terms *linear time-invariant* (LTI) system and *frequency response function* haven't been explained, yet.
+
+## Linear Time-Invariant Systems
+
+A system is *linear* if the superposition principle \cref{eq:superposition} holds.
+
+\begin{equation}
+F[a_1 x_1(n) + a_2x_2(n)] = a_1F[x_1(n)] + a_2F[x_2(n)]
+\label{eq:superposition}
+\end{equation}
+
+In other words, the response of system $F$ applied to two (or more) stimuli $x_{1,2}$ is equal to the sum of responses of the system applied to each stimulus individually, for any real values of $a_{1,2}$.
+This also shows the scaling the property of linear systems, i.e. scaling of a systems input results in an identical scaling of the response.
+A system is *time invariant*, if
+
+\begin{equation}
+F[x(n-k)]=y(n-k),
+\label{eq:time-invariance}
+\end{equation}
+
+for any time shift $k$.
+Thus, the response of the system applied to a stimuli delayed by $k$ units of time is equal to the systems response delayed for the same amount.
+Hence, if a system obeys both properties, linearity and time-invariance, then it is called an LTI system.
+Such a system is characterized completly by its *impulse-* or *frequency response*.
+
+### Impulse Response
+
+Any input sequence (signal) can be written as a sum of its components multiplied by a time shifted delta function.
+This equivalence is shown in \cref{eq:input-identity}, where $\delta$ is the Kronecker delta function which is $1$ at $n=k$ and $0$ otherwise.
+
+\begin{equation}
+x[n] \equiv \sum^\infty_{k=-\infty}x[k]\delta[n-k]
+\label{eq:input-identity}
+\end{equation}
+
+The output signal a system yields when an impulse is applied to it, like the Kronecker delta in the discrete-time case, is called the system's *impulse response*, denoted $h[n]$.
+A response of an LTI system in steady-state to an arbitrary input signal can be calculated using the *convolution sum* \cite[p.~73]{Proakis:DSP}:
+
+\begin{equation}
+y[n] = x\ast h = \sum^\infty_{k=-\infty}x[k]h[n-k] = \sum^\infty_{k=-\infty}x[n-k]h[n]
+\label{eq:discrete-convolution}
+\end{equation}
+
+Clearly, convolution $\ast$ is a commutative operation.
+This property can be used to optimize possible implementations \cite{Karas:Convolution}.
+In summary, convolving an input signal with the LTI's impulse response yields the systems output in the *time domain*.
+
+### Frequency Response
+
+The effect that an LTI system will have on an input signal in the frequency domain can be calculated with the systems *frequency response function*.
+By applying the discrete *Fourier transformation* \cref{eq:fourier-transform} on the impulse response the frequency response function can be obtained.
+It maps a signal from the time to the frequency domain, where $f$ denotes the components *frequency* and $N$ is the length of the input signal.
+Simply stated, a time-domain signal is decomposed into a linear combination of complex exponentials (sinusoids) with different frequencies, amplitudes and phases by the Fourier transform.
+
+\begin{equation}
+X(f) = \mathcal{F}\{x\} = \sum_{k=0}^{N-1}x[k]e^{-i 2\pi f n}
+\label{eq:fourier-transform}
+\end{equation}
+
+By replacing $x[n]$ in \cref{eq:fourier-transform} with the systems impulse response $h[n]$ we obtain the response function in terms of frequencies $H(f)$ \cite[p.~301]{Proakis:DSP}:
+
+\begin{equation}
+H(f) = \sum^{N-1}_{k=0}h[k]e^{-i 2\pi k}
+\label{eq:frequency-response}
+\end{equation}
+
+Element-wise multiplication of the Fourier transformed input signal $X(f)$ with the systems frequency response function $H(f)$ results in the systems output $H(f)$.
+
+\begin{equation}
+Y(f) = X(f)\cdot H(f)
+\label{eq:LTI-output-frequency-domain}
+\end{equation}
+
+In \cref{eq:LTI-output-frequency-domain} the frequency $f$ is an indenpendent variable, hence an input signal passed into an LTI system will result in an output signal at the same frequencies but scaled scaled in amplitude and shifted in phase.
+This conforms with the filter definition given in \cref{sec:digital-filters}.
+Applying the (discrete) inverse Fourier transform $\mathcal{F^{-1}}$ (\cref{eq:inverse-fourier-transform}) on $Y(f)$ yields the time-domain representation of the output signal $y(t)$.
+Knowing about frequency response functions will become useful in the next section when elementary filter types are discussed.
+
+\begin{equation}
+x(t) = \mathcal{F^{-1}}\{X\} = \frac{1}{N}\sum_{k=0}^{N-1} X(k)e^{i 2\pi k t}
+\label{eq:inverse-fourier-transform}
+\end{equation}
+
+## Elementary Filter Classification
+
+Filters of musical synthesizer are classified by their characteristic *frequency response* curve.
+
+Multi-mode \cref{fig:filter-classification}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/filter-classification}
+\caption{Log-log plots for Frequency response curves of four elementary filter types where $f_c$ denotes the cutoff frequency at the half-power point ($\SI{-3}\decibel$) shown as dotted line.}
+\label{fig:filter-classification}
+\end{figure}
+
+- phase response plot
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/filter-bands.pdf}
+\caption{Terminology for describing the frequency response of a low-pass filter.}
+\label{fig:bands}
+\end{figure}
+
+
+
+## FIR Filters
+
+- delay and add input (feedforward)
+- least-squares (Windowing) method
+    - create ideal filter
+    - get impulse response (fourier transform)
+    - ...
+    - apply smoothing window to FIR filter
+- Frequency sampling method
+    - specfiy the filters amplitude spectrum in the interval $[0, \pi]$ at a finite number of uniformly spaced frequency locations
+    - inverse fourier transform
+
+\begin{equation}
+H(z) = \frac{Y(z)}{X(z)} = \frac{\sum^M_{k=0}b_k z^{-k}}{\sum^N_{k=0}a_k z^{-k}}
+\label{eq:iir-transfer-function}
+\end{equation}
+
+## IIR Filters
+
+- delay and add output (feedback)
+- transform analog prototypes to digital equivalents using *bilinear transform*
+- result is an IIR filter
+
+<!-- http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt -->
+\begin{align}
+H(z) &= \frac{b_0 + b_1\,z^{-1} + b_2\,z^{-2}}{a_0 + a_1\,z^{-1} + a_2\,z^{-2}}\\
+    &= \frac{b_0}{a_0}\cdot\frac{1 + (b_1/b_0)\,z^{-1} + (b_2/b_0)\,z^{-2}}{1 + (a_1/a_0)\,z^{-1} + (a_2/a_0)\,z^{-2}}
+\label{eq:biquad}
+\end{align}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/filter-resonance}
+\label{fig:filter-resonance}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/filter-pole-zero}
+\label{fig:filter-pole-zero}
+\end{figure}
 
 \begin{figure}
 	\centering
@@ -1025,26 +1186,6 @@ At last there is the propagation delay which can be neglected for usual listenin
 	\draw[->](Soundcard) -- node{$l_{backend}$}(Speaker);
 	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
 \end{tikzpicture}}
-
-## Filter
-
-\begin{figure}
-\includegraphics[width=\textwidth]{imgs/filter-bands.pdf}
-\caption{Terminology for describing the frequency response of a low-pass filter.}
-\label{fig:bands}
-\end{figure}
-
-\begin{equation}
-H(z) = \frac{Y(z)}{X(z)} = \frac{\sum^M_{k=0}b_k z^{-k}}{\sum^N_{k=0}a_k z^{-k}}
-\label{eq:iir-transfer-function}
-\end{equation}
-
-<!-- http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt -->
-\begin{align}
-H(z) &= \frac{b_0 + b_1\,z^{-1} + b_2\,z^{-2}}{a_0 + a_1\,z^{-1} + a_2\,z^{-2}}\\
-    &= \frac{b_0}{a_0}\cdot\frac{1 + (b_1/b_0)\,z^{-1} + (b_2/b_0)\,z^{-2}}{1 + (a_1/a_0)\,z^{-1} + (a_2/a_0)\,z^{-2}}
-\label{eq:biquad}
-\end{align}
 
 ## Waveshaper
 
