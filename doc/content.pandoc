@@ -837,6 +837,63 @@ This is analog to the description given in \cref{sec:subtractive-synthesis}, des
 
 ## Linear Time-Invariant Systems
 
+### Signal Flow Graphs
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+[
+    auto,
+    >=latex,
+    node distance = 1cm
+]
+
+\node[input](xn){x[n]};
+
+\node[conn, right=of xn](c1){};
+\node[block, below=of c1](z1){$z^{-1}$};
+\node[empty, below=of z1](e1){\vdots};
+\node[block, below=of e1](z2){$z^{-1}$};
+\node[sum, right=of z1](s2){+};
+\node[sum, above=of s2](s1){+};
+
+\draw[->](s2)--(s1);
+\draw[->](z1)-- node[above]{$b_1$} (s2);
+\draw[->](z2)-| node[above]{$b_n$} (s2);
+
+\node[sum, right=of s1](s3){+};
+\node[conn, right=of s3](c2){};
+\node[sum, below=of s3](s4){+};
+\node[block, right=of s4](z3){$z^{-1}$};
+\node[empty, below=of z3](e2){\vdots};
+\node[block, below=of e2](z4){$z^{-1}$};
+
+\node[output, right=of c2](yn){y[n]};
+
+\draw[->](xn)--(c1);
+\draw[->](c1)-- node[above]{$b_0$} (s1);
+\draw[->](c1)--(z1);
+\draw[->](z1)--(e1);
+\draw[->](e1)--(z2);
+
+\draw[->](s1)--(s3);
+
+\draw[->](s4)--(s3);
+\draw[->](s3)--(c2);
+\draw[->](c2)--(z3);
+\draw[->](z3)-- node[above]{$a_1$} (s4);
+\draw[->](z3)--(e2);
+\draw[->](e2)--(z4);
+\draw[->](z4)-| node[above]{$a_n$} (s4);
+
+\draw[->](c2)--(yn);
+
+%\draw[->](xn)--(yn);
+    \end{tikzpicture}
+	\caption{Direct-Form I and II.}
+	\label{fig:fm-operator}
+\end{figure}
+
 A system is *linear* if the superposition principle \cref{eq:superposition} holds.
 
 \begin{equation}
