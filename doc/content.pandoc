@@ -40,7 +40,7 @@ Additionally, the time bounds must be as tight as possible to reduce the latency
 Therefore, (memory-)managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce non deterministic program stops while examining the state of variable references, will not receive any further consideration.
 Interpreted languages like [Python](https://www.python.org/) or [Ruby](https://www.ruby-lang.org/en/) face the same problems as compiled managed languages by also having increased runtime costs.
 Audio application development in those languages is still possible but commonly requires to write the signal processing as C modules and interface with them through the languages foreign function interface (FFI) (e.g. pyo \cite{pyo} uses this approach). 
-Unmanaged languages like [C](https://en.wikipedia.org/wiki/C_(programming_language)) and [C++](https://en.wikipedia.org/wiki/C%2B%2B) offer the control over memory that is needed to make reliable claims about the runtime behaviour while avoiding the overhead of an additional runtime environment.
+Unmanaged languages like [C](https://en.wikipedia.org/wiki/C_(programming_language)) and [C++](https://en.wikipedia.org/wiki/C%2B%2B) offer the control over memory that is needed to make reliable claims about the runtime behavior while avoiding the overhead of an additional runtime environment.
 This comes with a downside in memory safety and introduces a whole new class of possible bugs compared to managed languages.
 Those bugs are very likely to cause *undefined behavior* or to crash the program. Unfortunately, they are also very hard to debug.
 
@@ -504,7 +504,7 @@ To prevent aliasing artifacts it is required to create band limited versions of 
 *Fourier synthesis* is used to create band limited versions of those complex waveforms.
 It uses the properties of *Fourier series* representation of arbitrary but periodic waveforms \cite[p.~103]{LoyMusimathics2}:
 
-> Any periodic vibration, \ldots, can be built up from sinusoids whose frequencies are integer multiplies of a fundamental frequency, by choosing the proper amplitudes and phases.
+> Any periodic vibration, [\ldots], can be built up from sinusoids whose frequencies are integer multiplies of a fundamental frequency, by choosing the proper amplitudes and phases.
 
 This means that any periodic waveform can be constructed by specifying the power of each its *harmonics*, where a *harmonic* is an integer multiple of the waveforms fundamental frequency.
 The Fourier series is defined as (\cref{eq:fourier-series})
@@ -544,9 +544,10 @@ a_n = c_k + c_{-k} = 2\Re(c_k)
 b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
 -->
 
-#### Band limited Waveforms
+#### Band Limited Waveforms
 
-Fourier Synthesis is used to create one band limited cycle versions for sawtooth, triangle and square waves.
+Sawtooth, triangle and square waves are created by means of Fourier synthesis.
+<!-- Implementation detail: For each waveform only a single cycle is required because the oscillator will loop the cycle in the given frequency.-->
 Sawtooth, in contrast to square and triangle waves, contains odd and even harmonics which makes them a great source signal because of their rich harmonic content.
 Square and triangle waves consist solely of odd harmonic partials.
 The complex Fourier series for sawtooth, triangle and square waves is shown in \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series} where the sum is zero for $n=0$.
@@ -587,11 +588,11 @@ Distinction should be made between the ratio of signal energy which is expressed
 \label{eq:db-energy}
 \end{equation}
 
-and the ratio of signal power \cref{eq:db}.
+and the ratio of signal power \cref{eq:db-power}.
 
 \begin{equation}
 20\log_{10}{}\left(\frac{a}{b}\right)
-\label{eq:db}
+\label{eq:db-power}
 \end{equation}
 The difference in the scaling factors is based on the definition of signal energy where the square of the signals amplitude is taken, see \cref{eq:signal-energy}.
 \begin{equation}
@@ -667,10 +668,10 @@ An advantage of additive synthesis is its great versatility, because virtually a
 This comes with two major downsides:
 
 1. this method is computationally expensive.
-2. it is hard to control because there are at least as twice as much parameters as there are oscillators.
+2. it is hard to control because there are at least as twice as many parameters as there are oscillators.
 
 Additionally, to be able to simulate real or time-varying artificial sounds there must be functions that control those parameters over time, e.g. to reduce the amplitude of higher frequency partials when the sound decays.
-The coefficients obtained by a the Fourier analysis of a real sound (e.g. a sample of played key on a piano) can be used as parameters to reconstruct this sound through additive synthesis, this process is sometimes called *Fourier recomposition* \cite[p.~88]{West1986}.
+The coefficients obtained by Fourier analysis of a real sound (e.g. a sample of played key on a piano) can be used as parameters to reconstruct this sound through additive synthesis, this process is sometimes called *Fourier recomposition* \cite[p.~88]{West1986}.
 
 \begin{figure}
 	\centering
@@ -722,7 +723,7 @@ The coefficients obtained by a the Fourier analysis of a real sound (e.g. a samp
 
 Frequency Modulation (FM) was originally used in telecommunications to encode information on a carrier wave by modulating the waves instantaneous frequency, e.g. for radio broadcast.
 In \citeyear{Chowning:FM}, \citeauthor{Chowning:FM} presented a new application of this well-known process to control spectral components of an audio signal with great simplicity \cite[p.~1]{Chowning:FM}.
-Contrary to its well-understood use for radio transmission, both, the *carrier* and the *modulating frequency* are inside the audio band.
+Contrary to its well-understood use for radio transmission, both the *carrier* and the *modulating frequency* are inside the audio band.
 The audio spectrum is formed by the carrier wave and side frequencies which are introduced through frequency modulation.
 Modulation of the carrier wave is determined by two factors:
 
@@ -745,7 +746,7 @@ A table of waveforms generated by different values of $m_f$ and $m_a$ is shown i
 \label{fig:fm-table}
 \end{figure}
 
-For $I=0$ there is no modulation but non-zero values will result in frequencies occurring below and above the carrier frequency at intervals of the modulating frequency.
+For $I=0$ there is no modulation, but non-zero values will result in frequencies occurring below and above the carrier frequency at intervals of the modulating frequency.
 \citeauthor{Chowning:FM} describes the relation of modulation index and occurrence of side frequencies like this \cite[p.~2]{Chowning:FM}:
 
 > The number of side frequencies which occur is related to the modulation index in such a way that as $I$ increases from zero, energy is \enquote{stolen} from the carrier and distributed among an increasing number of side frequencies.
@@ -753,19 +754,18 @@ For $I=0$ there is no modulation but non-zero values will result in frequencies 
 This behavior is shown in \cref{fig:fm-bandwidth} for different modulation indices by constant modulation and carrier frequency. Negative amplitudes for frequency components indicate *phase inversion*\footnote{$-\sin(\phi)=\sin(-\phi)$}.
 
 \begin{figure}
-\begin{center}
+\centering
 \includegraphics[width=\textwidth]{imgs/fm-bandwidth}
-\end{center}
 \caption{Magnitude spectra for frequency modulated carrier frequency $c_f$ at different modulation indices $I$ and constant modulation frequency $m_f$. Bandwidth increases symmetrically around $c_f$ with $I$.}
 \label{fig:fm-bandwidth}
 \end{figure}
 
 Specific carrier and modulation frequency ratios and modulation index values will produce sideband frequencies that fall into the negative spectrum.
 Those negative frequency components will be reflected (aliased) around $\SI{0}{\hertz}$.
-Reflected sideband components will either increase or---if they are phase inverted---decrease the energy the energy in the spectrum.
+Reflected sideband components will either increase or---if they are phase inverted---decrease the energy in the spectrum.
 
 Harmonic spectra\footnote{Overtones are an integer multiple of waves the fundamental frequency.} will be generated if the ratio of carrier and modulation frequency is a rational number.
-Ratios that are irrational numbers, e.g. $1/\sqrt{2}$, will result in inharmonic spectra because the reflected sideband frequencies will fall in-between the positive frequency components.
+Ratios that are irrational numbers, e.g. $1/\sqrt{2}$, will result in inharmonic spectra because the reflected sideband frequencies will fall inbetween the positive frequency components.
 
 Carrier and sideband component amplitudes can be determined analytically by evaluating n-th order Bessel functions $J_i$ of the first kind with the modulation index as argument.
 A quick estimation for the resulting bandwidth of different modulation indices is shown in \cref{fig:fm-bessel} by evaluating Bessel functions $J_0$ through $J_{15}$ for those indices.
@@ -809,7 +809,7 @@ An FM algorithm is described by how its operators are connected among each other
 	\label{fig:fm-operator}
 \end{figure}
 
-FM's advantages lie in the simplicity of control, the small computational effort that is required and the great amount of flexibility, given by arranging operators in different algorithms.
+FM's advantages lie in the simplicity of control, the small computational effort that is required and the great amount of flexibility, resulting from arranging operators in different algorithms.
 On the other hand, FM synthesis is likely to introduce undesirable aliasing of higher frequencies which should be taken into account when implementing the algorithm.
 
 ## Subtractive Synthesis
@@ -817,8 +817,7 @@ On the other hand, FM synthesis is likely to introduce undesirable aliasing of h
 
 Subtractive Synthesis is---like the name implies---the opposite of *Additive Synthesis* and creates musical tones by *removing* parts of the frequency spectrum of a source signal.
 A *filter* thereby amplifies or attenuates regions of the spectrum while the source signal passes through.
-Spectrally rich signals like noise, sawtooth or square waves are well suited for the use as sound sources.
-This section will introduce filters by means of audio signal processing, describes commonly used filter types in musical synthesizers and discusses FIR and IIR filters.
+Spectrally rich signals like noise, sawtooth or square waves are well suited for the use as sound sources. The following section introduces filters by means of audio signal processing, describes commonly used filter types in musical synthesizers and discusses FIR and IIR filters.
 
 # Digital Filters
 \label{sec:digital-filters}
@@ -833,66 +832,15 @@ In this thesis a more specific definition will be used \cite[p.~326]{Proakis:DSP
 
 > The linear time-invariant system, through its frequency response function, attenuates some frequency components of the input signal and amplifies other frequency components. Thus the system acts as a filter to the input signal.
 
-This is analog to the description given in \cref{sec:subtractive-synthesis}, despite the terms *linear time-invariant* (LTI) system and *frequency response function* haven't been explained, yet.
+This is analog to the description given in \cref{sec:subtractive-synthesis}, despite the terms *linear time-invariant* (LTI) system and *frequency response function* not having been explained.
 
 ## Linear Time-Invariant Systems
 
-### Signal Flow Graphs
+LTI systems are used as filters because \enquote{no new spectral components are introduced} \cite{Smith:Filters} by them.
+The time-invariance property is not overly restrictive because it also holds for filters that change slowly over time.
+This is a very convenient property because if musicians were not allowed to change a subtractive synthesizers filter while playing then the result would be static and uninteresting sounds.
 
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-[
-    auto,
-    >=latex,
-    node distance = 1cm
-]
-
-\node[input](xn){x[n]};
-
-\node[conn, right=of xn](c1){};
-\node[block, below=of c1](z1){$z^{-1}$};
-\node[empty, below=of z1](e1){\vdots};
-\node[block, below=of e1](z2){$z^{-1}$};
-\node[sum, right=of z1](s2){+};
-\node[sum, above=of s2](s1){+};
-
-\draw[->](s2)--(s1);
-\draw[->](z1)-- node[above]{$b_1$} (s2);
-\draw[->](z2)-| node[above]{$b_n$} (s2);
-
-\node[sum, right=of s1](s3){+};
-\node[conn, right=of s3](c2){};
-\node[sum, below=of s3](s4){+};
-\node[block, right=of s4](z3){$z^{-1}$};
-\node[empty, below=of z3](e2){\vdots};
-\node[block, below=of e2](z4){$z^{-1}$};
-
-\node[output, right=of c2](yn){y[n]};
-
-\draw[->](xn)--(c1);
-\draw[->](c1)-- node[above]{$b_0$} (s1);
-\draw[->](c1)--(z1);
-\draw[->](z1)--(e1);
-\draw[->](e1)--(z2);
-
-\draw[->](s1)--(s3);
-
-\draw[->](s4)--(s3);
-\draw[->](s3)--(c2);
-\draw[->](c2)--(z3);
-\draw[->](z3)-- node[above]{$a_1$} (s4);
-\draw[->](z3)--(e2);
-\draw[->](e2)--(z4);
-\draw[->](z4)-| node[above]{$a_n$} (s4);
-
-\draw[->](c2)--(yn);
-
-%\draw[->](xn)--(yn);
-    \end{tikzpicture}
-	\caption{Direct-Form I and II.}
-	\label{fig:fm-operator}
-\end{figure}
+### Linearity and Time-Invariance
 
 A system is *linear* if the superposition principle \cref{eq:superposition} holds.
 
@@ -911,22 +859,64 @@ F[x(n-k)]=y(n-k),
 \end{equation}
 
 for any time shift $k$.
-Thus, the response of the system applied to a stimuli delayed by $k$ units of time is equal to the systems response delayed for the same amount.
+Thus the response of the system applied to a stimuli delayed by $k$ units of time is equal to the systems response delayed for the same amount.
 Hence, if a system obeys both properties, linearity and time-invariance, then it is called an LTI system.
-Such a system is characterized completly by its *impulse-* or *frequency response*.
+Such a system is characterized completely by its *impulse* or *frequency response*.
 
-### Impulse Response
+### LTI filters
+\label{sec:LTI-filters}
 
-Any input sequence (signal) can be written as a sum of its components multiplied by a time shifted delta function.
-This equivalence is shown in \cref{eq:input-identity}, where $\delta$ is the Kronecker delta function which is $1$ at $n=k$ and $0$ otherwise.
+Linear time-invariant digital filters (systems), in the following simply called *filters*, may be written as *difference equation* 
 
 \begin{equation}
-x[n] \equiv \sum^\infty_{k=-\infty}x[k]\delta[n-k]
-\label{eq:input-identity}
+y[n] = \sum^{M}_{i=0}b_i x[n-i]-\sum^{N}_{j=1}a_j y[n-j]
+\label{eq:difference-equation}
 \end{equation}
 
-The output signal a system yields when an impulse is applied to it, like the Kronecker delta in the discrete-time case, is called the system's *impulse response*, denoted $h[n]$.
-A response of an LTI system in steady-state to an arbitrary input signal can be calculated using the *convolution sum* \cite[p.~73]{Proakis:DSP}:
+where $x$ denotes the input signal\footnote{The term sequence and signal will be used interchangeably.}, $y$ the output signal, and the filter's *coefficients* are the constants $a_j$ and $b_i$.
+A signal therefore is a *sequence* of real numbers denoted as a function of integer index $x[n]$ where $n$ denotes the *n*-th sample.
+Coefficients $a_j, b_i$ must be in $\mathbb{R}$ to obtain a *real valued filter* that has a real valued output for any given real valued input signal.
+Another requirement of the filter is to be *causal*, i.e. it does not depend on future values and only uses past input and output values to calculate its current output value, otherwise the filter can not be realized.
+A filters *order* is the maximum sample delay used ($\max(M,N)$ in \cref{eq:difference-equation}) and in general the higher a filters order the steeper its transition slope.
+
+Another way of representing a digital filter is by its rational system- or *transfer function* $H(z)$ in the *z*-domain as shown for a *causal* filter in \cref{eq:transfer-function} where $z = Ae^{i\phi}$ is some complex exponential with amplitude $A$ and phase $\phi$ that acts as time-shift of $j$ samples.
+This *z*-domain representation will be required when designing a digital IIR filters based on an analog prototype.
+
+\begin{equation}
+H(z) = \frac{Y(z)}{X(z)} = \frac{\sum^{M}_{k=0}b_k z^{-k}}{1+\sum^{N}_{k=1}a_k z^{-k}}
+\label{eq:transfer-function}
+\end{equation}
+
+The z-domain representation of a discrete-time signal $x[n]$ is defined as the bilateral transform:
+
+\begin{equation}
+X(z) = \mathcal{Z}\left\{x[n]\right\} = \sum^{\infty}_{n=-\infty}x[n]z^{-n}.
+\label{eq:bilateral-transform}
+\end{equation}
+
+LTI filters can be divided into two types, first feedforward or *finite impulse response* (FIR) filters which only use previous input values ($a_j$s are zero) and second feedback or *infinite impulse response* (IIR) filters that also use previous output values to calculate the present filter output $y[n]$.
+
+## Impulse Response
+
+Another way of representing a LTI system in the time domain is its response to a signal impulse, called the systems *impulse response*.
+
+>   [A one-sample impulse] contains energy at all frequencies that can be represented at the given sampling frequency.
+    Hence, a general way of characterizing a filter is to view its response to a one-sample pulse[\ldots] \cite[p.~400]{Roads:CMT}.
+
+The hereby used input signal is the Kronecker delta function $\delta(n)$ \cref{eq:kronecker-delta} which is one if $n = 0$ and zero otherwise.
+
+\begin{equation}
+\delta(n) = \begin{cases}
+1,\quad n=0,\\
+0,\quad otherwise
+\end{cases}
+\label{eq:kronecker-delta}
+\end{equation}
+
+Applying the LTI system on the impulse signal $\delta(n)$ yields the systems impulse response denoted as $h[n]$.
+If the impulse response does not reach zero over time the system is said to be *unstable*.
+Any LTI system is fully described by its impulse response.
+*Convolving* an input signal $x[n]$ with the impulse response $h[n]$ yields the systems time-domain output for that signal \cite[p.~73]{Proakis:DSP}:
 
 \begin{equation}
 y[n] = x\ast h = \sum^\infty_{k=-\infty}x[k]h[n-k] = \sum^\infty_{k=-\infty}x[n-k]h[n]
@@ -935,180 +925,284 @@ y[n] = x\ast h = \sum^\infty_{k=-\infty}x[k]h[n-k] = \sum^\infty_{k=-\infty}x[n-
 
 Clearly, convolution $\ast$ is a commutative operation.
 This property can be used to optimize possible implementations \cite{Karas:Convolution}.
-In summary, convolving an input signal with the LTI's impulse response yields the systems output in the *time domain*.
 
-### Frequency Response
+## Frequency Response
 
-The effect that an LTI system will have on an input signal in the frequency domain can be calculated with the systems *frequency response function*.
-By applying the discrete *Fourier transformation* \cref{eq:fourier-transform} on the impulse response the frequency response function can be obtained.
-It maps a signal from the time to the frequency domain, where $f$ denotes the components *frequency* and $N$ is the length of the input signal.
-Simply stated, a time-domain signal is decomposed into a linear combination of complex exponentials (sinusoids) with different frequencies, amplitudes and phases by the Fourier transform.
+Evaluating the systems transfer function \cref{eq:transfer-function} on the unit circle, i.e. set $z$ to $e^{i\omega T}$ where $T$ is the sampling interval, yields the LTI systems frequency response which is the frequency spectrum of the output divided by the frequency spectrum of the input.
+
+It is easy to show that evaluating the (bilateral) z-transform on the unit-circle will find the spectrum because setting $z=e^{i\omega T}$ in \cref{eq:bilateral-transform} results in the definition of the bilateral discrete-time Fourier transform:
 
 \begin{equation}
-X(f) = \mathcal{F}\{x\} = \sum_{k=0}^{N-1}x[k]e^{-i 2\pi f n}
-\label{eq:fourier-transform}
+X\left(e^{i\omega T}\right) = \sum^{\infty}_{n=-\infty} x[n]e^{i\omega T}n .
+\label{eq:DTFT}
 \end{equation}
 
-By replacing $x[n]$ in \cref{eq:fourier-transform} with the systems impulse response $h[n]$ we obtain the response function in terms of frequencies $H(f)$ \cite[p.~301]{Proakis:DSP}:
+In the following only *causal* sequences are of interest, thus the *unilateral* versions of z-transform and discrete-time Fourier transform are used in which the summation index starts at $n=0$.
+Also, the sampling index $T$ is set to $1$ for simplicity.
+Another way of obtaining an LTI systems frequency response is by applying the Fourier transform on the systems impulse response $h(z)$ \cite[p.~301]{Proakis:DSP}:
 
 \begin{equation}
-H(f) = \sum^{N-1}_{k=0}h[k]e^{-i 2\pi k}
-\label{eq:frequency-response}
+H(\omega) = \sum^\infty_{n=-\infty} h[n]e^{i\omega n}
 \end{equation}
 
-Element-wise multiplication of the Fourier transformed input signal $X(f)$ with the systems frequency response function $H(f)$ results in the systems output $H(f)$.
+It is sufficient to evaluate the frequency response function only for $\omega \in [-\pi,\pi)$ because all frequencies are mapped into a single cycle of the unit circle and the spectrum would repeat for additional cycles anyway\footnote{see aliasing \cref{sec:aliasing}}.
 
-\begin{equation}
-Y(f) = X(f)\cdot H(f)
-\label{eq:LTI-output-frequency-domain}
-\end{equation}
+### Magnitude- and Phase Response
 
-In \cref{eq:LTI-output-frequency-domain} the frequency $f$ is an indenpendent variable, hence an input signal passed into an LTI system will result in an output signal at the same frequencies but scaled scaled in amplitude and shifted in phase.
-This conforms with the filter definition given in \cref{sec:digital-filters}.
-Applying the (discrete) inverse Fourier transform $\mathcal{F^{-1}}$ (\cref{eq:inverse-fourier-transform}) on $Y(f)$ yields the time-domain representation of the output signal $y(t)$.
-Knowing about frequency response functions will become useful in the next section when elementary filter types are discussed.
+The complex valued result of the frequency response function can be decomposed into two real valued functions \cite{Smith:Filters} the systems *magnitude response*\footnote{Sometimes improperly called *amplitude* response because amplitudes can be negative.} $|H(\omega)|$, and *phase response* $\angle H(\omega)$.
 
-\begin{equation}
-x(t) = \mathcal{F^{-1}}\{X\} = \frac{1}{N}\sum_{k=0}^{N-1} X(k)e^{i 2\pi k t}
-\label{eq:inverse-fourier-transform}
-\end{equation}
+The magnitude response of a filter shows how frequencies are attenuated or amplified and the phase response specifies the phase-shift experienced by each frequency.
+In general the frequency response is of more interest because it is better suited for characterizing a filter but the phase response should not be completely ignored.
 
-## Elementary Filter Classification
+\citeauthor{Chamberlin:85} states that \enquote{Poor phase response in
+a filter also means poor transient response} and this effect will become worse with increasing filter order \cite[p.~392]{Chamberlin:85}, i.e. sharp changes in a waveform (transients) will be smoothed by a filter with poor phase response.
+However, even a poor filter phase response is quite good compared to the phase error introduced by the audio speaker while transforming the signal from an electrical to an acoustical one \cite[p.~392]{Chamberlin:85}.
 
-Filters of musical synthesizer are classified by their characteristic *frequency response* curve.
+## Filter Classification
 
-Multi-mode \cref{fig:filter-classification}
+Filters of a musical synthesizer are classified by the magnitude curve of their frequency response function $|H(\omega)|$ which is the filter's characteristic *frequency response* curve.
+Exemplary frequency response curves for lowpass, highpass, bandpass and notch (sometimes called bandreject or bandstop) filters are shown in \cref{fig:filter-classification}.
+
+Low- and highpass filters cut all frequencies below, respectively above of the *cutoff frequency* $f_c$, while bandpass and notch filters let frequencies in a certain range (*frequency band*) pass through or rejecting them.
+The width of the pass- or stopband is an additional property of those last two filter types and the difference between their high and low cutoff frequencies is called *bandwidth*.
+Correspondingly, the center of the pass- or stopband---the point of maximum or minimum amplitude in this band---is the fiter's *center frequency*.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/filter-classification}
-\caption{Log-log plots for Frequency response curves of four elementary filter types where $f_c$ denotes the cutoff frequency at the half-power point ($\SI{-3}\decibel$) shown as dotted line.}
+\caption{Log-log plots for exemplary frequency response curves of four elementary filter types with \SI{12}{\decibel\per\text{octave}} roll-off where $f_c$ denotes the cutoff frequency at the half-power point ($\SI{-3}{\decibel}$) shown as a dotted line.}
 \label{fig:filter-classification}
 \end{figure}
 
-- phase response plot
+A filters cutoff frequency is commonly specified for the half-power point \cite[p.~8]{Rabiner1972} where the filter reduces the signals energy to $1/\sqrt{2}\approx 0.707$ or in terms of signal power $(1/\sqrt{2})^2 = 1/2$ or $\SI{-3}{\decibel}$ (see \cref{eq:db-power}).
+
+An ideal filter would have a sharp cut between the pass- and stopband that looks like a rectangle in the frequency response but such a filter is not realizable because it would be of infinite order.
+Hence, there is a transition between the pass- and stopband called *transition band*.
+\Cref{fig:filter-bands} shows those bands and their bandwidths $b_{pass},b_{trans}, b_{stop}$ as well as other constraints like pass- and stopband $a_{pass}, a_{stop}$ that must be specified and taken into account when designing a filter a filter..
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/filter-bands.pdf}
 \caption{Terminology for describing the frequency response of a low-pass filter.}
-\label{fig:bands}
+\label{fig:filter-bands}
 \end{figure}
 
+The steepness of the frequency response curve in the transition band is measured in $\si{\decibel\per\text{octave}}$ where a larger value implies an increased steepness of the curve,  e.g. a *roll-off* of $\SI{12}{\decibel\per\text{octave}}$ for a lowpass filter means that the amplitude is reduced by $\SI{12}{\decibel}$ for each doubling in frequency above $f_c$.
 
+Depending on the curve of the phase reponse a filter is said to have *zero phase* if the phase-shift is constant over all frequencies, *linear phase* if there is a linear relationship between phase-shift and frequency and *non-linear phase* otherwise.
+The phase response for the lowpass filter used in \cref{fig:filter-classification} is shown in \cref{fig:filter-phase}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/filter-phase}
+\caption{Non-linear phase response ($\angle H(\omega)$) of a second-order Butterworth lowpass filter.}
+\label{fig:filter-phase}
+\end{figure}
 
 ## FIR Filters
 
-- delay and add input (feedforward)
-- least-squares (Windowing) method
-    - create ideal filter
-    - get impulse response (fourier transform)
-    - ...
-    - apply smoothing window to FIR filter
-- Frequency sampling method
-    - specfiy the filters amplitude spectrum in the interval $[0, \pi]$ at a finite number of uniformly spaced frequency locations
-    - inverse fourier transform
+A FIR filter's response to an impulse will die away after a finite period of time \cite[p.~406]{Roads:CMT}, hence the name *finite* impulse response filter.
+The filter's structure is simply the sum of delayed and weighted samples where the weights for each delay are the coefficients $a_j$.
+As described in \cref{sec:LTI-filters}, the filters order is equal to the order of its transfer function polynomial, i.e. the total number of unit-sample delays it uses.
+There are various methods for FIR filter design, e.g. window design method, frequency sampling or equiripple method \cite[p.664-690]{Proakis:DSP} and constraint-based linear programming algorithms like METEOR \cite{Steiglitz:METEOR}.
+
+The general equation for a finite impulse response filter is equal to \cref{eq:difference-equation} when all recursive coefficients $a_k$ are zero:
 
 \begin{equation}
-H(z) = \frac{Y(z)}{X(z)} = \frac{\sum^M_{k=0}b_k z^{-k}}{\sum^N_{k=0}a_k z^{-k}}
-\label{eq:iir-transfer-function}
+y[n] = \sum^M_{k=0}b_k x[n-i] .
+\label{eq:fir-general}
 \end{equation}
+
+Thus, the denominator of a FIR filter's transfer function is one, hence its polynomial
+
+\begin{equation}
+H(z) = \sum^{M}_{k=0}b_k z^{-k}
+\label{eq:fir-transfer-function}
+\end{equation}
+
+has only zeroes but no poles.
+This implies that FIR filters are *always stable*, i.e. a *bounded* (finite) input always results in a bounded output.
+The transfer function \cref{eq:fir-transfer-function} may be written in factored form where each complex zero $q$ of the polynomial can be directly seen:
+
+\begin{equation}
+H(z) = (1-q_1~z^{-1})(1-q_2~z^{-1})\cdot\ldots\cdot(1-q_M~z^{-1})
+\label{eq:fir-transfer-function-factorized}
+\end{equation}
+
+There can be less than $M$ factors if some of them cancel out.
+
+If $z$ has the value of one of these factors $q$ then the transfer function evaluates to zero.
+The positions of the zeroes in the complex $z$-plane of a 12-th order lowpass FIR filter are shown in \cref{fig:filter-zero-fir}.
+
+By the complex zero's angle from the $z$-plane's origin is determined which frequencies are effected from it and its distance to the unit circle, on which the frequency response is evaluated, determines how large the attenuation is.
+Frequencies are mapped on the unit circle counterclockwise starting from 0 at $(1, 0)$ and going to $\pi$, which translates to a frequency limit like the Nyquist frequency, at $(-1, 0)$ where positive frequencies are carried out in the upper half of the unit circle and negative frequencies in the lower half.
+It can also be seen that complex zeroes $q=a+i\,b$ come in pairs; if they are not laying on the some point; where one of them is conjugate transposed $q^*=a-i\,b$, so that the imaginary parts cancel each other out to obtain a real valued filter response.
+
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{imgs/filter-zero-fir}
+\caption{Zeroes of 12-th order lowpass FIR filter with cutoff frequency $f_c=\pi/4$}
+\label{fig:filter-zero-fir}
+\end{figure}
 
 ## IIR Filters
 
-- delay and add output (feedback)
-- transform analog prototypes to digital equivalents using *bilinear transform*
-- result is an IIR filter
+Infinite Impulse Response filters additionally use previous output values to calculate the recent result.
+Therefore, an IIR's rational transfer function contains feedback coefficients $a_k$ \cref{eq:transfer-function} and can be viewed as $H(z) = H_1(z)H_2(z)$ \cite[p.~583]{Proakis:DSP}, where $H_1(z)$ consists of the zeroes of $H(z)$ and
 
-<!-- http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt -->
-\begin{align}
-H(z) &= \frac{b_0 + b_1\,z^{-1} + b_2\,z^{-2}}{a_0 + a_1\,z^{-1} + a_2\,z^{-2}}\\
-    &= \frac{b_0}{a_0}\cdot\frac{1 + (b_1/b_0)\,z^{-1} + (b_2/b_0)\,z^{-2}}{1 + (a_1/a_0)\,z^{-1} + (a_2/a_0)\,z^{-2}}
-\label{eq:biquad}
-\end{align}
+\begin{equation}
+H_2(z) = \frac{1}{1+\sum^N_{k=0}a_k z^{-k}}
+\label{eq:iir-poles}
+\end{equation}
+
+consists of the poles of $H(z)$ \cite[p.~583]{Proakis:DSP}.
+In contrast to FIR filters an impulse fed into an IIR filter will cause an infinite response---numerical quantization error ignored---because the transfer function will never truly reach zero due to the use feedback values, therefore the name *Infinite Impulse Response* filter.
+
+IIR filters can become *unstable* because they can have poles outside of the complex plane's origin, e.g. if there is a pole on the unit circle at frequency $\omega_p$ then $H(z)$ would become $\infty$ when evaluated on the unit circle ($z=e^{i\omega}$) for $\omega_p$.
+
+An advantage of the use of feedback values is that IIR filters can achieve much steeper transition band slopes than FIR filters of the same order, thus they are more efficient in the number of arithmetic operations and memory required.
+
+The effect of transfer function poles in the $z$-plane is the opposite of zeros, i.e. the distance to the unit circle determines how much a frequency is amplified by the pole.
+Musical synthesizers often allow the user to specify a *resonance* parameter for the filter cutoff frequency, where a low resonance results in smooth transition transition from the pass- to the transition band whereas a high value creates a peak at the cutoff frequency as shown for different resonance values in the magnitude response of a IIR second-order lowpass filter in \cref{fig:filter-resonance}.
+Such a resonance parameter is easy to realize for IIR filters.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/filter-resonance}
+\caption{Magnitude response of a recursive second-order lowpass filter for different resonance values.}
 \label{fig:filter-resonance}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=\textwidth]{imgs/filter-pole-zero}
-\label{fig:filter-pole-zero}
-\end{figure}
+IIR filters are very sensitive to numerical rounding error, where the sensitivity depends on their order and implementation structure \cref{sec:iir-structure}.
+Therefore, second-order systems, so called *biquads*, are used as building blocks for higher-order filters (order $>= 4$) because the filters sensitiviy to quantization increases with its order \cite[p.~132,589]{Proakis:DSP}.
+Filters of odd-order a constructed as separate biquad and a single-order system whereas even-order filters are constructed solely from biquads.
+
+Analog IIR filter design has a long history and is therefore a well researched and understood topic.
+There are a number of commonly used analog filters with different characteristics \cite[p.~717pp]{Proakis:DSP}:
+
+- *Butterworth* all-pole filters with monotonic frequency magnitude response in both pass- and stopband.
+- *Chebyshev Type I* all-pole filters with equiripple behavior in the passband and monotonic characteristic in the stopband.
+- *Chebyshev Type II* filters are like *Type I* except that they have monotonic passband characteristic and equiripple stopband behavior.
+- *Elliptic Filters* with equiripple behavior in both pass- and stopband.
+
+The filter design technique used in this thesis is to take an analog prototype filter and transform it into a discrete-time filter by using the *Bilinear transform*.
+Other design techniques like *approximation of derivates* or *design by impulse variance* have the limitation that they are only valid for a limited set of filter classes \cite[p.~712]{Proakis:DSP}.
+
+### Bilinear Transform
+
+The Bilinear transform, defined by \cref{eq:bilinear-transform} for sampling interval $T$, is used to convert a transfer function of a continious-time LTI filter transfer function $H_a(s)$ into a transfer function of a discrete-time LTI filter $H(z)$, where $H_a(s)$ defined in the $s$-domain with $s=\sigma + i\Omega$.
+
+\begin{equation}
+s = \frac{2}{T}\left(\frac{1-z^{-1}}{1+z^{-1}}\right)
+\label{eq:bilinear-transform}
+\end{equation}
+
+A continuous time filter defined in the $s$-plane is stable if all of its poles are located in the left-semi plane which is mapped by the bilinear transform into the unit circle, hence the transformed discrete-time filter is stable if all of its poles are located inside the unit circle of the z-domain.
+
+The frequency relationship of the bilinear transform is non-linear, thus continuous time frequencies $\Omega \in [-\infty, \infty]$ are mapped from the $i\Omega$ axis of the $s$-plane into digital frequencies $\omega \in [-\pi, \pi)$ on the unit-circle by the following transformation (also called *frequency warping*)
+
+\begin{equation}
+\omega = \frac{2}{T} \arctan\left(\frac{\Omega T}{2}\right),
+\label{eq:frequency-warping}
+\end{equation}
+
+and the inverse transformation is given by
+
+\begin{equation}
+\Omega = \frac{2}{T} \tan\left(\omega\frac{T}{2}\right).
+\label{eq:frequency-warping-inverse}
+\end{equation}
+
+### Bilinear Transform example
+
+The following steps illustrate the general procedure of designing a filter using bilinear transform at the example of a second-order Butterworth lowpass filter with cutoff frequency $f_c=\SI{4000}{\hertz}$ for a sampling rate of $f_s = 48000$, hence sampling interval $T = 1/f_s$:
+ 
+- Pre-warp the critical frequencies, in this case the filter's cutoff frequency $\omega_c = 2\pi f_c \si{\radian\per\second}$:
+
+\begin{equation*}
+\Omega_c = \frac{2}{T}\tan\left(\omega_c\frac{T}{2}\right) \approx \frac{2}{T} 0.268 \si{\radian\per\second}
+\end{equation*}
+
+- Set the critical frequency $\omega_c$ and apply the bilinear transformation \cref{eq:bilinear-transform} to obtain $H(z)$ from the analog transfer function $H_a(s)$:
+
+\begin{align}
+H_a(s) &= \dfrac{\Omega_c^2}{s^2 + s\sqrt{2}\Omega_c+\Omega_c^2}\\
+H(z)  &= \dfrac{\left(\dfrac{2}{T}0.268\right)^2}{
+            \left(\dfrac{2}{T}\dfrac{1-z^{-1}}{1+z^{-1}}\right)^2
+            + \dfrac{2}{T}\dfrac{1-z^{-1}}{1+z^{-1}}\sqrt{2}\dfrac{2}{T}0.268
+            + \left(\dfrac{2}{T}0.268\right)^2}\\
+      &= \dfrac{\left(\dfrac{2}{T}\right)^2 0.268^2}{
+            \left(\dfrac{2}{T}\right)^2 \left(\dfrac{1-z^{-1}}{1+z^{-1}}\right)^2
+            + \left(\dfrac{2}{T}\right)^2 \dfrac{1-z^{-1}}{1+z^{-1}}\sqrt{2}\cdot 0.268
+            + \left(\dfrac{2}{T}\right)^2 0.268^2}\\
+      &= \dfrac{0.268^2}{
+            \left(\dfrac{1-z^{-1}}{1+z^{-1}}\right)^2 + \dfrac{1-z^{-1}}{1+z^{-1}} \cdot 0.379 + 0.268^2}\\
+      &= \dfrac{0.0495 (1 + z)^2}{0.4775 - 1.2795 z + z^2}\cdot\dfrac{z^{-2}}{z^{-2}}\\
+      &= 0.0495\cdot\dfrac{1 + 2z^{-1} + z^{-2}}{
+          1 - 1.2795z^{-1} + 0.4775 z^{-2}}
+\label{eq:iir-example-transfer-function}
+\end{align}
+
+- $H(z)$ is evaluated on the unit circle to check the magnitude frequency response \cref{fig:freq-response-iir-example} which shows the that the cutoff frequency lays exactly on the half-power point
 
 \begin{figure}
-	\centering
-    \resizebox{\textwidth}{!}{
-	\begin{tikzpicture}
-[
-    auto,
-    >=latex',
-    node distance = 1cm
-]
-\node[align=center](control){Control\\Input};
-\node[matrix, row sep=5mm, right=of control](voices){
-    \node[draw](voice1){
-        $\text{voice}_1$
-        \begin{tikzpicture}
-            \node[block](osc){$∿$};
-            \node[left=of osc, yshift=4mm](freq){freq};
-            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
-            \draw[->](freq)--([yshift=4mm]osc.west);
-            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
-        \end{tikzpicture}
-    };\\
-    \node[draw](voice2){
-        $\text{voice}_2$
-        \begin{tikzpicture}
-            \node[block](osc){$∿$};
-            \node[left=of osc, yshift=4mm](freq){freq};
-            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
-            \draw[->](freq)--([yshift=4mm]osc.west);
-            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
-        \end{tikzpicture}
-    };\\
-    \node[](voiceX){\vdots};\\
-    \node[draw](voiceN1){
-        $\text{voice}_{n-1}$
-        \begin{tikzpicture}
-            \node[block](osc){$∿$};
-            \node[left=of osc, yshift=4mm](freq){freq};
-            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
-            \draw[->](freq)--([yshift=4mm]osc.west);
-            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
-        \end{tikzpicture}
-    };\\
-    \node[draw](voiceN){
-        $\text{voice}_n$
-        \begin{tikzpicture}
-            \node[block](osc){$∿$};
-            \node[left=of osc, yshift=4mm](freq){freq};
-            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
-            \draw[->](freq)--([yshift=4mm]osc.west);
-            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
-        \end{tikzpicture}
-    };\\
-};
-\draw[->](control.north)|-(voice1.west);
-\draw[->](control.north)|-(voice2.west);
-\draw[->](control.south)|-(voiceN1.west);
-\draw[->](control.south)|-(voiceN.west);
-\node[sum, right=of voices](sum){$+$};
-\draw[->](voice1.east)-|(sum.north);
-\draw[->](voice2.east)-|(sum.north);
-\draw[->](voiceN1.east)-|(sum.south);
-\draw[->](voiceN.east)-|(sum.south);
-\node[block, right=of sum, align=center](filter){Multi mode\\Filter};
-\draw[->](sum)--(filter);
-\node[right=of filter,align=center](out){Output\\Device};
-\draw[->](filter)--(out);
-	\end{tikzpicture}}
-	\caption{Building blocks/structure of a basic polyphonic subtractive synthesizer.}
-	\label{fig:basic-synth-structure}
+\includegraphics[width=\textwidth]{imgs/filter-freq-resp-iir-example}
+\caption{Magnitude frequency response of $H(z)$ \cref{eq:iir-example-transfer-function} showing cutoff frequency $f_c$ at half-power point (dotted line).}
+\label{fig:freq-response-iir-example}
 \end{figure}
 
-- pitch (see MIDI pitch, log. scale)
-- periodic signals $x[n+\tau] = x[n]$
-- angular frequency $\omega = 2\pi f = 2\pi \frac{1}{N}$
+- The pole-zero diagram \cref{fig:pole-zero-iir-example} of $H(z)$ shows that the pair of poles is located inside the unit circle, hence the filter is real-valued and stable. Also, a pair of zeros is located at the maximum frequency point which gives the lowpass characteristic.
+
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{imgs/filter-pole-zero-iir-example}
+\caption{Pole-zero diagram of $H(z)$ \cref{eq:iir-example-transfer-function} with pole and zero positions marked as $\times$, respectively \bullet.}
+\label{fig:pole-zero-iir-example}
+\end{figure}
+
+- Lastly, the filters difference equation \cref{eq:difference-equation} can be derived directly from $H(z)$: $y[n] = 0.0495 x[n] + 0.099 x[n-1] + 0.0495 x[n-2] + 1.2795 y[n-1] - 0.4775 y[n-2]$.
+
+## Implementation Structures for IIR Filters
+\label{sec:iir-structure}
+
+An recursive LTI filter given as difference equation may be implemented as one of four *direct-form* (DF) filter implementations.
+The direct-form is another way of representing a filter, besides impulse response and difference equation, with the benefit of directly representing its implementation structure.
+
+The four direct-form structures are DF-I and DF-II, shown in \cref{fig:direct-form} where ${z^{-1}}$ denotes a unit-sample delay, and their *transposed* counterparts.
+Transposed forms can be obtained from their DF-I or DF-II forms by reversing the signal path directions, replacing sums with branch-points and vice versa.
+This operations does not effect the filters transfer function.
+
+The technical properties of all four forms are different, despite that they represent the same transfer function.
+A DF-I implementation saves addition operations at the cost of requiring twice as many delays (memory) as necessary while a DF-II implementation saves memory by sharing delays at the cost of possible fixed-point arithmetic overflow \cite{Smith:Filters}.
+Transposed forms, TDF-I and TDF-II, have enhanced numerical robustness while obeying the same advantages and disadvantages of their fundamental structure.
+An additional advantage of TDF-II structures is that they perform well in applications where the filter parameters change in audio rate, in other words as implementation for time-varying filters \cite{Wishnick:TVF}.
+
+\begin{figure}
+\includegraphics[width=.48\textwidth]{imgs/Biquad_filter_DF-I}
+\hfill
+\includegraphics[width=.48\textwidth]{imgs/Biquad_filter_DF-II}
+\caption{Direct-Form I and II implementation of a second-order filter with the normalized (divided by $a_0$) difference equation $y[n]=b_{0}x[n]+b_{1}x[n-1]+b_{2}x[n-2]-a_{1}y[n-1]-a_{2}y[n-2]$ \cite{Wiki:digital-filter}}
+\label{fig:direct-form}
+\end{figure}
+
+### Comparison FIR against IIR
+
+\begin{table}[]
+    \centering
+    \caption{Comparison of FIR against IIR filters.}
+    \label{tab:fir-iir-comparison}
+    \begin{tabular}{@{}rp{5cm}p{5cm}@{}}
+    \toprule
+\toprule
+                 & FIR                        & IIR                                         \\ \midrule
+Impulse Response & finite                     & infinite                                    \\
+Magnitude response & arbitrary responses are easy to design, e.g. \emph{frequency sampling technique} \cite[p.~671]{Proakis:DSP} & often based on analog prototypes, arbitrary responses are hard to achieve   \\
+Stability        & always stable              & feedback coeffecients can cause instability \\
+Efficiency       & more memory and operations & less memory and operations                  \\
+Linear phase     & always possible            & no technique available                      \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+A comparison between FIR and IIR filter design techniques is given by \cref{tab:fir-iir-comparison}.
+For the synthesizer's filter an IIR design was chosen because of two requirements, first high computational efficiency to achieve short latencies, and an easy to implement parameter for controlling filter resonance.
+Additionally, a Butterworth characteristic was picked because the phase response of Elliptic filters is more nonlinear and the equiripple behavior in pass- and/or stopband of Elliptic and Chebyshev characteristics is unfavorable.
+It is not of great disadvantage for a musical synthesizers filter that a Butterworth filter rolls of more slowly at the cutoff frequency, because very sharp transition band steepness is not required.
 
 # Oscillators Methods
 
@@ -1205,14 +1299,12 @@ The propagation delay, i.e. time $t$ it takes for a wave of sound to travel from
 
 [^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
 
-$$
-\begin{aligned}
+\begin{align}
 t &= \frac{d}{v}\cdot 1\,s\\
   &= \frac{1.5\,m}{343.2\,m}\cdot 1\,s\\
   &= 0.00437\,s\\
   &= 4.37\,ms
-\end{aligned}
-$$
+\end{align}
 
 The overall latency of the synthesizer is the sum of different latency portions, introduced through a variety of components in the audio output chain.
 At first there is the input latency, that is either $l_{midi}$ or $l_{osc}$ depending on the used input protocol, where the amount of $l_{osc}$ depends highly on the network connection.
@@ -1244,15 +1336,81 @@ At last there is the propagation delay which can be neglected for usual listenin
 	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
 \end{tikzpicture}}
 
-## Waveshaper
-
-# Effects
-
-## Delay
-
-## Reverb
-
 # Implementation Details
+
+\begin{figure}
+	\centering
+    \resizebox{\textwidth}{!}{
+	\begin{tikzpicture}
+[
+    auto,
+    >=latex,
+    node distance = 1cm
+]
+\node[align=center](control){Control\\Input};
+\node[matrix, row sep=5mm, right=of control](voices){
+    \node[draw](voice1){
+        $\text{voice}_1$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+    \node[draw](voice2){
+        $\text{voice}_2$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+    \node[](voiceX){\vdots};\\
+    \node[draw](voiceN1){
+        $\text{voice}_{n-1}$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+    \node[draw](voiceN){
+        $\text{voice}_n$
+        \begin{tikzpicture}
+            \node[block](osc){$∿$};
+            \node[left=of osc, yshift=4mm](freq){freq};
+            \node[draw, left=of osc, yshift=-4mm](adsr){envelope};
+            \draw[->](freq)--([yshift=4mm]osc.west);
+            \draw[->](adsr)--node[above, midway]{A}([yshift=-4mm]osc.west);
+        \end{tikzpicture}
+    };\\
+};
+\draw[->](control.north)|-(voice1.west);
+\draw[->](control.north)|-(voice2.west);
+\draw[->](control.south)|-(voiceN1.west);
+\draw[->](control.south)|-(voiceN.west);
+\node[sum, right=of voices](sum){$+$};
+\draw[->](voice1.east)-|(sum.north);
+\draw[->](voice2.east)-|(sum.north);
+\draw[->](voiceN1.east)-|(sum.south);
+\draw[->](voiceN.east)-|(sum.south);
+\node[block, right=of sum, align=center](filter){Multi mode\\Filter};
+\draw[->](sum)--(filter);
+\node[right=of filter,align=center](out){Output\\Device};
+\draw[->](filter)--(out);
+	\end{tikzpicture}}
+	\caption{Building blocks/structure of a basic polyphonic subtractive synthesizer.}
+	\label{fig:basic-synth-structure}
+\end{figure}
+
+
+- real-time process one for which the computing time associated with each sampling interval can be completed in a time less than or equal to the sampling interval \cite{Rabiner1972}
 
 \begin{figure}
 \includegraphics[width=.8\textwidth,angle=180]{imgs/ytterbium-spectrum-legend.png}
@@ -1265,6 +1423,8 @@ At last there is the propagation delay which can be neglected for usual listenin
 ![Sweep using sine modulator and carrier with increasing modulation amount](imgs/ytterbium-0.1.0-fm.png){ width=100% }
 
 ## Ring Buffer
+
+- throughput-rate the total rate at which digital information is processed by a discrete-time system, measured in samples per second \cite{Rabiner1972}
 
 ## Control Input
 
@@ -1280,6 +1440,8 @@ At last there is the propagation delay which can be neglected for usual listenin
 
 ![View of the mixer section](imgs/lemur-filter.png){ width=100% }
 
+\cite{Bristow:Cookbook}
+
 ## Audio Output
 
 # Outlook
@@ -1292,3 +1454,4 @@ At last there is the propagation delay which can be neglected for usual listenin
 - general amount of modulation sources
 
 # Conclusion
+
