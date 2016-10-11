@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="370px" width="710px">
+<title>Digital biquadratic filter, Direct Form Ⅱ</title>
+<defs>
+
+	<symbol id="delay" viewBox="-2 -2 64 64">
+		<rect x="0px" y="0px" width="60px" height="60px" fill="white" stroke="black" stroke-width="3px"/>
+		<text x="10px" y="40px" font-family="serif" font-style="italic" font-size="24pt">z<tspan font-style="normal" font-size="14pt" dy="-8pt">−1</tspan></text>
+	</symbol>
+	<path id="gain-r" d="m30,0 l-30,15 v-30 z" fill="white" stroke="black" stroke-width="3px"/>
+	<path id="gain-l" d="m0,0 l30,-15 v30 z" fill="white" stroke="black" stroke-width="3px"/>
+	<path id="sum" d="m-20,0 h40 m-20,-20 v40 m0,10 a30,30 0 0,1 0,-60 30,30 0 0,1 0,60" fill="white" stroke="black" stroke-width="3px"/>
+
+	<marker id="triangle" markerWidth="40" markerHeight="30" refX="5" refY="15" markerUnits="userSpaceOnUse" orient="auto">
+		<path d="m25,15 l-30,10 v-20 z"/>
+	</marker>
+</defs>
+
+<use xlink:href="#sum" x="170px" y="50px"/>
+<use xlink:href="#sum" x="170px" y="190px"/>
+<use xlink:href="#sum" x="530px" y="50px"/>
+<use xlink:href="#sum" x="530px" y="190px"/>
+<use xlink:href="#delay" x="318px" y="98px" width="64px" height="64px"/>
+<use xlink:href="#delay" x="318px" y="238px" width="64px" height="64px"/>
+
+<circle cx="350px" cy="50px" r="7px" fill="black" stroke="none"/>
+<circle cx="350px" cy="190px" r="7px" fill="black" stroke="none"/>
+<circle cx="350px" cy="330px" r="7px" fill="black" stroke="none"/>
+
+<g fill="none" stroke="black" stroke-width="3px" marker-end="url(#triangle)">
+<line x1="60px" y1="50px" x2="120px" y2="50px"/>
+<polyline points="200,50 350,50 350,80"/>
+<line x1="350px" y1="160px" x2="350px" y2="220px"/>
+<line x1="350px" y1="190px" x2="220px" y2="190px"/>
+<line x1="170px" y1="160px" x2="170px" y2="100px"/>
+<polyline points="350,300 350,330 170,330 170,240"/>
+<line x1="350px" y1="50px" x2="480px" y2="50px"/>
+<line x1="530px" y1="160px" x2="530px" y2="100px"/>
+<line x1="350px" y1="190px" x2="480px" y2="190px"/>
+<polyline points="350,330 530,330 530,240"/>
+<line x1="560px" y1="50px" x2="620px" y2="50px"/>
+</g>
+
+<use xlink:href="#gain-l" x="260px" y="190px"/>
+<use xlink:href="#gain-l" x="260px" y="330px"/>
+
+<use xlink:href="#gain-r" x="410px" y="50px"/>
+<use xlink:href="#gain-r" x="410px" y="190px"/>
+<use xlink:href="#gain-r" x="410px" y="330px"/>
+
+<g font-size="18pt" font-family="serif">
+<text x="10px" y="60px"><tspan font-style="italic">x[n]</tspan></text>
+<text x="650px" y="60px"><tspan font-style="italic">y[n]</tspan></text>
+<text x="240px" y="220px">−<tspan font-style="italic">a</tspan><tspan font-size="10.5pt" dy="2.538pt">1</tspan></text>
+<text x="240px" y="360px">−<tspan font-style="italic">a</tspan><tspan font-size="10.5pt" dy="2.538pt">2</tspan></text>
+<text x="430px" y="30px"><tspan font-style="italic">b</tspan><tspan font-size="10.5pt" dy="2.538pt">0</tspan></text>
+<text x="430px" y="170px"><tspan font-style="italic">b</tspan><tspan font-size="10.5pt" dy="2.538pt">1</tspan></text>
+<text x="430px" y="310px"><tspan font-style="italic">b</tspan><tspan font-size="10.5pt" dy="2.538pt">2</tspan></text>
+</g>
+
+</svg>
