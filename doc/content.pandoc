@@ -487,8 +487,8 @@ f_a =
 ### Waveforms
 \label{sec:waveforms}
 
-Synthesis techniques like subtractive or FM synthesis (see \cref{sec:synthesis-techniques}) require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
-Oscillator waveforms that are commonly available in most synthesizers are *triangle*, *sawtooth* and *square wave*.
+Synthesis techniques like subtractive synthesis require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
+Oscillator waveforms typically used in subtractive synthesis are *triangle*, *sawtooth* and *square wave* the so called *trivial* or *geometric waveforms* \cite[p.~5]{Pekonen2013} because of their well-defined shape consisting of piece-wise linear or constant segments.
 Non band limited versions of those waveforms are shown in \cref{fig:waveforms}.
 To prevent aliasing artifacts it is required to create band limited versions of those waveforms.
 
@@ -1204,18 +1204,129 @@ For the synthesizer's filter an IIR design was chosen because of two requirement
 Additionally, a Butterworth characteristic was picked because the phase response of Elliptic filters is more nonlinear and the equiripple behavior in pass- and/or stopband of Elliptic and Chebyshev characteristics is unfavorable.
 It is not of great disadvantage for a musical synthesizers filter that a Butterworth filter rolls of more slowly at the cutoff frequency, because very sharp transition band steepness is not required.
 
-# Oscillators Methods
+# Oscillators and Waveform Synthesis
 
-- primitive waveforms not suitable because they are not band limited
-- example: ramp for sawtooth and -1,1 for perfect square, unlimited harmonics to generate hard step (discontinuity) in waveform
-- aliasing problems
-- anti-aliasing not possible after sampling
-- simple: oversample -> antialias (low-pass, brickwall) -> resample
-- fold back: sr = 48kHz, harmonic 30kHz -> 24kHz - (30kHz - 24khz) = 18kHz ...
+An oscillator is one of a synthesizer's fundamental building blocks because it is the source signal from which the desired sound is modeled from.
+Typically, one or more oscillators are used as a signal source.
+Subtractive synthesizers require spectrally rich source signals.
+Therefore, oscillators must be able to generate a variety of waveforms other than pure sine, but at least the basic ones listed in \cref{sec:waveforms}.
+Requirements for an oscillator's waveform synthesis algorithm are to generate periodic band-limited signals, to avoid aliasing and to be computationally efficient.
+The latter requirement originates from the number of times the oscillator is called, this is at least once for each sample instant.
+Depending on the amount of polyphony, i.e. the maximum number of parallel voices playable, they can even be called multiple times for each sample.
 
-## BLITs
+\citeauthor{Valimaki2006} (and others \cite[p.~28]{Pekonen2007}, \cite{Otalvar2015}) divide digital oscillator algorithms into three classes in regard to the amount aliasing left\cite{Valimaki2006}:
 
-## Wavetables
+1. Bandlimited methods without harmonics above the Nyquist frequency, e.g. additive or wavetable synthesis
+1. Quasi-bandlimited methods with low aliasing, e.g. *BLIT* and *BLEP* methods \cite{Brandt2001}
+1. Alias-supressing methods, e.g. oversampling and filtering trivial waveforms
+
+A fourth class, so called ad-hoc methods, that uses non-linear processing techniques is mentioned in more recent publications (\cite{Otalvar2015}, \cite{Pekonen2007}).
+They are not of interest for this research because this class of methods is developed for very specific applications \cite[p.~26]{Otalvar2015}.
+
+The aim of this chapter is to introduce the generic structure of a digital oscillator and to evaluate quasi-bandlimited methods against (fully) bandlimited wavetable synthesis.
+
+## Generic Oscillator Structure
+
+A common structure that is used for a wide variety of oscillators is shown in \cref{fig:oscillator-structure}.
+It consists of a *phase accumulator* which adds a *phase increment* $\varphi$ to itself each time a clock signal $t$ arrives.
+The phase increment is given by the *fundamental frequency* $f_0$ as $\phi = 2\pi f_0/f_s$.
+Subsequently, an initial *phase offset* $\phi_0 \in [0, 2\pi]$ is added to the accumulators output.
+The *phasor signal*
+
+\begin{equation}
+\phi[t] = \phi t \mod 2\pi
+\end{equation}
+
+for a discrete time variable $t$ wraps around on a full cycle.
+It is convenient to normalize $\phi[t]$ to a fraction of the waveform's period
+
+\begin{equation}
+\varphi[t] = \frac{\phi}{2\pi} t
+\end{equation}
+
+with $\varphi \in [0,1]$, e.g. to map the phasor to a wavetable lookup index.
+The *wave* function maps the *phasor signal* to the desired wave shape and multiplies the output signal with a given amplitude *A*.
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+[
+    auto,
+    >=latex,
+    node distance = 10mm
+]
+\node[input](clock){t};
+\node[block, right=of clock](phasor){phase accu.};
+\node[input, below=of phasor](freq){$f_0$};
+\node[sum, right=of phasor](sum1){$+$};
+\node[input, below=of sum1](phase){$\phi_0$};
+\node[block, right=of sum1](wrap){wrap};
+\node[block, right=of wrap](f){wave};
+\node[input, below=of f](A){$A$};
+\node[output, right=of f](y){y};
+\draw[->](clock) -- (phasor);
+\draw[->](freq) -- (phasor);
+\draw[->](phasor) -- (sum1);
+\draw[->](phase) -- (sum1);
+\draw[->](sum1) -- (wrap);
+\draw[->](wrap) -- node{$\phi[t]$}(f);
+\draw[->](A) -- (f);
+\draw[->](f) -- (y);
+    \end{tikzpicture}
+\caption{Block diagram of a generic oscillator.}
+\label{fig:oscillator-structure}
+\end{figure}
+
+## Trivial Waveform Generation
+
+The trivial way for generating geometric waveforms is to sample them without bandlimiting.
+A sawtooth wave is expressed by *bipolar modular counter*
+
+\begin{equation}
+saw(t) = 2\varphi(t) - 1
+\end{equation}
+
+where $\varphi(t) = f_0 t \mod 1$ is a phasor signal (modular counter) for a continuous time variable $t$ in seconds \cite[p.~5]{Pekonen2013}.
+An inverted sawtooth wave --- where the ramp decreases from 1 to -1 ---can be obtained 
+by
+
+\begin{equation}
+invsaw(t) = 1 - saw(t).
+\end{equation}
+
+Both remaining waveforms, square and triangle, can be derived from sawtooth waves.
+Rectangular waveforms can be produced by subtracting two sawtooth waveforms with a proper phase shift \cite[p.~22]{Valimaki2006}
+
+\begin{equation}
+rect(t)=saw(t)-saw(t - p/f_0)
+\end{equation}
+
+where $p \in (0, 1)$ is the duty cycle.
+Square waves are simply the symmetric case of rectangular pulses with 50% duty cycle, i.e. equal pulse lengths.
+Another trivial way of generating a rectangular pulse is by comparing the output $x$ of bipolar modular counter with the pulse width $p$ as in the following closed form expression:
+
+\begin{equation}
+rect(x)=\begin{cases}
+	1	& x < p\\
+	0	& x = p\\
+	1	& x > p
+\end{cases}
+\end{equation}.
+
+- triangular: $tri(t) = 1-2|saw(t)| = 4 f_0 \int^t_{-\infty}sqr(\tau)d\tau$
+
+TODO reword: Trivial digital oscillator algorithms can be constructed by replacing the
+continuous-time phasor signal with the discrete-time phasor signal \cite[p.~8]{Pekonen2013}.
+
+## Quasi-Bandlimited Waveform Synthesis
+
+### BLITs
+
+### BLEPs
+
+## Bandlimited Waveform Synthesis
+
+### Wavetables
 
 - one cycle of a periodic waveform
 - pitch: read wavetable at different speeds (index increments)
