@@ -544,9 +544,9 @@ a_n = c_k + c_{-k} = 2\Re(c_k)
 b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
 -->
 
-#### Band Limited Waveforms
+#### Bandlimited Waveforms
 
-Sawtooth, triangle and square waves are created by means of Fourier synthesis.
+Bandlimited sawtooth, triangle and square waveforms can be created by means of Fourier synthesis.
 <!-- Implementation detail: For each waveform only a single cycle is required because the oscillator will loop the cycle in the given frequency.-->
 Sawtooth, in contrast to square and triangle waves, contains odd and even harmonics which makes them a great source signal because of their rich harmonic content.
 Square and triangle waves consist solely of odd harmonic partials.
@@ -1229,15 +1229,19 @@ The aim of this chapter is to introduce the generic structure of a digital oscil
 
 A common structure that is used for a wide variety of oscillators is shown in \cref{fig:oscillator-structure}.
 It consists of a *phase accumulator* which adds a *phase increment* $\varphi$ to itself each time a clock signal $t$ arrives.
-The phase increment is given by the *fundamental frequency* $f_0$ as $\phi = 2\pi f_0/f_s$.
+The phase increment is given by the *fundamental frequency* $f_0$ as $\phi = 2\pi f_0/f_s$. <!-- TODO RENAME phase increment variable to something like phi_i
+-->
 Subsequently, an initial *phase offset* $\phi_0 \in [0, 2\pi]$ is added to the accumulators output.
 The *phasor signal*
 
-\begin{equation}
-\phi[t] = \phi t \mod 2\pi
-\end{equation}
+\begin{align}
+\begin{split}
+\phi[t]	&= \phi t \mod 2\pi\\
+		&= \left(\phi[t - 1] + \phi\right) \mod 2\pi
+\end{split}
+\end{align}
 
-for a discrete time variable $t$ wraps around on a full cycle.
+for a discrete time variable $t$ wraps around on a full cycle. The second form shows the recurrence relation for the phasor signal where $\phi[t] = 0, \forall t \le 0$.
 It is convenient to normalize $\phi[t]$ to a fraction of the waveform's period
 
 \begin{equation}
@@ -1280,29 +1284,35 @@ The *wave* function maps the *phasor signal* to the desired wave shape and multi
 ## Trivial Waveform Generation
 
 The trivial way for generating geometric waveforms is to sample them without bandlimiting.
-A sawtooth wave is expressed by *bipolar modular counter*
+A sawtooth wave can be expressed by a *bipolar modular counter*
 
 \begin{equation}
 saw(t) = 2\varphi(t) - 1
 \end{equation}
 
-where $\varphi(t) = f_0 t \mod 1$ is a phasor signal (modular counter) for a continuous time variable $t$ in seconds \cite[p.~5]{Pekonen2013}.
-An inverted sawtooth wave --- where the ramp decreases from 1 to -1 ---can be obtained 
+where
+
+\begin{equation}
+\varphi(t) = f_0 t \mod 1
+\end{equation}
+
+is a phasor signal (modular counter) for a continuous time variable $t$ in seconds \cite[p.~5]{Pekonen2013}.
+An inverted sawtooth wave with a ramp that decreases from 1 to -1 can be obtained 
 by
 
 \begin{equation}
-invsaw(t) = 1 - saw(t).
+saw_{\text{invert}}(t) = 1 - saw(t).
 \end{equation}
 
 Both remaining waveforms, square and triangle, can be derived from sawtooth waves.
 Rectangular waveforms can be produced by subtracting two sawtooth waveforms with a proper phase shift \cite[p.~22]{Valimaki2006}
 
 \begin{equation}
-rect(t)=saw(t)-saw(t - p/f_0)
+rect(t)=saw(t) - saw(t - \frac{p}{f_0})
 \end{equation}
 
 where $p \in (0, 1)$ is the duty cycle.
-Square waves are simply the symmetric case of rectangular pulses with 50% duty cycle, i.e. equal pulse lengths.
+Square waves are simply the symmetric case of rectangular pulses with 50% pulse width.
 Another trivial way of generating a rectangular pulse is by comparing the output $x$ of bipolar modular counter with the pulse width $p$ as in the following closed form expression:
 
 \begin{equation}
@@ -1311,12 +1321,23 @@ rect(x)=\begin{cases}
 	0	& x = p\\
 	1	& x > p
 \end{cases}
-\end{equation}.
+\end{equation}
 
-- triangular: $tri(t) = 1-2|saw(t)| = 4 f_0 \int^t_{-\infty}sqr(\tau)d\tau$
+By taking the absolute value of a sawtooth wave one gets a inverted triangle in the range of zero to one, doubling and subtracting from one results in bipolar triangle wave as shown in the first form of \cref{eq:triangle-wave}.
+The second form shows that integrating a square wave over time $t$ also results in a triangle wave which then needs to be scaled to a normalized range from -1 to 1 \cite[p.~7]{Pekonen2013}, hence a (scaled) square wave is the time derivate of a triangle waveform.
 
-TODO reword: Trivial digital oscillator algorithms can be constructed by replacing the
-continuous-time phasor signal with the discrete-time phasor signal \cite[p.~8]{Pekonen2013}.
+\begin{align}
+\begin{split}
+tri(t) 	&= 1 - 2|saw(t)|\\
+		&= 4 f_0 \int^t_{-\infty}sqr(\tau)d\tau
+		\label{eq:triangle-wave}
+\end{split}
+\end{align}
+
+A straightforward digital implementation of those trivial waveforms is constructed by replacing the continuous-time phasor time signal with its discrete-time counterpart \cite[p.~8]{Pekonen2013}.
+Unfortunately, those naive digital implementations suffer from severe aliasing distortion because the continous-time source signal of those geometric waveforms is not bandlimited, hence it contains an infinte number of harmonics as can be seen in their fourier-series representation (see \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series}).
+The spectral tilt, i.e. the attenuation of harmonic partials with increasing frequency, is about $\SI{6}{\decibel}$ per octave for pulse and sawtooth waveforms and $\SI{12}{\decibel}$ per octave for triangle waveforms \cite[p.~11]{Pekonen2013}.
+Thus, a trivial triangle oscillator implementation can be sufficient if implemented with oversampling depending on the amount of tolerable aliasing, especially for devices with very limited processing resources.
 
 ## Quasi-Bandlimited Waveform Synthesis
 
