@@ -575,7 +575,7 @@ x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,
 \label{fig:waveforms}
 \end{figure}
 
-## Non linearity of hearing
+## Non-linearity of hearing
 \label{sec:hearing}
 
 The intensity of a sound is perceived logarithmically by human hearing \cite[p.~27]{West1986}.
@@ -1209,7 +1209,7 @@ It is not of great disadvantage for a musical synthesizers filter that a Butterw
 An oscillator is one of a synthesizer's fundamental building blocks because it is the source signal from which the desired sound is modeled from.
 Typically, one or more oscillators are used as a signal source.
 Subtractive synthesizers require spectrally rich source signals.
-Therefore, oscillators must be able to generate a variety of waveforms other than pure sine, but at least the basic ones listed in \cref{sec:waveforms}.
+Therefore, oscillators must be able to generate a variety of waveforms other than pure sine, but at least the trivial ones listed in \cref{sec:waveforms}.
 Requirements for an oscillator's waveform synthesis algorithm are to generate periodic band-limited signals, to avoid aliasing and to be computationally efficient.
 The latter requirement originates from the number of times the oscillator is called, this is at least once for each sample instant.
 Depending on the amount of polyphony, i.e. the maximum number of parallel voices playable, they can even be called multiple times for each sample.
@@ -1337,9 +1337,14 @@ tri(t) 	&= 1 - 2|saw(t)|\\
 A straightforward digital implementation of those trivial waveforms is constructed by replacing the continuous-time phasor time signal with its discrete-time counterpart \cite[p.~8]{Pekonen2013}.
 Unfortunately, those naive digital implementations suffer from severe aliasing distortion because the continous-time source signal of those geometric waveforms is not bandlimited, hence it contains an infinte number of harmonics as can be seen in their fourier-series representation (see \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series}).
 The spectral tilt, i.e. the attenuation of harmonic partials with increasing frequency, is about $\SI{6}{\decibel}$ per octave for pulse and sawtooth waveforms and $\SI{12}{\decibel}$ per octave for triangle waveforms \cite[p.~11]{Pekonen2013}.
-Thus, a trivial triangle oscillator implementation can be sufficient if implemented with oversampling depending on the amount of tolerable aliasing, especially for devices with very limited processing resources.
+Thus, a trivial triangle oscillator implementation can be sufficient if implemented with two or more times oversampling depending on the amount of tolerable aliasing, especially for devices with very limited processing resources.
 
 ## Quasi-Bandlimited Waveform Synthesis
+
+Quasi-bandlimited oscillator algorithms allow a certain degree of aliasing to be produced while making use of *psychoacoustic* effects like *masking*.
+Auditory masking is how sensitivity for one sound is affected by the presence of another sound which is largely dependend on the intensity and spectrum of the sound that causes the masking \cite[p.~187]{Gelfand2010}, i.e. the human ear cannot differentiate between two sounds with roughly the same frequency spectrum if the intensity difference is large enough.
+Accordingly, the harmonics of a waveform can mask the aliasing components in their spectral vicinity. 
+The intensity of aliasing must be particularly reduced in the range of$\SI{1}{\kilo\hertz}$ to $\SI{5}{\kilo\hertz}$, because this is where human ears are most sensitive \cite[fig.~11.1]{Gelfand2010}.
 
 ### BLITs
 
