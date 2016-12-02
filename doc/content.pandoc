@@ -490,7 +490,7 @@ f_a =
 Synthesis techniques like subtractive synthesis require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
 Oscillator waveforms typically used in subtractive synthesis are *triangle*, *sawtooth* and *square wave* the so called *trivial* or *geometric waveforms* \cite[p.~5]{Pekonen2013} because of their well-defined shape consisting of piece-wise linear or constant segments.
 Non band limited versions of those waveforms are shown in \cref{fig:waveforms}.
-To prevent aliasing artifacts it is required to create band limited versions of those waveforms.
+To prevent aliasing artifacts caused by discontinuities in the waveform (square and sawtooth) or its slope (triangle) it is required to create band limited versions of those waveforms.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/basic-waveforms}
