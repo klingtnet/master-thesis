@@ -489,19 +489,19 @@ f_a =
 
 Synthesis techniques like subtractive synthesis require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
 Oscillator waveforms typically used in subtractive synthesis are *triangle*, *sawtooth* and *square wave* the so called *trivial* or *geometric waveforms* \cite[p.~5]{Pekonen2013} because of their well-defined shape consisting of piece-wise linear or constant segments.
-Non band limited versions of those waveforms are shown in \cref{fig:waveforms}.
-To prevent aliasing artifacts caused by discontinuities in the waveform (square and sawtooth) or its slope (triangle) it is required to create band limited versions of those waveforms.
+Non bandlimited versions of those waveforms are shown in \cref{fig:waveforms}.
+To prevent aliasing artifacts caused by discontinuities in the waveform (square and sawtooth) or its slope (triangle) it is required to create bandlimited versions of those waveforms.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/basic-waveforms}
-\caption{Common (non band-limited) waveforms supported by most synthesizers: a) sine wave, b) triangle wave, c) ramp/sawtooth, d) square wave}
+\caption{Common (non bandlimited) waveforms supported by most synthesizers: a) sine wave, b) triangle wave, c) ramp/sawtooth, d) square wave}
 \label{fig:waveforms}
 \end{figure}
 
 #### Fourier Synthesis
 \label{sec:fourier-synthesis}
 
-*Fourier synthesis* is used to create band limited versions of those complex waveforms.
+*Fourier synthesis* is used to create bandlimited versions of those complex waveforms.
 It uses the properties of *Fourier series* representation of arbitrary but periodic waveforms \cite[p.~103]{LoyMusimathics2}:
 
 > Any periodic vibration, [\ldots], can be built up from sinusoids whose frequencies are integer multiplies of a fundamental frequency, by choosing the proper amplitudes and phases.
@@ -571,7 +571,7 @@ x_\text{triangle}(t) = 4\sum^{\infty}_{n=-\infty,\;n\neq{}0} \frac{e^{-i\,2\pi\,
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/fourier-series-saw.pdf}
 \includegraphics[width=\textwidth]{imgs/fourier-series-sqr.pdf}
-\caption{One cycle of band limited a) sawtooth and b) square waveforms with increasing number of harmonics.}
+\caption{One cycle of bandlimited a) sawtooth and b) square waveforms with increasing number of harmonics.}
 \label{fig:waveforms}
 \end{figure}
 
@@ -1210,7 +1210,7 @@ An oscillator is one of a synthesizer's fundamental building blocks because it i
 Typically, one or more oscillators are used as a signal source.
 Subtractive synthesizers require spectrally rich source signals.
 Therefore, oscillators must be able to generate a variety of waveforms other than pure sine, but at least the trivial ones listed in \cref{sec:waveforms}.
-Requirements for an oscillator's waveform synthesis algorithm are to generate periodic band-limited signals, to avoid aliasing and to be computationally efficient.
+Requirements for an oscillator's waveform synthesis algorithm are to generate periodic bandlimited signals, to avoid aliasing and to be computationally efficient.
 The latter requirement originates from the number of times the oscillator is called, this is at least once for each sample instant.
 Depending on the amount of polyphony, i.e. the maximum number of parallel voices playable, they can even be called multiple times for each sample.
 
