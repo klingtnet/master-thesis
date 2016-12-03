@@ -1442,9 +1442,10 @@ Aliasing is reduced by increasing the window length, in fact, a doubling in leng
 \citeauthor{Stilson1996a} used a blackman window that spanned 32 zero crossings\footnote{The $\sinc$ function has zeros at $n*\pi, n \in \mathbb{Z}$} of the $\sinc$ function \cite[fig.~10]{Stilson1996a} which attenuated aliasing to about $\SI{-90}{\decibel}$ for 80% of the spectrum.
 The paper also proposed to use some oversampling to get a guard band in which the transition band can be moved by using a appropriate window length, e.g. for a sampling rate of $\SI{48}{\kilo\hertz}$ and a window length of 64 $\sinc$ zero crossings the transition band would span 10% of the spectrum which gives a nearly alias-free frequency range up to $0.9 \cdot\SI{24}{\kilo\hertz} = \SI{21.6}{\kilo\hertz}$.
 
-A disadvantage of BLIT-SWS is that the CPU consumption is proportional to the frequency because for each period a impulse must be inserted and replaced by the impulse response of the windowed filter ($\sinc$).
+A disadvantage of BLIT-SWS method is that the CPU consumption is proportional to the frequency because for each period a impulse must be inserted and replaced by the impulse response of the windowed filter ($\sinc$).
 Furthermore, the $\sinc$ is centered on the impulse and must be mixed in several samples before the actual impulse arrives, thus lookahead is required \cite[p.~20]{Huovilainen2010}.
 By controlling the window length a tradeoff between CPU usage and quality can be achieved.
+Another feasible optimization is to tabulate the windowed $\sinc$ function and to retrieve its values by the use of an interpolated table-lookup.
 
 ### BLEPs
 
