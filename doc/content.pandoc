@@ -1282,6 +1282,7 @@ The *wave* function maps the *phasor signal* to the desired wave shape and multi
 \end{figure}
 
 ## Trivial Waveform Generation
+\label{sec:trivial-waveform-generation}
 
 The trivial way for generating geometric waveforms is to sample them without bandlimiting.
 A sawtooth wave can be expressed by a *bipolar modular counter*
@@ -1337,20 +1338,126 @@ tri(t) 	&= 1 - 2|saw(t)|\\
 A straightforward digital implementation of those trivial waveforms is constructed by replacing the continuous-time phasor time signal with its discrete-time counterpart \cite[p.~8]{Pekonen2013}.
 Unfortunately, those naive digital implementations suffer from severe aliasing distortion because the continous-time source signal of those geometric waveforms is not bandlimited, hence it contains an infinte number of harmonics as can be seen in their fourier-series representation (see \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series}).
 The spectral tilt, i.e. the attenuation of harmonic partials with increasing frequency, is about $\SI{6}{\decibel}$ per octave for pulse and sawtooth waveforms and $\SI{12}{\decibel}$ per octave for triangle waveforms \cite[p.~11]{Pekonen2013}.
+The steeper spectral tilt for triangle waveforms can be explained by their construction from pulse waves via integration which corresponds to the application of a first-order lowpass filter.
 Thus, a trivial triangle oscillator implementation can be sufficient if implemented with two or more times oversampling depending on the amount of tolerable aliasing, especially for devices with very limited processing resources.
 
 ## Quasi-Bandlimited Waveform Synthesis
 
 Quasi-bandlimited oscillator algorithms allow a certain degree of aliasing to be produced while making use of *psychoacoustic* effects like *masking*.
-Auditory masking is how sensitivity for one sound is affected by the presence of another sound which is largely dependend on the intensity and spectrum of the sound that causes the masking \cite[p.~187]{Gelfand2010}, i.e. the human ear cannot differentiate between two sounds with roughly the same frequency spectrum if the intensity difference is large enough.
+Auditory masking means how sensitivity for one sound is affected by the presence of another sound which is largely dependend on the intensity and spectrum of the sound that causes the masking \cite[p.~187]{Gelfand2010}, i.e. the human ear cannot differentiate between two sounds with roughly the same frequency spectrum if the intensity difference is large enough.
 Accordingly, the harmonics of a waveform can mask the aliasing components in their spectral vicinity. 
-The intensity of aliasing must be particularly reduced in the range of$\SI{1}{\kilo\hertz}$ to $\SI{5}{\kilo\hertz}$, because this is where human ears are most sensitive \cite[fig.~11.1]{Gelfand2010}.
+The intensity of aliasing must be particularly reduced in the range of $\SI{1}{\kilo\hertz}$ to $\SI{5}{\kilo\hertz}$, because this is where human ears are most sensitive \cite[fig.~11.1]{Gelfand2010}.
 
 ### BLITs
 
+In \citeyear{Stilson1996a} \citeauthor{Stilson1996a} presented in their paper \citetitle{Stilson1996a} \cite{Stilson1996a} a method for synthesizing alias free geometric waveforms by integrating a *bandlimited impulse train* (BLIT).
+Sawtooth, pulse and, of course, triangle waveforms can be derived from a pulse train by integration which is inherently a bandlimited operation.
+Hence, it is sufficient to show how bandlimited impulse trains can be constructed by this method.
+The naive way of discretizing an impulse train is by approximating each impulse with a unit-sample pulse.
+The impulse trains period $p = f_s/f$ is rarely an integer, thus the locations of the unit-sample pulses must be approximated to the nearest sample instant.
+\Cref{fig:impulse-train-approximation} (b) clearly shows the irregular intervals between unit-sample pulses the *pitch-period jitter* which adds noise to the signal \cite[p.~2]{Stilson1996a}.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/box-train-plot.pdf}
+\caption{(a) Impulse train $\bullet$ with frequency $f=\SI{8.3}{\hertz}$ and sample positions $\triangle$. (b) The approximated unit-sample pulse train with sample positions $p=f_s/f$ rounded to the nearest integer.}
+\label{fig:impulse-train-approximation}
+\end{figure}
+
+The naive discretization approach suffers from aliasing just as the trivial waveform generation method (see \cref{sec:trivial-waveform-generation}) because it is also not-bandlimited.
+Hence, a more sophisticated method is needed.
+<!-- TODO: two times the -->
+The idea is to apply an ideal anti-aliasing filter before sampling the impulse train.
+\Cref{fig:ideal-filter-response} shows the frequency response of an ideal anti-aliasing filter is a rectangle function in the frequency interval ($-f_s/2, f_s/2$) and a continuous-time impulse response that is a $\sinc$ function:
+
+\begin{equation}
+h(t) = sinc(f_s t) = \frac{\sin(\pi f_s t)}{\pi f_s t}
+\label{eq:sinc}
+\end{equation}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{imgs/ideal-filter-plot.pdf}
+\caption{(a) Impulse response and (b) frequency response of an ideal anti-aliasing (lowpass) filter where $f_{Ny}=f_s/2$ is the frequency of the Nyquist limit.}
+\label{fig:ideal-filter-response}
+\end{figure}
+
+Applying the ideal filter $h(t)$ to the unit-amplitude impulse train of period $T_1$
+
+\begin{equation}
+x(t) = \sum^\infty_{k=-\infty} \delta(t=k T_1)
+\label{eq:unit-impulse-train}
+\end{equation}
+
+by means of convolution gives a bandlimited signal $x_f(t) = (x \ast h)(t)$.
+Thus, $x_f$ can now be sampled without aliasing which gives
+
+\begin{equation}
+y[n] = x_f(n T_s) = \sum^\infty_{k=-\infty} \sinc(n + k p)
+\label{eq:blit}
+\end{equation}
+
+where $T_s = 1 / f_s$ is the sample period and $p=f_s/f$ as defined above.
+The bandlimited discrete-time signal $y[n]$ can be interpreted as time-aliased $\sinc$ functions \cite[p.~5]{Stilson1996a}, i.e. every impulse is replaced with $\sinc$ response of the ideal filter.
+Furthermore, \citeauthor{Stilson1996a} provided a closed-form expression for the *sampled bandlimited impulse train*:
+
+\begin{equation}
+y[n] = \frac{M}{P} \sinc_M\left(\frac{M}{P}n\right)
+\label{eq:blit-closed-form}
+\end{equation}
+
+where
+
+\begin{equation}
+\sinc_M(x) = \frac{\sin(\pi x)}{M\sin\left(\pi x/M\right)}
+\end{equation}
+
+and $M$ is the number harmonics.
+It is convenient to relate the number of harmonics $M$ to the period in samples $p$ as
+
+\begin{equation}
+M = 2 \lfloor P/2 \rfloor + 1
+\label{eq:blit-harmonics-to-period}
+\end{equation}
+
+that is the largest odd integer smaller than the period \cite[p.~6]{Stilson1996a}.
+However, the BLIT method cannot be implemented as is because the $\sinc$ function is infinitely long.
+
+### BLIT-SWS
+
+A realizable approximation that was proposed in the original paper by \citeauthor{Stilson1996a} is called *Sum of Windowed Sincs* (SWS) and will be discussed in more detail.
+Since then, a lot more methods were developed but it is not in the scope of this thesis to give an overview about all of them.
+For a very thorough analysis of alternative methods refer to  \cite{Otalvar2015}.
+
+The difference between this realizable approach and the theoretical BLIT method in the previous section is that a window is applied to the ideal filter's impulse response to make it finite.
+Hence, \cref{eq:blit} becomes
+
+\begin{equation}
+y_w[n] = \sum^\infty_{k=-\infty} w(n)\sinc(n + k p)
+\label{eq:blit-sws}
+\end{equation}
+
+where $w(n)$ is a window function.
+The choice of the window function determines the attenuation of harmonics in the spectrum.
+This is advantageous for frequency sweeps in contrast to exactly bandlimited methods where harmonics pop in and out which can cause unwanted transients.
+Aliasing is reduced by increasing the window length, in fact, a doubling in length approximately halves the transition band where most of the aliasing occurs.
+\citeauthor{Stilson1996a} used a blackman window that spanned 32 zero crossings\footnote{The $\sinc$ function has zeros at $n*\pi, n \in \mathbb{Z}$} of the $\sinc$ function \cite[fig.~10]{Stilson1996a} which attenuated aliasing to about $\SI{-90}{\decibel}$ for 80% of the spectrum.
+The paper also proposed to use some oversampling to get a guard band in which the transition band can be moved by using a appropriate window length, e.g. for a sampling rate of $\SI{48}{\kilo\hertz}$ and a window length of 64 $\sinc$ zero crossings the transition band would span 10% of the spectrum which gives a nearly alias-free frequency range up to $0.9 \cdot\SI{24}{\kilo\hertz} = \SI{21.6}{\kilo\hertz}$.
+
+A disadvantage of BLIT-SWS is that the CPU consumption is proportional to the frequency because for each period a impulse must be inserted and replaced by the impulse response of the windowed filter ($\sinc$).
+Furthermore, the $\sinc$ is centered on the impulse and must be mixed in several samples before the actual impulse arrives, thus lookahead is required \cite[p.~20]{Huovilainen2010}.
+By controlling the window length a tradeoff between CPU usage and quality can be achieved.
+
 ### BLEPs
 
-## Bandlimited Waveform Synthesis
+- bandlimited step
+- \citeauthor{Brandt2001} \cite{Brandt2001}
+- minimum-phase impulse and pre-integrating it -> minimum-phase bandlimited step
+- method can be used to produce bandlimited version of any waveform with discontinuities as long as all derivatives of the waveform are continuous
+- integration step of BLIT can be skipped -> reduces numerical error as leaky integrators are no longer needed
+- BLEP pulse can simply be mixed with the non-bandlimited waveform any time there is a discontinuity
+- integration before sampling decreases aliasing by another 6dB per octave bandlimitation compared to BLIT-SWS
+- CPU cost still proportional to frequency and a division for each period required
+
+## Ideally Bandlimited Waveform Synthesis
 
 ### Wavetables
 
