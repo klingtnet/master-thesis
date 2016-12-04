@@ -1449,14 +1449,21 @@ Another feasible optimization is to tabulate the windowed $\sinc$ function and t
 
 ### BLEPs
 
-- bandlimited step
-- \citeauthor{Brandt2001} \cite{Brandt2001}
-- minimum-phase impulse and pre-integrating it -> minimum-phase bandlimited step
-- method can be used to produce bandlimited version of any waveform with discontinuities as long as all derivatives of the waveform are continuous
-- integration step of BLIT can be skipped -> reduces numerical error as leaky integrators are no longer needed
-- BLEP pulse can simply be mixed with the non-bandlimited waveform any time there is a discontinuity
-- integration before sampling decreases aliasing by another 6dB per octave bandlimitation compared to BLIT-SWS
-- CPU cost still proportional to frequency and a division for each period required
+\citeauthor{Brandt2001} proposed in \citeyear{Brandt2001} a method to synthesize hard synced oscillators without aliasing called *bandlimited step* (BLEP) \cite{Brandt2001}, an extension of BLIT.
+Hard sync is the phase synchronisation of two oscillators with frequencies $f_1, f_2$ where a slave oscillator's phase is reset with each period of $f_1$.
+Clearly, this adds discontinuities to the synthesized waveform which cause aliasing if the waveform is sampled without bandlimiting.
+The method is not limited to hard-sync instead it can synthesize bandlimited versions of arbitray waveforms with discontinuities, like the geometric waveforms, if the derivates of the waveform are continuous across the point of discontinuity \cite[p.~3]{Brandt2001}.
+
+The method improves BLIT in two ways, first it almost removes the lookahead to the center of the impulse by using a minimum-phase impulse, and second, it removes the integration at run-time by pre-integrating the bandlimited step.
+The minimum-phase impulse is considered as a minimum phase FIR filter, i.e. all zeroes are located inside ($|z| < 1$) the unit 
+circle, with the impulse response of a windowed sinc.
+Integrating the minimum-phase impulse results in a minimum-phase bandlimited step (MinBLEP).
+
+Waveforms are synthesized by producing their naive non-bandlimited shape and mixing in a MinBLEP each time a discontinuity in the waveform occurs.
+
+Advantages of MinBLEP in contrast to BLIT-SWS are that former method removes numerical error and computational costs by avoiding the numerical integration of the impulse train at run-time and the lookahead is reduced to several samples of the bandlimited step.
+Also, the pre-integration step reduces aliasing by another 6dB over BLIT-SWS.
+However, the CPU usage is still proportional to the oscillators frequency.
 
 ## Ideally Bandlimited Waveform Synthesis
 
