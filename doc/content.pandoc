@@ -933,7 +933,7 @@ Evaluating the systems transfer function \cref{eq:transfer-function} on the unit
 It is easy to show that evaluating the (bilateral) z-transform on the unit-circle will find the spectrum because setting $z=e^{i\omega T}$ in \cref{eq:bilateral-transform} results in the definition of the bilateral discrete-time Fourier transform:
 
 \begin{equation}
-X\left(e^{i\omega T}\right) = \sum^{\infty}_{n=-\infty} x[n]e^{i\omega T}n .
+X\left(e^{i\omega T}\right) = \sum^{\infty}_{n=-\infty} x[n]e^{-i\omega n T}.
 \label{eq:DTFT}
 \end{equation}
 
@@ -942,7 +942,7 @@ Also, the sampling index $T$ is set to $1$ for simplicity.
 Another way of obtaining an LTI systems frequency response is by applying the Fourier transform on the systems impulse response $h(z)$ \cite[p.~301]{Proakis:DSP}:
 
 \begin{equation}
-H(\omega) = \sum^\infty_{n=-\infty} h[n]e^{i\omega n}
+H(\omega) = \sum^\infty_{n=-\infty} h[n]e^{-i\omega n}
 \end{equation}
 
 It is sufficient to evaluate the frequency response function only for $\omega \in [-\pi,\pi)$ because all frequencies are mapped into a single cycle of the unit circle and the spectrum would repeat for additional cycles anyway\footnote{see aliasing \cref{sec:aliasing}}.
