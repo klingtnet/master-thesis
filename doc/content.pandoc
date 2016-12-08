@@ -1,36 +1,26 @@
 # Introduction
 
-## Scope of this Thesis
-
-It's not required for the reader to have any prior knowledge of soft- and hardware tools used in music production environments.
-However, a basic knowledge of signal processing and some familiarity with computer programming is beneficial to grasp the presented concepts.
-
 ## Objectives
 
-<!-- TODO
-Be more specific
--->
-
-The objective of this thesis is to show how to build a real time audio software application at the example of an audio synthesizer with frequency modulated oscillators.
+The objective of this thesis is to describe the process of building a real time audio software application at the example of an audio synthesizer with frequency modulated oscillators.
 
 The amount of problems that arise when building such an application is quite large.
 This includes timing and synchronization problems that occur because the computations made are required to be finished in short time windows.
 Computations must be as fast as possible to ensure a responsive feedback for the player of the instrument, and are needed to avoid sound distortion when the generated signals could not be delivered fast enough to the sound card buffer.
+Another class of problems are sound artifacts like aliasing that must be avoided by choosing apropriate algorithms.
+Those algorithms and methods are evaluated and the one that best fits the given requirements is then implemented.
 
 Not every programming language is equally suitable for the development of real time applications, thus it is explained why Rust was chosen as the implementation language.
 Libraries for the MIDI and Open Sound Control protocol were implemented and released as open-source software.
-Both protocols are supported by the application and are used to play polyphonic\footnote{More than one at a time.} notes or remote control all parameters of the synthesizer.
-Common synthesizer architectures and signal generation methods are discussed and evaluated.
+Both protocols are supported by the application and are used to play polyphonic\footnote{More than one at a time.} notes or to remotely control all parameters of the synthesizer.
+Furthermore, common synthesizer architectures and signal generation methods are discussed and evaluated.
 
-Furthermore, sound shaping techniques and effects are presented in detail.
-The precautions taken to reduce the amount of signal distortion are shown as well.
 Lastly, an outlook on possible optimizations and enhancements, as well as a summary of the achieved results is given.
 
-## Overview
+## Scope of this Thesis
 
-<!-- TODO: provide a quick summary of each chapter. -->
-
-Chapter 2 gives an overview about common synthesis concepts and evaluates why Rust was chosen as the implementation language.
+It's not required for the reader to have any prior knowledge of soft- and hardware tools used in music production environments.
+However, a basic knowledge of signal processing and some familiarity with computer programming is beneficial to grasp the presented concepts.
 
 # User Interface
 
