@@ -1,5 +1,9 @@
 # Introduction
 
+<!--TODO
+Describe the structure of the thesis
+-->
+
 ## Objectives
 
 The objective of this thesis is to describe the process of building a real time audio software application at the example of an audio synthesizer with frequency modulated oscillators.
