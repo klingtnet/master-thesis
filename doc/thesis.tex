@@ -4,13 +4,13 @@
 % ,bibliography=totoc
 %
 \documentclass[fontsize=12pt,%
-               oneside,%
-               draft=false]{scrreprt}
+			   oneside,%
+			   draft=false]{scrreprt}
 
 \KOMAoptions{paper=a4,%
-             DIV=calc,%
-             listof=leveldown,%
-             listof=totoc}
+			 DIV=calc,%
+			 listof=leveldown,%
+			 listof=totoc}
 \input{vars}
 \input{./etc/preamble}
 \usepackage{setspace}
@@ -22,26 +22,26 @@
 \DeclareMathOperator{\sinc}{sinc}
 
 \begin{document}
-    %\frontmatter
-    \include{title}\cleardoublepage{}
-    \setcounter{page}{1}
-    \pagenumbering{Roman}
-    \tableofcontents\cleardoublepage{}
-    \include{acknowledgements}
-    %\mainmatter
-    \pagenumbering{arabic}
+	%\frontmatter
+	\include{title}\cleardoublepage{}
+	\setcounter{page}{1}
+	\pagenumbering{Roman}
+	\tableofcontents\cleardoublepage{}
+	\include{acknowledgements}
+	%\mainmatter
+	\pagenumbering{arabic}
 	\pagestyle{scrheadings}
-	\setstretch{1.2}
+	\setstretch{1.5}
 	\setlength{\parskip}{.35\baselineskip}%
 	\setlength{\parindent}{0pt}%
-    \include{text}
+	\include{text}
 	\setstretch{1.0}
 	\pagestyle{plain}
-    \include{abstract}
-    \appendix % http://mirrors.ctan.org/macros/latex/contrib/koma-script/doc/scrguien.pdf p. 132
+	\include{abstract}
+	\appendix % http://mirrors.ctan.org/macros/latex/contrib/koma-script/doc/scrguien.pdf p. 132
 	\addchap{\appendixname}
-    \listoffigures\clearpage{}
+	\listoffigures\clearpage{}
 	\listoftables\clearpage{}
-    \printbibliography[heading=subbibintoc]\clearpage{} % http://mirrors.ctan.org/macros/latex/contrib/biblatex/doc/biblatex.pdf
-    \include{statement}\cleardoublepage{}
+	\printbibliography[heading=subbibintoc]\clearpage{} % http://mirrors.ctan.org/macros/latex/contrib/biblatex/doc/biblatex.pdf
+	\include{statement}\cleardoublepage{}
 \end{document}
