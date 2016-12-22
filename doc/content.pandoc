@@ -324,7 +324,7 @@ The following list shows them for OSC compared to MIDI:
 	They also provide symbolic types like booleans or \emph{Nil} to represent an empty value.
 	\item[$+$] The definition of \emph{custom data-types} is allowed, therefore OSC applications must be made robust against unknown ones.
 	\item[$+$] The \emph{bandwidth} is orders of magnitudes larger than MIDI's, but it depends on the type of network used.
-	A common choice are ad-hoc WiFi connections between OSC receiver and sender because the player (sender) and the instrument (receiver) are in local proximity to each other.
+	A common choice are ad-hoc Wi-Fi connections between OSC receiver and sender because the player (sender) and the instrument (receiver) are in local proximity to each other.
 	This, in turn, results in an acceptable network \emph{latency} in the single digit millisecond range.
 	\item[$+$] Control events can be send simultaneously as an OSC bundle, e.g. note events of a chord.
 	\item[$+$] Events can be timed with an resolution of $\approx 200$ picoseconds \cite{OSC:10}.
@@ -1479,13 +1479,20 @@ This process is illustrated by \cref{fig:saw-table} and \cref{fig:sqr-table} for
 A wavetable based approach was selected for the synthesizer's oscillators because of its simple implementation, high audio quality and great flexibility that allows to easily support any arbitrary waveform.
 Nonetheless, a mixed approach that uses BLEP based oscillators for geometric waveforms and wavetables for arbitray or user defined spectras would be a desirable optimization.
 
-# Implementation Details
+# Implementation Details and Evaluation
+
+The following chapter describes implementation details of the software synthesizer and evaluates algorithms and architecture decisions.
+In \cref{sec:why-rust} the decision for choosing Rust as the implementation language is explained.
+\Cref{sec:realtime} and \cref{sec:latency} defines the terms *realtime* and *latency* and their implications for the application followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
+
+<!-- TODO: finish chapter intro when all sections are written -->
 
 ## Why Rust?
+\label{sec:why-rust}
 
 Real time audio applications must finish their signal processing in tight time bounds to ensure that the sound card can output a continuous audio stream.
 Missing such a bound will result in unpleasant sound glitches, and---in the worst case---renders a whole song recording useless.
-Additionally, the time bounds must be as tight as possible to reduce the latency between the user input (playing a note) and the output of the calculated signal in the speaker.
+Additionally, the time bounds must be as tight as possible to reduce the latency (see \cref{sec:latency}) between user input (playing a note) and output of the calculated signal from the speaker.
 Therefore, (memory-)managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce non deterministic program stops while examining the state of variable references, will not receive any further consideration.
 Interpreted languages like [Python](https://www.python.org/) or [Ruby](https://www.ruby-lang.org/en/) face the same problems as compiled managed languages by also having increased runtime costs.
 Audio application development in those languages is still possible but commonly requires to write the signal processing as C modules and interface with them through the languages foreign function interface (FFI) (e.g. pyo \cite{pyo} uses this approach). 
@@ -1494,12 +1501,12 @@ This comes with a downside in memory safety and introduces a whole new class of 
 Those bugs are very likely to cause *undefined behavior* or to crash the program. Unfortunately, they are also very hard to debug.
 
 One of the major selling points of [Rust](https://rust-lang.org) is guaranteed memory safety *without* garbage collection and *data race freedom* while providing the same level of control over memory as C/C++.
-These goals are achieved through a variety of concepts like ownership, lifetimes and borrowing to know at compile when memory can be safely freed, and to enforce that there is only a single mutable access to any variable at any given time in the run of the program.
+These goals are achieved through a variety of concepts, like ownership, lifetimes and borrowing, to know at compile when memory can be safely freed, and to enforce that there is only a single mutable access to any variable at any given time in the run of the program.
 Explaining these concepts is outside the scope of this thesis and the official [Rust Book](https://doc.rust-lang.org/book/ownership.html) \cite{RustBook} does a great job doing this in detail, hence, this is left as an exercise for the interested reader.
+
 The [Max Planck Institute for Software Systems](http://plv.mpi-sws.org/) has started the \cite{RustBelt} RustBelt research project in 2015 to develop formal foundations for the Rust programming language.
 One of the main goals of the research group is to formally investigate if the claims made about data-race freedom, memory and type safety actually hold.
-<!-- Furthermore, they want to provide formal tools for verifying safe encapsulation of `unsafe` code blocks. -->
-As of the time of writing there is no evidence that the claims are untrue, therefore it's assumed that they're actually hold.
+As of the time of writing there is no evidence that the claims are untrue, therefore it's assumed that they actually hold.
 
 In the following I will describe a number of language features that were crucial in making the decision to use Rust for the implementation of the synthesizer:  
 
@@ -1521,7 +1528,7 @@ Cross compilation
 :	Cross compilation is the ability to compile statically linked binaries for different target platforms on a single machine, e.g. one can compile a windows executable on a Linux machine.
 
 Abstractions without overhead
-:	The Rust compiler will create a separate implementation for each type that a generic function is used with in the code.
+:	The Rust compiler will create a separate implementation for each type that a generic function is used within the code.
 	This is called *monomorphization* and allows to statically dispatch calls to generic functions but comes with the cost of slightly increased binary sizes.
 	Iterators and other high-level features will be compiled down to simpler constructs like *for* loops.
 
@@ -1567,7 +1574,72 @@ Iterators
 Toolchain
 :	Rust has a standard package manager and build tool called *Cargo*, that is typically used to manage the dependencies of a project but also to run tests and benchmarks.
 
+## Realtime
+\label{sec:realtime}
+
+There are different forms of realtime computing in computer science but common to all of them is that computations have to be finished in a predefined amount of time and the shorter this time span is the faster those computations have to be.
+The definition of real-time used in the context of this thesis is of \citeauthor{Rabiner1972} \cite[p.2]{Rabiner1972}:
+
+> A real-time process is one for which, on the average, the computing associated with each sampling interval can be completed in a time less than or equal to the sampling interval.
+
+Based on this definition, the time to compute a single sampl should not exceed $1/f_s = \SI{20.833}{\micro\second}$ for a common sampling rate of $f_s = \SI{48}{\kilo\hertz}$.
+Nonetheless, sample calculation time should be much shorter than this limit to compensate for delays introduced by the operating system, e.g. context switches caused by the process scheduler.
+Multimedia applications can greatly benefit from a custom process scheduler like \citeauthor{Kolivas:MuQSS}'s *Brainfuck Scheduler* or the more recent implementation called *Multiple Queue Skiplist Schedule* \cite{Kolivas:MuQSS} because those schedulers are optimized for process responsiveness on symmetric multiprocessing platforms like desktops or laptops unlike the default *Completely Fair Scheduler* \cite{Molinar:CFS} which aims to maximizes for overall CPU utilization and must fit for a wide variety of use cases.
+
+## Latency
+\label{sec:latency}
+
+The *responsiveness* of an electronic musical instrument is mainly determined by its latency, i.e. the time delay between two causally connected events.
+
+An instrument is the more responsive, the less latency between an input event and the corresponding sound output it has.
+The latency is imperceptible for the user if the delay between the input event and audio output stimuli is less than $\SI{24}{\milli\second}$ \cite{NasaLatency}.
+Furthermore, there is an even stronger latency limit of $\approx\SI{2}{\milli\second}$, that is the *temporal resolution* of the human hearing, as shown by \cite[p.~294]{FastlZwicker} using psycho acoustic measurements.
+However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = \SI{343.2}{\meter\per\second}$ at normal temperature [^stdTemp] and a common listening distance of $d = \SI{2}{\meter}$ is about 3 times larger than the temporal resolution $d/v = \SI{2}{\meter}/\SI{343.2}{\meter\per\second} = \SI{5.82}{\milli\second}$.
+Therefore, achieving a system latency of less than $\SI{24}{\milli\second}$ is favorable.
+
+[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
+
+The sum of two delayed audio signals can act like a comb filter \cite[p.~1]{AES:Latency}, such that even very short latencies can cause spectral artifacts in applications that monitor input signals.
+Fortunately, there is no input audio signal for this synthesizer, thus only temporal issues must be taken into account.
+
+
+### System Latency
+
+The overall latency of the synthesizer is the sum of different latency portions made up a variety of components in the audio output chain.
+At first there is the control input latency that is either that of the MIDI or OSC connection, where the OSC latency greatly depends on the network connection's physical layer, e.g. Bluetooth, Wi-Fi or USB.
+Usually a Wi-Fi connection is used to connect an OSC client, like a tablet running [liine's lemur](https://liine.net/de/products/lemur/) or some other OSC capable controller application.
+A USB connection is recommended to get reliable network latencies between an OSC client and the synthesizer but an ad-hoc Wi-Fi connection that is exlusively used for transporting OSC messages can also work well.
+Another latency portion is introduced through the synthesizers and the audio backends output buffer.
+The backend's audio buffer size can be configured in most cases except for some backends like PulseAudio which is not recommended for real-time use anyway.
+Lastly, there is a propagation delay which can be neglected for usual listening distances or is near zero if headphones are used.
+
+Measuring the system latency is hard because an experimental setup is needed that triggers the input device and starts a sound recording at the same time.
+Such a setup is error prone because the time for triggering a piano key of the MIDI keyboard and the input buffer of the sound card must be compensated.
+Summing the input latency and delays introduced by the internal audio buffers gives a good approximation without the errors of an experimental setup.
+The overall latency $l$ can be approximate by evaluating
+
+\begin{equation}
+l = l_{in}+\frac{b_{syn}+b_{out}}{f_s}
+\label{eq:delay-approximation}
+\end{equation}
+
+where $l_{in}$ is the input latency, $f_s$ the sample rate and $b_{syn}, b_{out}$ are the synthesizer's and sound card's buffer sizes in samples.
+Given a sample rate of $\SI{48}{\kilo\hertz}$, an input latency of $\SI{1.3}{\milli\second}$ and buffer sizes of $b_{syn}=512, b_{out}=256$ inserted in \cref{eq:delay-approximation} results in a system latency
+$l 	= \SI{1.3}{\milli\second}+(512 + 256)\cdot\SI{48}{\kilo\hertz}^{-1}
+	= \SI{17.3}{\milli\second}$
+that is about \textthreequarters{} of the $\SI{24}{\milli\second}$ limit and thus sufficiently small to be unperceivable.
+Both buffer sizes were used without buffer underruns on the development machine, a HP elitebook 8460p running Arch Linux with kernel 4.8.15-2-ck-sandybridge and JACK2 \cite{Jack2} as audio backend.
+The input latency was measured by taking the average round-trip times of 100 ICMP echo requests (ping) between an OSC client, an android tablet running liine's Lemur OSC app, connected through an ad-hoc Wi-Fi connection and the computer running the synthesizer application.
+
 ## Structure
+\label{sec:synthesizer-structure}
+
+The synthesizer's structure consists of mainly three parts.
+In the first part, incoming user input, as MIDI or OSC messages, is processed and transformed into user events which are then send to the appropriate component addressed by the input message.
+Signal generation takes place in the second part which also handles user events, e.g. by triggering voices on a note input or modifying parameters of a component like changing the filter's cutoff frequency.
+Then the generated signal is fed into a ring buffer (see \cref{sec:ring-buffer}).
+Lastly, in the third part, the ring buffer is read-out by a callback from an audio backend that writes the data into the sound card's audio buffer.
+The overall structure of the synthesizer is depicted in \cref{fig:basic-synth-structure}.
 
 \begin{figure}
 	\centering
@@ -1633,110 +1705,17 @@ Toolchain
 \draw[->](voiceN.east)-|(sum.south);
 \node[block, right=of sum, align=center](filter){Multi mode\\Filter};
 \draw[->](sum)--(filter);
-\node[right=of filter,align=center](out){Output\\Device};
-\draw[->](filter)--(out);
+\node[block, right=of filter,align=center](ringbuffer){Ring\\Buffer};
+\draw[->](filter)--(ringbuffer);
+\node[right=of ringbuffer,align=center](out){Output\\Device};
+\draw[->](ringbuffer)--(out);
 	\end{tikzpicture}}
-	\caption{Building blocks/structure of a basic polyphonic subtractive synthesizer.}
+	\caption{Structure of a basic polyphonic subtractive synthesizer.}
 	\label{fig:basic-synth-structure}
 \end{figure}
 
-
-- real-time process one for which the computing time associated with each sampling interval can be completed in a time less than or equal to the sampling interval \cite{Rabiner1972}
-
-\begin{figure}
-\includegraphics[width=.8\textwidth,angle=180]{imgs/ytterbium-spectrum-legend.png}
-\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Saw-sweep.png}
-\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Square-sweep.png}
-\caption{Frequency sweep from 20Hz to 20kHz in the sawtooth and square (below wavetable}
-\label{fig:sweep}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-fm.png}
-\label{fig:sweep-mod}
-\caption{Sweep using sine modulator and carrier with increasing modulation amount}
-\end{figure}
-
-## Latency
-<!-- TODO: unsure where to put this chapter -->
-
-The *responsiveness* of an electronic musical instrument is mainly determined by its latency.
-
-\theoremstyle{definition}
-\begin{definition}
-\label{def:latency}
-Latency is the time delay between two causally connected events.
-\end{definition}
-
-An instrument is the more responsive, the less latency between an input event and the corresponding sound output it has.
-The latency is imperceptible for the user if the delay between the input event and audio output stimuli is $< 24ms$ \cite{NasaLatency}.
-Furthermore, there is an even stronger latency limit of $\approx 2$ms, that is the *temporal resolution* of the human hearing, as shown by \cite[p.\~294]{FastlZwicker} using psycho acoustic measurements.
-However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = 343.2 m/s$ and a common listening distance of $d = 2m$ is $\approx$ 3 times larger than the temporal resolution: $d/v = 2m/343.2\frac{m}{s} = 5.82ms$.
-Therefore, achieving a system latency of less than $24ms$ is favorable.
-
-Latency (see \nameref{latency}) is the time difference between an input action and the corresponding output from a system, in this case the synthesizer.
-
-- reduce latency with custom kernel (linux-ck)
-
-\begin{definition}{Latency} is a time interval between the stimulation and response, or, from a more general point of view, a time delay between the cause and the effect of some physical change in the system being observed
-\end{definition}
-
-> For any audio system, may it be, for example, an analogue electronic circuit, a digital circuit, a whole computer or a physical wave-guide, there will be some time lag between the instant at which the signal enters the audio system and the one at which the signal exits.
-> For a lot of reasons:
-> - finite propagation speed of sound waves
-> - AD/DA conversion times
-
-- temporal resolution of human hearing is $\approx 2\,ms$ \cite{FastlZwicker}
-- only control over some aspects, buffer sizes of the application or the sound backend
-- user of the application should not be able to hear any possible delay between his input action/event and the generated output signal
-
-Spectral artifacts can occur for very low latencies and only when the signal is monitored (comb filter).
-Can be ignored because there is no source signal that is monitored.
-Temporal issues are to be concerned.
-\cite{AES:Latency}
-
-The propagation delay, i.e. time $t$ it takes for a wave of sound to travel from the speaker to the ear of the listener, over a distance of $d = 1.5\,m$, and by a speed of sound of $v = 343.2\,m/s$ at normal temperature [^stdTemp] can be calculated like this:
-
-[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
-
-\begin{align}
-t &= \frac{d}{v}\cdot 1\,s\\
-  &= \frac{1.5\,m}{343.2\,m}\cdot 1\,s\\
-  &= 0.00437\,s\\
-  &= 4.37\,ms
-\end{align}
-
-The overall latency of the synthesizer is the sum of different latency portions, introduced through a variety of components in the audio output chain.
-At first there is the input latency, that is either $l_{midi}$ or $l_{osc}$ depending on the used input protocol, where the amount of $l_{osc}$ depends highly on the network connection.
-Usually a wifi connection is used to connect an OSC client, like a tablet running [liine's lemur](https://liine.net/de/products/lemur/) or some other OSC capable controller application.
-An ad-hoc wifi network or tethering over USB can be used to get reliable network latencies with wireless clients.
-
-The next latency portion, $l_{dsp}$ is introduced through the synthesizers internal audio output buffer.
-At the time of writing, a small buffer size of [64 samples](https://github.com/klingtnet/ytterbium/blob/master/src/main.rs#L172), or $\approx 1.3\,ms$, was used.
-
-The audio backends output buffer adds a portion $t_{backend}$ of latency, as well.
-It depends on the users buffer size settings how large the added latency is.
-
-At last there is the propagation delay which can be neglected for usual listening distances or is near zero if headphones are used.
-
-\resizebox{\textwidth}{!}{
-\begin{tikzpicture}[auto]
-\draw
-	node [block](Engine){DSP Engine}
-	node [block, above left=of Engine, node distance=3cm](MIDI){MIDI}
-	node [block, below left=of Engine, node distance=3cm](OSC){OSC}
-	node [block, right=of Engine, node distance=4cm](Soundcard){Audio Backend}
-	node [block, right=of Soundcard, node distance=5cm](Speaker){Speaker}
-	node [block, right=of Speaker, node distance=4cm](Listener){Listener}
-;
-	\draw[->](MIDI) -- node{$l_{midi}$}(Engine);
-	\draw[->](OSC) -- node{$l_{osc}$}(Engine);
-	\draw[->](Engine) -- node{$l_{dsp}$}(Soundcard);
-	\draw[->](Soundcard) -- node{$l_{backend}$}(Speaker);
-	\draw[->](Speaker) -- node{$l_{wave}$}(Listener);
-\end{tikzpicture}}
-
 ## Ring Buffer
+\label{sec:ring-buffer}
 
 - throughput-rate the total rate at which digital information is processed by a discrete-time system, measured in samples per second \cite{Rabiner1972}
 
@@ -1757,6 +1736,24 @@ At last there is the propagation delay which can be neglected for usual listenin
 \cite{Bristow:Cookbook}
 
 ## Audio Output
+
+# Evaluation
+
+## Audio Quality
+
+\begin{figure}
+\includegraphics[width=.8\textwidth,angle=180]{imgs/ytterbium-spectrum-legend.png}
+\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Saw-sweep.png}
+\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Square-sweep.png}
+\caption{Frequency sweep from 20Hz to 20kHz in the sawtooth and square (below wavetable}
+\label{fig:sweep}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-fm.png}
+\label{fig:sweep-mod}
+\caption{Sweep using sine modulator and carrier with increasing modulation amount}
+\end{figure}
 
 # Summary and Conclusion
 
