@@ -14,6 +14,7 @@ There are prebuild versions of the document available in the [release section](h
 	- xelatex
 	- [biber](http://biblatex-biber.sourceforge.net/)
 	- [pandoc](http://pandoc.org/)
+    - python pygments for source code highlighting: `pip install --user pygments`
 
 ```sh
 $ make
