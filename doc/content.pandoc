@@ -1520,8 +1520,8 @@ Nonetheless, a mixed approach that uses BLEP based oscillators for geometric wav
 The following chapter describes implementation details of the software synthesizer and evaluates algorithms and architecture decisions.
 In \cref{sec:why-rust} the decision for choosing Rust as the implementation language is explained.
 \Cref{sec:realtime} and \cref{sec:latency} defines the terms *realtime* and *latency* and their implications for the application followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
-
-<!-- TODO: finish chapter intro when all sections are written -->
+Thereafter, \cref{sec:input-implementation} to \cref{sec:audio-output-implementation} describe the implementation of all components shown in the structure overview and evaluate the aliasing behaviour of the wavetable oscillator implementation.
+<!-- TODO: finish chapter intro when all sections are written and a remark about the open source libraries and code-->
 
 ## Why Rust?
 \label{sec:why-rust}
@@ -1567,13 +1567,14 @@ Furthermore, there is an even stronger latency limit of $\approx\SI{2}{\milli\se
 However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = \SI{343.2}{\meter\per\second}$ at normal temperature [^stdTemp] and a common listening distance of $d = \SI{2}{\meter}$ is about 3 times larger than the temporal resolution $d/v = \SI{2}{\meter}/\SI{343.2}{\meter\per\second} = \SI{5.82}{\milli\second}$.
 Therefore, achieving a system latency of less than $\SI{24}{\milli\second}$ is favorable.
 
-[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at $1\,atm$ absolute pressure.
+[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at 1\thinspace{}atm absolute pressure.
 
 The sum of two delayed audio signals can act like a comb filter \cite[p.~1]{AES:Latency}, such that even very short latencies can cause spectral artifacts in applications that monitor input signals.
 Fortunately, there is no input audio signal for this synthesizer, thus only temporal issues must be taken into account.
 
 
 ### System Latency
+\label{sec:system-latency}
 
 The overall latency of the synthesizer is the sum of different latency portions made up a variety of components in the audio output chain.
 At first there is the control input latency that is either that of the MIDI or OSC connection, where the OSC latency greatly depends on the network connection's physical layer, e.g. Bluetooth, Wi-Fi or USB.
@@ -1682,48 +1683,162 @@ The overall structure of the synthesizer is depicted in \cref{fig:basic-synth-st
 	\end{tikzpicture}}
 	\caption{Structure of a basic polyphonic subtractive synthesizer.}
 	\label{fig:basic-synth-structure}
-\end{figure}
+\end{sidewaysfigure}
+
+## Control Input
+\label{sec:input-implementation}
+
+MIDI and OSC (see \cref{sec:midi} and \cref{sec:osc}) protocol support is provided by two libraries, \citetitle{github:portmidi-rs} \cite{github:portmidi-rs} and \citetitle{github:rosc} \cite{github:rosc}.
+The first library, \citetitle{github:portmidi-rs}, is a safe Rust wrapper around the cross-platform real-time MIDI C library \citetitle{portmidi} \cite{portmidi}.
+The word *safe* in this context means that memory-safety is guaranteed by the fact that there are no unsafe operations for the use of \citetitle{github:portmidi-rs}' API necessary, like e.g. pointer dereferencing.
+Furthermore, \citetitle{github:portmidi-rs} was completly rewritten \cite{github:portmidi-rs:rewrite} in order to follow Rust's language idioms more strictly, i.e. a library user does not have to drop unused objects explicitly, instead this is done implicitly when the object goes out of scope.
+<!--TODO: completely playable but no parameter change implemented for MIDI controller -->
+
+At the time of writing, there was no Rust OSC library that fully supported the OSC 1.0 specification and was also compatible with Rust 1.0 and later versions, thus a new library had to be implemented, named \citetitle{github:rosc}.
+The library achieves full compatibility with the OSC 1.0 specification and features encoding and decoding of OSC messages while being transport and platform indepent.
+OSC messages are decoded from their byte array representation, e.g. received as payload of an UDP packet, by pattern matching \cite[`src/decoder.rs`, lines 129-161]{github:rosc} against the corresponding variant of the algebraic Rust data type shown in \cref{lst:osc-type}.
+
+\begin{listing}
+\begin{minted}{rust}
+pub enum OscType {
+    Int(i32),
+    Float(f32),
+    String(String),
+    Blob(Vec<u8>),
+    Time(u32, u32),
+    Long(i64),
+    Double(f64),
+    Char(char),
+    Color(OscColor),
+    Midi(OscMidiMessage),
+    Bool(bool),
+    Nil,
+    Inf,
+}
+\end{minted}
+\caption{Definition of OSC data types in \cite[`src/types.rs`]{github:rosc}}
+\label{lst:osc-type}
+\end{listing}
+
+### Lemur
+\label{sec:lemur}
+
+A multitouch capable graphical user interface (GUI) for the synthesizer is provided by the implemenation of a custom controller patch for liine's Lemur application \cite{LiineLemur}.
+Lemur resembles the control surface of Jazzmutant's Lemur, a multi touch capable OSC control surface hardware device, but runs on Android on iOS devices instead.
+Control information is send as OSC Bundles which contain one or more OSC Messages containing the actual control signal.
+The custom control interface shown in \cref{fig:lemur-piano} to \cref{fig:lemur-filter} was implemented using Lemur's control surface editor and makes use of the integrated scripting language.
+
+\Cref{fig:lemur-piano} shows the piano grid of the control surface with 8 key rows of 12 keys each.
+A row represents a single octave of a musical keyboard with black and white keys where the lowest key is colored blue.
+The root key of the grid can be shifted in a range from -3 to +3 octaves with the slider shown on the right.
+In contrast to classical MIDI keyboards it is not possible to play notes with different velocities because Android an iOS devices lack pressure sensitivity sensors.
+Multi touch support allows to play the synthesizer polyphonically by pressing multiple keys at once.
+
+![View of the piano view\label{fig:lemur-piano}](imgs/lemur-piano.png){ width=100% }
+
+There are four identical oscillator control sections with separate controls for each oscillator's envelope, phase, detune and transpose parameters and a list of waveforms to choose from.
+Each oscillator can be transposed in a \textpm{} 3 octave range and detuned in a by \textpm{} one seminote at a resolution of 1 cent \cite[`src/dsp/wavetable.rs`, lines 357-372]{github:ytterbium} which is a 100th of an equal tempered semitone.
+Also, the phase offset can be controlled in a range of \SI{0}{\degree} to \SI{180}{\degree}.
+
+![View of the oscillator contol view showing the first of four oscillator control views\label{fig:lemur-oscillator}](imgs/lemur-oscillator.png){ width=100% }
+
+\Cref{fig:lemur-fm} shows the FM control section where each oscillator section contains a group of sliders to control the amount of frequency modulation applied to its fundamental frequency, including feedback modulation, i.e. an oscillator is modulating its own frequency.
+In the screenshot the frequency of the first oscillator is modulated by the second which is itself modulated by the third oscillator.
+
+![View of the FM control view\label{fig:lemur-fm}](imgs/lemur-fm.png){ width=100% }
+
+The oscillator mixing view shown in \cref{fig:lemur-mixer} contains a slider for amplitude control and a bipolar (zero at center position) slider to set the stereo panning for each oscillator.
+
+![View of the mixer view\label{fig:lemur-mixer}](imgs/lemur-mix.png){ width=100% }
+
+Parameters of the multi-mode filter can be set in the filter view.
+It contains a drop-down list for selecting the filter mode and a two dimensional control field to set the filter's cutoff frequency on its x-axis and the resonance control on its y-axis.
+
+![View of the mixer view\label{fig:lemur-filter}](imgs/lemur-filter.png){ width=100% }
+
+## Wavetable Oscillator
+\label{sec:wavetable-oscillator-implementation}
+
+The wavetable oscillator's implementation follows closely the description that was given in \cref{subsec:wavetables}, i.e. there are separate wavetables for each octave of the desired frequency range, i.e. ongoing from a lowest frequency $f_L$ there is a new wavetable that covers frequencies in
+
+$$\left[n\,f_L, (n+1)\,f_L\right],\quad{}n \in\mathbb N \wedge n\,f_L < \lfloor f_{s}/2 \rfloor - 1$$
+
+where $n$ is the octave.
+A tables length and the number of harmonics contained in its waveform gets halved each time $n$ increases until the waveform consists solely of its fundamental in the highest wavetable.
+
+The waveforms are generated by means of Fourier synthesis, i.e. an inverse Fourier transform (IFT) is applied to the spectrum that was predefined for the desired waveform.
+\Cref{lst:sawtooth-spectrum} shows how the spectrum of a inverse sawtooth wave is defined where line 8 asserts that the spectrum is mirrored in order to obtain a real valued signal from the IFT.
+By using a length $l=2^n,\;n\in\mathbb{N}$ for the initial spectrum table assures that each following table also has a length which is a power of two because halving the table's length corresponds to decrementing $n$ by 1.
+Those table lenghts are optimal for the inverse mixed-radix fast Fourier transform (FFT) \cite{github:rustfft} used in the implementation because it can make use of all symmetries in the FFT algorithm.
+All wavetables are serialized to disk so they can be read from a file \cite[`src/dsp/wavetable.rs`, lines 89-100]{github:ytterbium} in subsequent application starts to reduce its initialization time.
+
+\begin{listing}
+\begin{minted}[linenos]{rust}
+Waveform::Saw => {
+    for i in 1..harmonics {
+        let magnitude = (i as Float).recip();
+        spectrum[i] = Complex {
+            re: 1.0,
+            im: -1.0 * magnitude,
+        };
+        spectrum[table_size - i] = -spectrum[i];
+    }
+}
+\end{minted}
+\label{lst:sawtooth-spectrum}
+\caption{Calculation of Fourier coefficients for sawtooth waveform definition in the frequency domain \cite[`src/dsp/waveform.rs`, lines 163-172]{github:ytterbium}}
+\end{listing}
+
+Both spectrograms shown in \cref{fig:wavetable-sweep} are calculated from frequency sweeps to which a Hann window was applied and that were generated from the wavetable oscillator as part of the unit test set.
+It can be seen that the aliasing amount does not exceed $\SI{-80}{\decibel}$ which makes it inaudible.
+Additionally, the frequency sweep visualizes the use of separate tables and their decreasing number of harmonic content.
+The loss of spectral energy at each table switch can be perceived in the frequency sweep but it is not of great concern because the oscillators frequency is rather constant when the synthesizer is played.
+However, this should be considered for effects with pulsating pitch changes like a vibrato.
+
+\begin{sidewaysfigure}
+\includegraphics[width=\textheight]{imgs/ytterbium-spectrum-legend.png}
+\includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-Saw-sweep.png}
+\includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-Square-sweep.png}
+\caption{Spectrogram of a frequency sweep from 20Hz to 20kHz in the sawtooth (upper) and square (lower) wavetable}
+\label{fig:wavetable-sweep}
+\end{sidewaysfigure}
+
+A spectrogram of a frequency sweep for a sinusoidal carrier and modulator with increasing modulation amount is shown in \cref{fig:sweep-fm}.
+The increasing amount of harmonic content is clearly visible as well as the distortion that starts approximately in the last quarter of the spectrogram and which is almost unavoidable because it is hard to give a constraint for the modulation amount so that no distortion will occur.
+
+\begin{sidewaysfigure}
+\includegraphics[width=\textheight]{imgs/ytterbium-spectrum-legend.png}
+\includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-fm.png}
+\label{fig:sweep-fm}
+\caption{Spectrogram of a frequency sweep for sine modulator and carrier with increasing modulation amount}
+\end{sidewaysfigure}
+
+## Filter
+
+The multi-mode biquad filter \cite[`src/dsp/filter.rs`]{github:ytterbium} is a direct implementation of \citeauthor{Bristow:Cookbook}'s EQ Cookbook \cite{Bristow:Cookbook}.
+The filter design is derived from an analog prototype using bilinear transform (see \cref{sec:iir-filters} and \cref{subsec:bilinear-transform) and is a stable and popular design which is also used in the biquad implemenation of the WebAudio API \cite{github:webaudio-api} which got adopted by firefox \cite{webaudio:biquad:firefox} and chromium \cite{webaudio:biquad:chromium} browsers.
+A spectrogram of a white noise filtered by the biquad implementation with increasing filter cutoff and constant neutral filter resonance in lowpass and bandpass mode is shown in \cref{fig:filter-sweep}.
+The parameter sweep of the spectrograms is generated by the filter's unit test to check the stability for time-varying paramters by sweeping the cutoff parameter at audio rate with the result that there are no sound artifacts visible and perceivable in the rendered audio, hence the implementation is suitable as a time-varying filter.
+
+\begin{sidewaysfigure}
+\includegraphics[width=\textheight]{imgs/ytterbium-spectrum-legend.png}
+\includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-LP-filter.png}
+\includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-BP-filter.png}
+\caption{Spectrogram of a white noise filtered by a lowpass (upper) and hipass (lower) biquad with increasing filter cutoff and constant neutral filter resonance}
+\label{fig:filter-sweep}
+\end{sidewaysfigure}
 
 ## Ring Buffer
 \label{sec:ring-buffer}
 
+\cite{github:rb}
+
 - throughput-rate the total rate at which digital information is processed by a discrete-time system, measured in samples per second \cite{Rabiner1972}
 
-## Control Input
-
-### Lemur
-
-![View of the piano section](imgs/lemur-piano.png){ width=100% }
-
-![View of the oscillator contol section](imgs/lemur-oscillator.png){ width=100% }
-
-![View of the fm section](imgs/lemur-fm.png){ width=100% }
-
-![View of the mixer section](imgs/lemur-mix.png){ width=100% }
-
-![View of the mixer section](imgs/lemur-filter.png){ width=100% }
-
-\cite{Bristow:Cookbook}
-
 ## Audio Output
+\label{sec:audio-output-implementation}
 
-# Evaluation
-
-## Audio Quality
-
-\begin{figure}
-\includegraphics[width=.8\textwidth,angle=180]{imgs/ytterbium-spectrum-legend.png}
-\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Saw-sweep.png}
-\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-Square-sweep.png}
-\caption{Frequency sweep from 20Hz to 20kHz in the sawtooth and square (below wavetable}
-\label{fig:sweep}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=.9\textheight,angle=90,origin=c]{imgs/ytterbium-0.1.0-fm.png}
-\label{fig:sweep-mod}
-\caption{Sweep using sine modulator and carrier with increasing modulation amount}
-\end{figure}
+\cite{github:rsoundio} \cite{github:libsoundio}
 
 # Summary and Conclusion
 
