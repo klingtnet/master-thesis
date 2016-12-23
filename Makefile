@@ -14,7 +14,7 @@ PANDOC_OPTS=--from=markdown\
 			--chapters
 
 # batchmode does not print anything, this makes debugging on a CI impossible
-XELATEX_CI_OPTS=-interaction=nonstopmode
+XELATEX_CI_OPTS=-interaction=nonstopmode -shell-escape
 
 # := is expanded once, see https://www.gnu.org/software/make/manual/html_node/Flavors.html#Flavors
 MD_FILES := $(wildcard $(DOC_PATH)/content*.pandoc | sort)
