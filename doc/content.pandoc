@@ -560,11 +560,11 @@ An ADSR generator's output is fully determined by five parameters, that are the 
 The generator will start the output on an event like a key press and will reside in the sustain stage as long as the key is still pressed.
 If the key is released the generator will switch to the release stage independent of its state at the time of the event.
 
-\begin{figure}
-\includegraphics[width=\textwidth]{imgs/adsr}
+\begin{sidewaysfigure}
+\includegraphics[width=\textheight]{imgs/adsr}
 \caption{An ADSR envelope with equal duration of 0.5\si{\second} for each stage and attack and sustain levels of 1 and 0.5.}
 \label{fig:adsr}
-\end{figure}
+\end{sidewaysfigure}
 
 
 # Synthesis Techniques
@@ -1296,11 +1296,11 @@ The naive way of discretizing an impulse train is by approximating each impulse 
 The impulse trains period $p = f_s/f$ is rarely an integer, thus the locations of the unit-sample pulses must be approximated to the nearest sample instant.
 \Cref{fig:impulse-train-approximation} (b) clearly shows the irregular intervals between unit-sample pulses the *pitch-period jitter* which adds noise to the signal \cite[p.~2]{Stilson1996a}.
 
-\begin{figure}
-\includegraphics[width=\textwidth]{imgs/box-train-plot.pdf}
+\begin{sidewaysfigure}
+\includegraphics[width=\textheight]{imgs/box-train-plot.pdf}
 \caption{(a) Impulse train $\bullet$ with frequency $f=\SI{8.3}{\hertz}$ and sample positions $\triangle$. (b) The approximated unit-sample pulse train with sample positions $p=f_s/f$ rounded to the nearest integer.}
 \label{fig:impulse-train-approximation}
-\end{figure}
+\end{sidewaysfigure}
 
 The naive discretization approach suffers from aliasing just as the trivial waveform generation method (see \cref{sec:trivial-waveform-generation}) because it is also not-bandlimited.
 Hence, a more sophisticated method is needed.
@@ -1611,9 +1611,9 @@ Then the generated signal is fed into a ring buffer (see \cref{sec:ring-buffer})
 Lastly, in the third part, the ring buffer is read-out by a callback from an audio backend that writes the data into the sound card's audio buffer.
 The overall structure of the synthesizer is depicted in \cref{fig:basic-synth-structure}.
 
-\begin{figure}
+\begin{sidewaysfigure}
 	\centering
-    \resizebox{\textwidth}{!}{
+    \resizebox{\textheight}{!}{
 	\begin{tikzpicture}
 [
     auto,
