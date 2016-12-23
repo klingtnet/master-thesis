@@ -1,10 +1,12 @@
 # Introduction
+\label{ch:introduction}
 
 <!--TODO
 Describe the structure of the thesis
 -->
 
 ## Objectives
+\label{sec:objectives}
 
 The objective of this thesis is to describe the process of building a real time audio software application at the example of an audio synthesizer with frequency modulated oscillators.
 
@@ -22,11 +24,13 @@ Furthermore, common synthesizer architectures and signal generation methods are 
 Lastly, an outlook on possible optimizations and enhancements, as well as a summary of the achieved results is given.
 
 ## Scope of this Thesis
+\label{sec:scope}
 
 It's not required for the reader to have any prior knowledge of soft- and hardware tools used in music production environments.
 However, a basic knowledge of signal processing and some familiarity with computer programming is beneficial to grasp the presented concepts.
 
 # User Interface
+\label{ch:user-interface}
 
 Interaction with the software synthesizer is done through its *user interface*.
 The user interface serves three senses, which are sight, touch and hearing.
@@ -49,6 +53,7 @@ User input, if it is a played note or a parameter change, must be processed in r
 -->
 
 ## MIDI
+\label{sec:midi}
 
 The Musical Instrument Digital Interface (MIDI) specification stipulates a hardware interconnection scheme and a method for data communication \cite[p.~972]{Roads:CMT}, but only the protocol specification is of interest for this work.
 Most modern MIDI hardware is connected via USB anyway.
@@ -69,6 +74,7 @@ The TMA should support the global community of MIDI users and establish [midi.or
 MIDI is used in nearly every music electronic device, like synthesizers, samplers, digital audio effects, and music software, due to its simple protocol structure and long time of existence.
 
 ### MIDI Protocol
+\label{subsec:midi-protocol}
 
 The MIDI protocol specifies a standard transmission rate of 31.250 baud.
 This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of 1MHz by 32 \cite[p.~976]{Roads:CMT}.
@@ -140,6 +146,7 @@ Only the latter contain musical control information and therefore are of interes
 \end{figure}
 
 ### MIDI Pitch
+\label{subsec:midi-pitch}
 
 \begin{table}[]
     \centering
@@ -190,6 +197,7 @@ f	&= 440\,\text{Hz}\cdot 2^{(60-69)/12}\\
 $$
 
 ### Timing Problems
+\label{subsec:midi-timing-problems}
 
 Playing two or more notes a the same time, i.e. playing a chord, can lead to timing problems because of MIDI's low bandwidth.
 
@@ -206,6 +214,7 @@ This may result in a *comb filter*[^comb-filter] like distortion of the synthesi
 [^comb-filter]: A comb filter adds a delayed copy of the signal to itself causing addition or subtraction in the signal. The filters frequency response shows regularly spaced notches, might resemble the shape of a comb.
 
 ## Open Sound Control
+\label{sec:osc}
 
 The *UC Berkeley Center for New Music and Audio Technology* (CNMAT) originally developed, and continues to research, Open Sound Control.
 In 2002, OSC's 1.0 specification was released.
@@ -221,6 +230,7 @@ UDP is often used as the transport layer to avoid the time required to establish
 A connection less transport is sufficient because OSC sender and receiver are almost always in physical proximity and connected through the same LAN.
 
 ### OSC Data Types
+\label{subsec:osc-data-types}
 
 \begin{table}[]
     \centering
@@ -315,6 +325,7 @@ bundle-element	= size, content ;
 \end{figure}
 
 ### Comparison to MIDI
+\label{subsec:osc-vs-midi}
 
 Both protocols provide a number of benefits and limitations in comparison to each other.
 The following list shows them for OSC compared to MIDI:
@@ -334,11 +345,13 @@ The following list shows them for OSC compared to MIDI:
 	\item[$-$] The number of applications that support OSC is very limited.
 \end{enumerate}
 
-# Synthesizer Fundamentals 
+# Synthesizer Fundamentals
+\label{ch:fundamentals}
 
 This chapter outlines the fundamental elements of a synthesizer and briefly describes the fundamental methods of sound generation.
 
 ## Oscillator
+\label{sec:oscillator}
 
 Oscillators are the fundamental building blocks of a synthesizer's sound generation engine.
 They serve the purpose of emitting a periodic waveform.
@@ -360,7 +373,7 @@ In general, the (Nyquist-Shannon) *sampling-theorem* states that a signal can be
 In other words, it ensures that there are at least two sample points for any frequency contained in the sampled signal.
 
 ### Aliasing
-\label{sec:aliasing}
+\label{subsec:aliasing}
 
 \begin{figure}
 \resizebox{\textwidth}{!}{
@@ -392,9 +405,8 @@ f_a =
 \label{fig:foldover}
 \end{figure}
 
-### Waveforms
+## Waveforms
 \label{sec:waveforms}
-
 Synthesis techniques like subtractive synthesis require a source signal with rich harmonic content, hence providing only sine wave oscillators is not sufficient.
 Oscillator waveforms typically used in subtractive synthesis are *triangle*, *sawtooth* and *square wave* the so called *trivial* or *geometric waveforms* \cite[p.~5]{Pekonen2013} because of their well-defined shape consisting of piece-wise linear or constant segments.
 Non bandlimited versions of those waveforms are shown in \cref{fig:waveforms}.
@@ -406,8 +418,8 @@ To prevent aliasing artifacts caused by discontinuities in the waveform (square 
 \label{fig:waveforms}
 \end{figure}
 
-#### Fourier Synthesis
-\label{sec:fourier-synthesis}
+### Fourier Synthesis
+\label{subsec:fourier-synthesis}
 
 *Fourier synthesis* is used to create bandlimited versions of those complex waveforms.
 It uses the properties of *Fourier series* representation of arbitrary but periodic waveforms \cite[p.~103]{LoyMusimathics2}:
@@ -452,7 +464,8 @@ a_n = c_k + c_{-k} = 2\Re(c_k)
 b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
 -->
 
-#### Bandlimited Waveforms
+### Bandlimited Waveforms
+\label{subsec:bandlimited-waveforms}
 
 Bandlimited sawtooth, triangle and square waveforms can be created by means of Fourier synthesis.
 <!-- Implementation detail: For each waveform only a single cycle is required because the oscillator will loop the cycle in the given frequency.-->
@@ -517,6 +530,7 @@ The difference in the scaling factors is based on the definition of signal energ
 The pressure levels audible by human ears range from 0.00002 \si{\newton\per\meter\squared} to 200 \si{\newton\per\meter\squared} \cite[p.~26]{West1986}, which is seven orders of magnitude larger than the audibility threshold and clearly shows that logarithmic scale is better suited than a linear one to represent sound level ratios.
 
 ## Envelope Generators
+\label{sec:envelope-generators}
 
 The sound produced by an musical instrument is usually not static and changes in amplitude or spectral content over time.
 To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizers sound engine, e.g. the cutoff of a frequency filter.
@@ -554,7 +568,7 @@ If the key is released the generator will switch to the release stage independen
 
 
 # Synthesis Techniques
-\label{sec:synthesis-techniques}
+\label{ch:synthesis-techniques}
 
 Since the invention of the first electrical organ in 1894 \cite[p.~83]{Roads:CMT}, the *Telharmonium* built by Thaddeus Cahill, a lot of different synthesizing techniques have been developed.
 Those techniques can be roughly divided into two broad categories, techniques for *mimicking the sound of traditional instruments*, like
@@ -629,6 +643,7 @@ The coefficients obtained by Fourier analysis of a real sound (e.g. a sample of 
 \end{figure}
 
 ## Frequency Modulation (FM) Synthesis
+\label{sec:fm-synthesis}
 
 Frequency Modulation (FM) was originally used in telecommunications to encode information on a carrier wave by modulating the waves instantaneous frequency, e.g. for radio broadcast.
 In \citeyear{Chowning:FM}, \citeauthor{Chowning:FM} presented a new application of this well-known process to control spectral components of an audio signal with great simplicity \cite[p.~1]{Chowning:FM}.
@@ -729,7 +744,7 @@ A *filter* thereby amplifies or attenuates regions of the spectrum while the sou
 Spectrally rich signals like noise, sawtooth or square waves are well suited for the use as sound sources. The following section introduces filters by means of audio signal processing, describes commonly used filter types in musical synthesizers and discusses FIR and IIR filters.
 
 # Digital Filters
-\label{sec:digital-filters}
+\label{ch:digital-filters}
 
 Filter is a broad term that has many different and often very general definitions.
 Such a general definition is given by \citeauthor{Smith:FilterTheory} in \cite{Smith:FilterTheory}:
@@ -744,12 +759,14 @@ In this thesis a more specific definition will be used \cite[p.~326]{Proakis:DSP
 This is analog to the description given in \cref{sec:subtractive-synthesis}, despite the terms *linear time-invariant* (LTI) system and *frequency response function* not having been explained.
 
 ## Linear Time-Invariant Systems
+\label{sec:lti-systems}
 
 LTI systems are used as filters because \enquote{no new spectral components are introduced} \cite{Smith:Filters} by them.
 The time-invariance property is not overly restrictive because it also holds for filters that change slowly over time.
 This is a very convenient property because if musicians were not allowed to change a subtractive synthesizers filter while playing then the result would be static and uninteresting sounds.
 
 ### Linearity and Time-Invariance
+\label{subsec:lti}
 
 A system is *linear* if the superposition principle \cref{eq:superposition} holds.
 
@@ -806,6 +823,7 @@ X(z) = \mathcal{Z}\left\{x[n]\right\} = \sum^{\infty}_{n=-\infty}x[n]z^{-n}.
 LTI filters can be divided into two types, first feedforward or *finite impulse response* (FIR) filters which only use previous input values ($a_j$s are zero) and second feedback or *infinite impulse response* (IIR) filters that also use previous output values to calculate the present filter output $y[n]$.
 
 ## Impulse Response
+\label{sec:impulse-response}
 
 Another way of representing a LTI system in the time domain is its response to a signal impulse, called the systems *impulse response*.
 
@@ -836,6 +854,7 @@ Clearly, convolution $\ast$ is a commutative operation.
 This property can be used to optimize possible implementations \cite{Karas:Convolution}.
 
 ## Frequency Response
+\label{sec:frequency-response}
 
 Evaluating the systems transfer function \cref{eq:transfer-function} on the unit circle, i.e. set $z$ to $e^{i\omega T}$ where $T$ is the sampling interval, yields the LTI systems frequency response which is the frequency spectrum of the output divided by the frequency spectrum of the input.
 
@@ -854,9 +873,10 @@ Another way of obtaining an LTI systems frequency response is by applying the Fo
 H(\omega) = \sum^\infty_{n=-\infty} h[n]e^{-i\omega n}
 \end{equation}
 
-It is sufficient to evaluate the frequency response function only for $\omega \in [-\pi,\pi)$ because all frequencies are mapped into a single cycle of the unit circle and the spectrum would repeat for additional cycles anyway\footnote{see aliasing \cref{sec:aliasing}}.
+It is sufficient to evaluate the frequency response function only for $\omega \in [-\pi,\pi)$ because all frequencies are mapped into a single cycle of the unit circle and the spectrum would repeat for additional cycles anyway\footnote{see aliasing \cref{subsec:aliasing}}.
 
 ### Magnitude- and Phase Response
+\label{subsec:magnitude-phase-response}
 
 The complex valued result of the frequency response function can be decomposed into two real valued functions \cite{Smith:Filters} the systems *magnitude response*\footnote{Sometimes improperly called *amplitude* response because amplitudes can be negative.} $|H(\omega)|$, and *phase response* $\angle H(\omega)$.
 
@@ -868,6 +888,7 @@ a filter also means poor transient response} and this effect will become worse w
 However, even a poor filter phase response is quite good compared to the phase error introduced by the audio speaker while transforming the signal from an electrical to an acoustical one \cite[p.~392]{Chamberlin:85}.
 
 ## Filter Classification
+\label{sec:filter-classification}
 
 Filters of a musical synthesizer are classified by the magnitude curve of their frequency response function $|H(\omega)|$ which is the filter's characteristic *frequency response* curve.
 Exemplary frequency response curves for lowpass, highpass, bandpass and notch (sometimes called bandreject or bandstop) filters are shown in \cref{fig:filter-classification}.
@@ -906,10 +927,11 @@ The phase response for the lowpass filter used in \cref{fig:filter-classificatio
 \end{figure}
 
 ## FIR Filters
+\label{sec:fir-filters}
 
 A FIR filter's response to an impulse will die away after a finite period of time \cite[p.~406]{Roads:CMT}, hence the name *finite* impulse response filter.
 The filter's structure is simply the sum of delayed and weighted samples where the weights for each delay are the coefficients $a_j$.
-As described in \cref{sec:LTI-filters}, the filters order is equal to the order of its transfer function polynomial, i.e. the total number of unit-sample delays it uses.
+As described in \cref{subsec:LTI-filters}, the filters order is equal to the order of its transfer function polynomial, i.e. the total number of unit-sample delays it uses.
 There are various methods for FIR filter design, e.g. window design method, frequency sampling or equiripple method \cite[p.664-690]{Proakis:DSP} and constraint-based linear programming algorithms like METEOR \cite{Steiglitz:METEOR}.
 
 The general equation for a finite impulse response filter is equal to \cref{eq:difference-equation} when all recursive coefficients $a_k$ are zero:
@@ -952,6 +974,7 @@ It can also be seen that complex zeroes $q=a+i\,b$ come in pairs; if they are no
 \end{figure}
 
 ## IIR Filters
+\label{sec:iir-filters}
 
 Infinite Impulse Response filters additionally use previous output values to calculate the recent result.
 Therefore, an IIR's rational transfer function contains feedback coefficients $a_k$ \cref{eq:transfer-function} and can be viewed as $H(z) = H_1(z)H_2(z)$ \cite[p.~583]{Proakis:DSP}, where $H_1(z)$ consists of the zeroes of $H(z)$ and
@@ -994,6 +1017,7 @@ The filter design technique used in this thesis is to take an analog prototype f
 Other design techniques like *approximation of derivates* or *design by impulse variance* have the limitation that they are only valid for a limited set of filter classes \cite[p.~712]{Proakis:DSP}.
 
 ### Bilinear Transform
+\label{subsec:bilinear-transform}
 
 The Bilinear transform, defined by \cref{eq:bilinear-transform} for sampling interval $T$, is used to convert a transfer function of a continious-time LTI filter transfer function $H_a(s)$ into a transfer function of a discrete-time LTI filter $H(z)$, where $H_a(s)$ defined in the $s$-domain with $s=\sigma + i\Omega$.
 
@@ -1018,7 +1042,8 @@ and the inverse transformation is given by
 \label{eq:frequency-warping-inverse}
 \end{equation}
 
-### Bilinear Transform example
+### Bilinear Transform Example
+\label{subsec:bilinear-transform-example}
 
 The following steps illustrate the general procedure of designing a filter using bilinear transform at the example of a second-order Butterworth lowpass filter with cutoff frequency $f_c=\SI{4000}{\hertz}$ for a sampling rate of $f_s = 48000$, hence sampling interval $T = 1/f_s$:
  
@@ -1090,7 +1115,8 @@ An additional advantage of TDF-II structures is that they perform well in applic
 \label{fig:direct-form}
 \end{figure}
 
-### Comparison FIR against IIR
+## Comparison FIR against IIR
+\label{sec:fir-vs-iir}
 
 \begin{table}[]
     \centering
@@ -1114,6 +1140,7 @@ Additionally, a Butterworth characteristic was picked because the phase response
 It is not of great disadvantage for a musical synthesizers filter that a Butterworth filter rolls of more slowly at the cutoff frequency, because very sharp transition band steepness is not required.
 
 # Oscillators and Waveform Synthesis
+\label{ch:oscillators}
 
 An oscillator is one of a synthesizer's fundamental building blocks because it is the source signal from which the desired sound is modeled from.
 Typically, one or more oscillators are used as a signal source.
@@ -1135,6 +1162,7 @@ They are not of interest for this research because this class of methods is deve
 The aim of this chapter is to introduce the generic structure of a digital oscillator and to evaluate quasi-bandlimited methods against (fully) bandlimited wavetable synthesis.
 
 ## Generic Oscillator Structure
+\label{sec:oscillator-structure}
 
 A common structure that is used for a wide variety of oscillators is shown in \cref{fig:oscillator-structure}.
 It consists of a *phase accumulator* which adds a *phase increment* $\varphi$ to itself each time a clock signal $t$ arrives.
@@ -1251,6 +1279,7 @@ The steeper spectral tilt for triangle waveforms can be explained by their const
 Thus, a trivial triangle oscillator implementation can be sufficient if implemented with two or more times oversampling depending on the amount of tolerable aliasing, especially for devices with very limited processing resources.
 
 ## Quasi-Bandlimited Waveform Synthesis
+\label{sec:quasi-bandlimited-synthesis}
 
 Quasi-bandlimited oscillator algorithms allow a certain degree of aliasing to be produced while making use of *psychoacoustic* effects like *masking*.
 Auditory masking means how sensitivity for one sound is affected by the presence of another sound which is largely dependend on the intensity and spectrum of the sound that causes the masking \cite[p.~187]{Gelfand2010}, i.e. the human ear cannot differentiate between two sounds with roughly the same frequency spectrum if the intensity difference is large enough.
@@ -1258,6 +1287,7 @@ Accordingly, the harmonics of a waveform can mask the aliasing components in the
 The intensity of aliasing must be particularly reduced in the range of $\SI{1}{\kilo\hertz}$ to $\SI{5}{\kilo\hertz}$, because this is where human ears are most sensitive \cite[fig.~11.1]{Gelfand2010}.
 
 ### BLITs
+\label{subsec:blit}
 
 In \citeyear{Stilson1996a} \citeauthor{Stilson1996a} presented in their paper \citetitle{Stilson1996a} \cite{Stilson1996a} a method for synthesizing alias free geometric waveforms by integrating a *bandlimited impulse train* (BLIT).
 Sawtooth, pulse and, of course, triangle waveforms can be derived from a pulse train by integration which is inherently a bandlimited operation.
@@ -1331,6 +1361,7 @@ that is the largest odd integer smaller than the period \cite[p.~6]{Stilson1996a
 However, the BLIT method cannot be implemented as is because the $\sinc$ function is infinitely long.
 
 ### BLIT-SWS
+\label{subsec:blit-sws}
 
 A realizable approximation that was proposed in the original paper by \citeauthor{Stilson1996a} is called *Sum of Windowed Sincs* (SWS) and will be discussed in more detail.
 Since then, a lot more methods were developed but it is not in the scope of this thesis to give an overview about all of them.
@@ -1357,6 +1388,7 @@ By controlling the window length a tradeoff between CPU usage and quality can be
 Another feasible optimization is to tabulate the windowed $\sinc$ function and to retrieve its values by the use of an interpolated table-lookup.
 
 ### BLEPs
+\label{subsec:blep}
 
 \citeauthor{Brandt2001} proposed in \citeyear{Brandt2001} a method to synthesize hard synced oscillators without aliasing called *bandlimited step* (BLEP) \cite{Brandt2001}, an extension of BLIT.
 Hard sync is the phase synchronisation of two oscillators with frequencies $f_1, f_2$ where a slave oscillator's phase is reset with each period of $f_1$.
@@ -1375,6 +1407,7 @@ Also, the pre-integration step reduces aliasing by another 6dB over BLIT-SWS.
 However, the CPU usage is still proportional to the oscillators frequency.
 
 ## Ideal Bandlimited Waveform Synthesis
+\label{sec:ideal-bandlimited-synthesis}
 
 Ideal bandlimited methods generate waveforms with a finite number of harmonics.
 The number of harmonics is limited by the highest harmonic frequency less than the Nyquist limit, hence, the waveforms are completly alias-free.
@@ -1384,6 +1417,7 @@ Feedback Delay Loop's are a relatively new method (first published in \citeyear{
 Pure additive synthesis is the most CPU intensive of those three because it requires to sum a sinusoidal oscillator for every harmonic to be synthesized,therefore a wavetable based approach is evaluated which uses lookup-tables containing bandlimited cycles of the waveform.
 
 ### Wavetables
+\label{subsec:wavetables}
 
 Wavetable oscillators can generate *arbitrary* static harmonic spectra.
 Nonetheless, dynamic spectra can be generated by crossfading the output of two detuned or different wavetable oscillators \cite[p.~41]{Frei2010} or by applying a time-varying filter to the output \cite[p.~37]{Huovilainen2010}.
@@ -1475,11 +1509,13 @@ This process is illustrated by \cref{fig:saw-table} and \cref{fig:sqr-table} for
 \end{figure}
 
 ## Conclusion
+\label{sec:oscillator-conclusion}
 
 A wavetable based approach was selected for the synthesizer's oscillators because of its simple implementation, high audio quality and great flexibility that allows to easily support any arbitrary waveform.
 Nonetheless, a mixed approach that uses BLEP based oscillators for geometric waveforms and wavetables for arbitray or user defined spectras would be a desirable optimization.
 
 # Implementation Details and Evaluation
+\label{ch:implementation-evaluation}
 
 The following chapter describes implementation details of the software synthesizer and evaluates algorithms and architecture decisions.
 In \cref{sec:why-rust} the decision for choosing Rust as the implementation language is explained.
