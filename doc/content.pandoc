@@ -1574,7 +1574,7 @@ Fortunately, there is no input audio signal for this synthesizer, thus only temp
 
 
 ### System Latency
-\label{sec:system-latency}
+\label{subsec:system-latency}
 
 The overall latency of the synthesizer is the sum of different latency portions made up a variety of components in the audio output chain.
 At first there is the control input latency that is either that of the MIDI or OSC connection, where the OSC latency greatly depends on the network connection's physical layer, e.g. Bluetooth, Wi-Fi or USB.
@@ -1721,7 +1721,7 @@ pub enum OscType {
 \end{listing}
 
 ### Lemur
-\label{sec:lemur}
+\label{subsec:lemur}
 
 A multitouch capable graphical user interface (GUI) for the synthesizer is provided by the implemenation of a custom controller patch for liine's Lemur application \cite{LiineLemur}.
 Lemur resembles the control surface of Jazzmutant's Lemur, a multi touch capable OSC control surface hardware device, but runs on Android on iOS devices instead.
