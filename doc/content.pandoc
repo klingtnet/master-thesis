@@ -1599,7 +1599,7 @@ Given a sample rate of $\SI{48}{\kilo\hertz}$, an input latency of $\SI{1.3}{\mi
 $l 	= \SI{1.3}{\milli\second}+(512 + 256)\cdot\SI{48}{\kilo\hertz}^{-1}
 	= \SI{17.3}{\milli\second}$
 that is about \textthreequarters{} of the $\SI{24}{\milli\second}$ limit and thus sufficiently small to be unperceivable.
-Both buffer sizes were used without buffer underruns on the development machine, a HP elitebook 8460p running Arch Linux with kernel 4.8.15-2-ck-sandybridge and JACK2 \cite{Jack2} as audio backend.
+Both buffer sizes were used without buffer underruns on the development machine, a HP elitebook 8460p equipped with an intel\textregistered{} i5-2520M running Arch Linux kernel 4.8.15-2-ck-sandybridge and JACK2 \cite{Jack2} as audio backend.
 The input latency was measured by taking the average round-trip times of 100 ICMP echo requests (ping) between an OSC client, an android tablet running liine's Lemur OSC app, connected through an ad-hoc Wi-Fi connection and the computer running the synthesizer application.
 
 ## Structure
