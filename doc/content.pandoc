@@ -1517,11 +1517,11 @@ Nonetheless, a mixed approach that uses BLEP based oscillators for geometric wav
 # Implementation Details and Evaluation
 \label{ch:implementation-evaluation}
 
-The following chapter describes implementation details of the software synthesizer and evaluates algorithms and architecture decisions.
-In \cref{sec:why-rust} the decision for choosing Rust as the implementation language is explained.
-\Cref{sec:realtime} and \cref{sec:latency} defines the terms *realtime* and *latency* and their implications for the application followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
-Thereafter, \cref{sec:input-implementation} to \cref{sec:audio-output-implementation} describe the implementation of all components shown in the structure overview and evaluate the aliasing behaviour of the wavetable oscillator implementation.
-<!-- TODO: finish chapter intro when all sections are written and a remark about the open source libraries and code-->
+The following chapter explains implementation details of the software synthesizer that was developed in this thesis and evaluates the implementation with respect to latency in \cref{subsec:system-latency}, aliasing behaviour of the wavetable oscillators in \cite{sec:wavetable-oscillator-implementation} and the time-varying behaviour of the multi-mode filter in \cref{sec:filter-implementation}.
+In the first section is explained why Rust was chosen as the implementation language and the important terms *realtime* and *latency* are defined in \Cref{sec:realtime} and \cref{sec:latency}, followed by an followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
+Thereafter, all components of the structure are described in \cref{sec:input-implementation} to \cref{sec:audio-output-implementation}.
+
+The full source code of the synthesizer and its libraries is published as open source software on github and is available in \cite{github:ytterbium}, \cite{github:rb}, \cite{github:rsoundio} and \cite{github:rosc}.
 
 ## Why Rust?
 \label{sec:why-rust}
