@@ -11,12 +11,12 @@ Since then, a large number of vastly different software synthesizers was develop
 Despite the huge amount of computing power that is recently available even on commodity hardware, the development is still a challenging task because musicians expect an nearly instantaneous response from their instrument and dropped audio frames cause click sound which could make a whole recording useless.
 Therefore, audio software must make very efficient use of processing and power while achieving the best possible amount of audio quality.
 
-The set of problems that arise when building a software synthesizer is quite large.
+The set of problems that arise when developing a software synthesizer is quite large.
 It includes timing and synchronization problems that occur because the short time windows in which computations are required to finish.
-Another class of problems are sound artifacts like aliasing which must be avoided by choosing apropriate algorithms.
+Another class of problems are sound artifacts like aliasing which must be avoided by choosing appropriate algorithms.
 
-Audio software is usually implemented in languages with manual memory managment (unmanaged languages) like C or C++ for which a great number of frameworks already exist.
-Rust, on the other hand, is a promising new language that claims to be thread-safe, guarantees memory safety (unlike C and C++) and has little runtime cost because a garbage collector is not required.
+Audio software is usually implemented in programming languages with manual memory managment (unmanaged languages) like C or C++ for which a great number of frameworks already exist.
+Rust, on the other hand, is a promising new programming language that claims to be thread-safe, guarantees memory safety (unlike C and C++) and has little runtime cost because a garbage collector is not required.
 This makes Rust a great candidate for the development of modern audio software.
 But, due to the language's ecosystem still being in its early days, a lot of libraries had to be implemented from scratch.
 
