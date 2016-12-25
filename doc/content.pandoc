@@ -1,27 +1,27 @@
 # Introduction
 \label{ch:introduction}
 
-<!--TODO
-Describe the structure of the thesis
--->
+Electronic musical synthesizers have a long history that started in 1906 with the *Telharmonium* \cite[p.~83]{Roads:CMT}, a very large device with rotating tone generators that emitted pure sinusoidal waves.
+It took nearly 50 years until the first experiments with digital sound synthesis were made in 1957 at Bell Telephone Laboratories with the development of Music I and II programs by Max V. Mathews \cite[p.~88]{Roads:CMT}.
+Another 20 years later, in the late 70s, the first real-time FM synthesizers became commercially available, e.g. the Fairlight CMI in 1979.
+The first affordable digital hardware FM synthesizer, Yamaha's DX7, was introduced in 1983 and caused the decline of analog synthesizers because digital hardware became cheaper from year to year.
+Due to increasing computing power, real-time synthesis was made possible on general purpose computers in the early 2000s without the need for special DSP processors or other expensive audio hardware.
+Since then, a large number of vastly different software synthesizers was developed, both commercial as well as free or open source projects.
 
-## Objectives
-\label{sec:objectives}
+Despite the huge amount of computing power that is recently available even on commodity hardware, the development is still a challenging task because musicians expect an nearly instantaneous response from their instrument and dropped audio frames cause click sound which could make a whole recording useless.
+Therefore, audio software must make very efficient use of processing and power while achieving the best possible amount of audio quality.
 
-The objective of this thesis is to describe the process of building a real time audio software application at the example of an audio synthesizer with frequency modulated oscillators.
+The set of problems that arise when building a software synthesizer is quite large.
+It includes timing and synchronization problems that occur because the short time windows in which computations are required to finish.
+Another class of problems are sound artifacts like aliasing which must be avoided by choosing apropriate algorithms.
 
-The amount of problems that arise when building such an application is quite large.
-This includes timing and synchronization problems that occur because the computations made are required to be finished in short time windows.
-Computations must be as fast as possible to ensure a responsive feedback for the player of the instrument, and are needed to avoid sound distortion when the generated signals could not be delivered fast enough to the sound card buffer.
-Another class of problems are sound artifacts like aliasing that must be avoided by choosing apropriate algorithms.
-Those algorithms and methods are evaluated and the one that best fits the given requirements is then implemented.
+Audio software is usually implemented in languages with manual memory managment (unmanaged languages) like C or C++ for which a great number of frameworks already exist.
+Rust, on the other hand, is a promising new language that claims to be thread-safe, guarantees memory safety (unlike C and C++) and has little runtime cost because a garbage collector is not required.
+This makes Rust a great candidate for the development of modern audio software.
+But, due to the language's ecosystem still being in its early days, a lot of libraries had to be implemented from scratch.
 
-Not every programming language is equally suitable for the development of real time applications, thus it is explained why Rust was chosen as the implementation language.
-Libraries for the MIDI and Open Sound Control protocol were implemented and released as open-source software.
-Both protocols are supported by the application and are used to play polyphonic\footnote{More than one at a time.} notes or to remotely control all parameters of the synthesizer.
-Furthermore, common synthesizer architectures and signal generation methods are discussed and evaluated.
-
-Lastly, an outlook on possible optimizations and enhancements, as well as a summary of the achieved results is given.
+The aim of this thesis is to evaluate available methods and algorithms for the use in a real-time polyphonic FM synthesizer and to implement a prototype that can be played with conventional audio controller hardware.
+Every piece of code that was implemented for this thesis is being open sourced, see \cref{ch:implementation-evaluation} for details.
 
 ## Scope of this Thesis
 \label{sec:scope}
