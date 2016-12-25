@@ -1938,15 +1938,27 @@ A simple solution was to set a boolean marker that prevented the struct from bei
 Implementing a safe Rust wrapper for \citetitle{github:libsoundio} has shown to be more complicated than expected but the final implementation could be used successfully as an audio backend for the synthesizer.
 
 # Summary
+\label{ch:summary}
+
+This work presented an overview of synthesis techniques and algorithms suitable for the implementation of a polyphonic real-time audio synthesizer.
+The evaluation of the synthesizer prototype showed that the chosen techniques achieved the required amount of audio quality and are efficient enough so that the instrument can be played with very low latency through MIDI and OSC controller hard- or software.
+Also, Rust proved to be an excellent choice for the implementation of real-time audio software, even though the language's ecosystem still lacks a mature signal processing libraries.
 
 ## Optimizations
+\label{sec:optimizations}
 
-- LFOs
-- modulation for oscillator pitch via envelopes
-- general amount of modulation sources
+It should be possible to compile the source code on platforms other than Linux, but those were not tested, hence a cross platform build setup could be developed.
+Moreover, commercial synthesizers usually provide a vast amount of modulation options, e.g. nearly every parameter of the instrument can be controlled from low frequency oscillators, envelope generators or integrated step sequencers, the possibilities are nearly endless.
+Adding an envelope generator to control the filter's cutoff frequency would greatly expand the range of sounds that can be created with the synthesizer.
+A combination of different oscillator algorithms for specific waveforms could improve the performance of the application, especially the sine wave could be generated without the use of wavetables.
+Also, of great value would be the addition of a variety of sound effects to the synthesizer's audio chain, e.g. a reverb effect, a delay or one of its special forms like phaser and flanger, bit reduction or a distortion effect.
+The set of possible extensions and improvements is as large as the variety of sonic themes that can be produced, so the given ideas can be seen as a starting point.
 
 ## Conclusion
+\label{sec:conclusion}
 
-- software development is an iterative process
-- first version is never perfect
-- developing a synthesizer costs many manhours
+I underestimated the amount of work that comes with such a project, especially for one with no previous experience in the development of signal processing software.
+
+The closing sentence is a quote from my presentation of the master's thesis:
+
+> Implementing an audio synthesizer is serious work, if done right.
