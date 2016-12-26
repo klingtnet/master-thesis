@@ -1507,7 +1507,7 @@ Nonetheless, a mixed approach that uses BLEP based oscillators for geometric wav
 \label{ch:implementation-evaluation}
 
 The following chapter explains implementation details of the software synthesizer that was developed in this thesis and evaluates the implementation with respect to latency in \cref{subsec:system-latency}, aliasing behaviour of the wavetable oscillators in \cite{sec:wavetable-oscillator-implementation} and the time-varying behaviour of the multi-mode filter in \cref{sec:filter-implementation}.
-In the first section is explained why Rust was chosen as the implementation language and the important terms *realtime* and *latency* are defined in \Cref{sec:realtime} and \cref{sec:latency}, followed by an followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
+In the first section is explained why Rust was chosen as the implementation language and the important terms *real-time* and *latency* are defined in \Cref{sec:real-time} and \cref{sec:latency}, followed by an followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
 Thereafter, all components of the structure are described in \cref{sec:input-implementation} to \cref{sec:audio-output-implementation}.
 
 The full source code of the synthesizer and its libraries is published as open source software on github and is available in \cite{github:ytterbium}, \cite{github:rb}, \cite{github:rsoundio} and \cite{github:rosc}.
@@ -1533,10 +1533,10 @@ The [Max Planck Institute for Software Systems](http://plv.mpi-sws.org/) has sta
 One of the main goals of the research group is to formally investigate if the claims made about data-race freedom, memory and type safety actually hold.
 As of the time of writing there is no evidence that the claims are untrue, therefore it's assumed that they actually hold.
 
-## Realtime
-\label{sec:realtime}
+## Real-Time
+\label{sec:real-time}
 
-There are different forms of realtime computing in computer science but common to all of them is that computations have to be finished in a predefined amount of time and the shorter this time span is the faster those computations have to be.
+There are different forms of real-time computing in computer science but common to all of them is that computations have to be finished in a predefined amount of time and the shorter this time span is the faster those computations have to be.
 The definition of real-time used in the context of this thesis is of \citeauthor{Rabiner1972} \cite[p.2]{Rabiner1972}:
 
 > A real-time process is one for which, on the average, the computing associated with each sampling interval can be completed in a time less than or equal to the sampling interval.
