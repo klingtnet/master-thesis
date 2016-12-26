@@ -3,27 +3,6 @@
 
 % use text from introduction
 
-\section*{German}
-
-Aufgrund der stetig zunehmenden Rechenleistung wurde Anfang der 2000er Jahren Echtzeit-Synthese auf PCs ermöglicht, ohne dass spezielle DSP-Prozessoren oder andere teure Audiogeräte erforderlich wären.
-Seither wurde eine große Anzahl unterschiedlichster Software-Synthesizer entwickelt, sowohl kommerzielle als Open-Source Projekte.
-
-Trotz der enormen Menge an Rechenleistung, die auf moderner Endanwenderhardware zur Verfügung steht, ist die Entwicklung von Audiosoftware noch immer eine anspruchsvolle Aufgabe, da Musiker eine nahezu unmittelbare Reaktion von dem Instrument erwarten und große Verzögerungen in der Echtzeitsignalberechnung eine ganze Aufnahme nutzlos machen könnte.
-Daher muss Audiosoftware möglichst effizient mit der Rechenleistung umgehen und gleichzeitig ein Höchstmaß an Audioqualität bieten.
-
-Die Menge an Problemen die bei der Entwicklung eines Softwaresynthesizers ensteht ist recht groß.
-Es können u. a. aufgrund der geringen Zeitfenster für die Berechnungen Zeit- und Synchronisationsprobleme auftreten.
-Eine andere Klasse von Problemen sind Signalartefakte wie Aliasing welche durch die Verwendung adäquater Algorithmen verringert oder vermieden werden können.
-
-Audiosoftware wird üblicherweise in Sprachen mit manuellen Speichermanagement wie C oder C++ entwickelt, für welche bereits eine große Anzahl an Bibliotheken existiert.
-Rust, andererseits, ist eine vielversprechende neue Programmiersprache welche behauptet Thread- und Speichersicherheit zu garantieren bei gleichzeitig geringen Laufzeitkosten da kein Garbage Collector notwendig ist.
-Das macht Rust zu einem grossartigen Kandidaten für die Entwicklung von moderner Audiosoftware.
-Dennoch, aufgrund des geringen Alters des Rust-Ökosystems müssen viele Bibliotheken von neuem entwickelt werden.
-
-Das Ziel dieser Arbeit ist die Entwicklung und Evaluierung von vorhandenen Methoden und Algorithmen für die Verwendung in polyphonen Echtzeit FM Synthesizern, sowie die Implementierung eines Prototypen welcher mit üblicher Audio Controller Hardware gespielt werden kann.
-
-Abschließend werden mögliche Optimierungen vorgestellt und der Ist-Zustand des Synthesizerprototypen evaluiert.
-
 \section*{English}
 
 Due to increasing computing power, real-time synthesis was made possible on general purpose computers in the early 2000s without the need for special DSP processors or other expensive audio hardware.
@@ -44,6 +23,27 @@ But, due to the language's ecosystem still being in its early days, a lot of lib
 The aim of this thesis is to evaluate available methods and algorithms for the use in a real-time polyphonic FM synthesizer and to implement a prototype that can be played with conventional audio controller hardware.
 
 In the end, possible optimizations are proposed and the state of the implementation prototype is evaluated.
+
+\section*{German}
+
+Aufgrund stetig zunehmender Rechenleistung wurde Anfang der 2000er Jahre Echtzeitaudiosynthese auf PCs ermöglicht, ohne dass spezielle DSP-Prozessoren oder andere teure Audiogeräte erforderlich wären.
+Seither wurde eine große Anzahl unterschiedlichster Software-Synthesizer entwickelt, sowohl kommerzielle als auch Open-Source Projekte.
+
+Trotz der enormen Menge an Rechenleistung, die auf moderner Endanwenderhardware zur Verfügung steht, ist die Entwicklung von Audiosoftware noch immer eine anspruchsvolle Aufgabe, da Musiker eine nahezu unmittelbare Reaktion von dem Instrument erwarten und große Verzögerungen in der Echtzeitsignalberechnung eine ganze Aufnahme nutzlos machen könnte.
+Daher muss Audiosoftware möglichst effizient mit der Rechenleistung umgehen und gleichzeitig ein Höchstmaß an Audioqualität bieten.
+
+Die Menge an Problemen die bei der Entwicklung eines Softwaresynthesizers ensteht ist recht groß.
+Es können u. a. aufgrund der geringen Zeitfenster für die Berechnungen Zeit- und Synchronisationsprobleme auftreten.
+Eine andere Klasse von Problemen sind Signalartefakte wie Aliasing welche durch die Verwendung adäquater Algorithmen verringert oder vermieden werden können.
+
+Audiosoftware wird üblicherweise in Sprachen mit manuellen Speichermanagement wie C oder C++ entwickelt, für welche bereits eine große Anzahl an Bibliotheken existiert.
+Rust, andererseits, ist eine vielversprechende neue Programmiersprache welche behauptet Thread- und Speichersicherheit zu garantieren bei gleichzeitig geringen Laufzeitkosten da kein Garbage Collector notwendig ist.
+Das macht Rust zu einem grossartigen Kandidaten für die Entwicklung von moderner Audiosoftware.
+Dennoch, aufgrund des geringen Alters des Rust-Ökosystems müssen viele Bibliotheken von neuem entwickelt werden.
+
+Das Ziel dieser Arbeit ist die Entwicklung und Evaluierung von vorhandenen Methoden und Algorithmen für die Verwendung in polyphonen Echtzeit FM Synthesizern, sowie die Implementierung eines Prototypen welcher mit üblicher Audio Controller Hardware gespielt werden kann.
+
+Abschließend werden mögliche Optimierungen vorgestellt und der Ist-Zustand des Synthesizerprototypen evaluiert.
 
 \sffamily{
 	\begin{center}
