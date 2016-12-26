@@ -44,14 +44,6 @@ On the other hand, Open Sound Control software like [liine's Lemur](https://liin
 
 ![Edirol PCR-300 MIDI controller keyboard\label{midi:edirol}](imgs/pcr_300_angle.jpg){ width=100% }
 
-<!-- TODO
-- OSC: custom controllers, more modern approach
-- User interface must work in real time (latency)
-
-MIDI support is a basic requirement for nearly all types of music hard- and software because it allows to use controller hardware
-User input, if it is a played note or a parameter change, must be processed in real-time to give the player direct feedback without perceived *latency* (see \nameref{latency}).
--->
-
 ## MIDI
 \label{sec:midi}
 
@@ -468,7 +460,6 @@ b_n = i\,(c_k + c_{-k}) = 2\Im(c_k)
 \label{subsec:bandlimited-waveforms}
 
 Bandlimited sawtooth, triangle and square waveforms can be created by means of Fourier synthesis.
-<!-- Implementation detail: For each waveform only a single cycle is required because the oscillator will loop the cycle in the given frequency.-->
 Sawtooth, in contrast to square and triangle waves, contains odd and even harmonics which makes them a great source signal because of their rich harmonic content.
 Square and triangle waves consist solely of odd harmonic partials.
 The complex Fourier series for sawtooth, triangle and square waves is shown in \cref{eq:sawtooth-series}, \cref{eq:squarewave-series} and \cref{eq:triangle-series} where the sum is zero for $n=0$.
@@ -536,7 +527,6 @@ The sound produced by an musical instrument is usually not static and changes in
 To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizers sound engine, e.g. the cutoff of a frequency filter.
 In \cref{fig:piano-c4} the time-varying behavior of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
 
-<!-- Replace this by the high resolution image -->
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/piano_c4_small.png}
 \caption{Waveform plot of sampled C\textsubscript{4} note played on a piano \cite{freesound:piano}.}
@@ -701,7 +691,6 @@ A quick estimation for the resulting bandwidth of different modulation indices i
 \end{figure}
 
 The most basic FM synthesizer *algorithm* consists of two *operators* (which are just oscillators in FM terminology), a modulator and a carrier, where the modulators output is summed with the carriers fundamental frequency.
-<!-- TODO: untereinander verbunden -->
 An FM algorithm is described by how its operators are connected among each other.
 \Cref{fig:fm-operator} shows the structure of the most basic FM algorithm, a simple pair of operators.
 
