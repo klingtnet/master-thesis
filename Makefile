@@ -11,7 +11,7 @@ LATEX_ENGINE=xelatex
 PANDOC_OPTS=--from=markdown\
 			--to=latex\
 			--smart\
-			--chapters
+			--top-level-division=chapter
 
 # batchmode does not print anything, this makes debugging on a CI impossible
 XELATEX_CI_OPTS=-interaction=nonstopmode -shell-escape
