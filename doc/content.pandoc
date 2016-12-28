@@ -195,8 +195,8 @@ Playing two or more notes a the same time, i.e. playing a chord, can lead to tim
 
 $$
 \begin{aligned}
-t_\text{Note-On}	&= 3\cdot\left(31250\,\frac{\text{bit}}{\text{s}}/10\,{\text{bit}}\right)^{-1}\\
-					&= 0.0096\,\text{s} = 0.96\,\text{ms}
+t_\text{Note-On}	&= 3\cdot\left(\SI{31250}{\bit\per\second}/\SI{10}{\bit}\right)^{-1}\\
+					&= \SI{0.00096}{\second} = \SI{0.96}{\milli\second}
 \end{aligned}
 $$
 
