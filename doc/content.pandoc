@@ -286,7 +286,7 @@ The address of an OSC method starts with a `/`, followed by any container name a
 \end{figure}
 
 \begin{figure}
-\caption{Grammar of an OSC packet described as EBNF (ISO14977 syntax \cite[p.~14]{ISO14977})}
+\caption{Grammar of an OSC packet described as EBNF (ISO14977 syntax \cite[p.~14]{ISO14977}).}
 \label{osc:grammar}
 \begin{verbatim}
 packet			= size, content ;
@@ -376,9 +376,10 @@ f_a =
 |N\,f_s - f|,& \text{if }N\text{ is even}\\
 |(N+1)f_s - f|,& \text{otherwise}
 \end{cases}
-\text{, where }N = \lfloor{}f/f_s\rfloor{}
 \label{eq:aliasing-frequency}
 \end{equation}
+
+, where $N = \lfloor{}f/f_s\rfloor{}$.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/foldover}
@@ -395,7 +396,7 @@ To prevent aliasing artifacts caused by discontinuities in the waveform (square 
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/basic-waveforms}
-\caption{Common (non bandlimited) waveforms supported by most synthesizers: a) sine wave, b) triangle wave, c) ramp/sawtooth, d) square wave}
+\caption{Common (non bandlimited) waveforms supported by most synthesizers: a) sine wave, b) triangle wave, c) ramp/sawtooth, d) square wave.}
 \label{fig:waveforms}
 \end{figure}
 
@@ -426,9 +427,9 @@ e^{i\phi} = \cos(\phi)+i\sin(\phi)
 into \cref{eq:fourier-series} it can be written in complex form:
 
 \begin{equation}
-f(t) = \sum_{k=-\infty}^\infty c_n e^{i\,2\pi\,k\,t+\phi_k}.
+f(t) = \sum_{k=-\infty}^\infty c_n e^{i\,2\pi\,k\,t+\phi_k}
 \label{eq:fourier-series-complex}
-\end{equation}
+\end{equation}.
 
 The summation range has changed for the complex Fourier series \cref{eq:fourier-series-complex} to $-\infty$ and $\infty$, thus there are now negative frequencies.
 To retrieve a real-valued signal from the complex Fourier series it is required to take the conjugate transpose of each value, i.e. to specify the coefficients $c_k$ as pairs with a $-c_k$ for each positive coefficient.
@@ -495,6 +496,8 @@ and the ratio of signal power \cref{eq:db-power}.
 20\log_{10}{}\left(\frac{a}{b}\right)
 \label{eq:db-power}
 \end{equation}
+
+with $a,b\in{}\mathbb{R}$.
 The difference in the scaling factors is based on the definition of signal energy where the square of the signals amplitude is taken, see \cref{eq:signal-energy}.
 \begin{equation}
 \int^{\infty}_{-\infty} \left|x(t)\right|^2 dt
@@ -513,7 +516,7 @@ The pressure levels audible by human ears range from 0.00002 \si{\newton\per\met
 \label{sec:envelope-generators}
 
 The sound produced by an musical instrument is usually not static and changes in amplitude or spectral content over time.
-To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizers sound engine, e.g. the cutoff of a frequency filter.
+To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizer's sound engine, e.g. the cutoff of a frequency filter.
 In \cref{fig:piano-c4} the time-varying behavior of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
 
 \begin{figure}
@@ -526,12 +529,12 @@ There are various types of envelope generators that range from simple two stage 
 A commonly used model with a reasonable amount of controllable parameters is the so called ADSR envelope, which stands for the four different stages of the envelope which are *Attack*, *Decay*, *Sustain* and *Release*.
 Because of the non-linearity of human hearing, as discussed in \cref{sec:hearing}, it is not sufficient to linearly ramp values between those four stages because this would not yield a smooth change in perceived loudness.
 
-\Citeauthor{Puckette2006a} proposes three different amplitude envelope transfer functions \cite[p.~94]{Puckette2006a} where $10^{2(x-1)}$ converts from \si{\decibel} to linear and the quartic curve $x^4$ approximates the exponential \si{\decibel} curve while being computationally less expensive and reaching true zero at $x=0$.
+\Citeauthor{Puckette2006a} proposes three different amplitude envelope transfer functions \cite[p.~94]{Puckette2006a} (see \cref{fig:envelope-transfer-functions}) where $10^{2(x-1)}$ converts from \si{\decibel} to linear and the quartic curve $x^4$ approximates the exponential \si{\decibel} curve while being computationally less expensive and reaching true zero at $x=0$.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/adsr-transfer-functions}
 \caption{Three amplitude envelope transfer functions for input values in the range of [0, 1] as proposed by \cite[p.~94]{Puckette2006a}.}
-\label{fig:transfer-functions}
+\label{fig:envelope-transfer-functions}
 \end{figure}
 
 An ADSR generator's output is fully determined by five parameters, that are the output *level* and *duration* of the attack stage, decay duration, sustain level and duration of release.
@@ -645,7 +648,7 @@ A table of waveforms generated by different values of $m_f$ and $m_a$ is shown i
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/fm-grid}
-\caption{One cycle of a FM modulated sine wave for different modulation intensities $a_m$ and modulator frequencies $f_m$}
+\caption{One cycle of a FM modulated sine wave for different modulation intensities $a_m$ and modulator frequencies $f_m$.}
 \label{fig:fm-table}
 \end{figure}
 
@@ -729,7 +732,7 @@ Such a general definition is given by \citeauthor{Smith:FilterTheory} in \cite{S
 
 > Any medium through which the music signal passes, whatever its form, can be regarded as a filter.
 
-Surprisingly, even \citetitle{Rabiner1972} (\cite{Rabiner1972}) uses the term without prior specification.
+Surprisingly, even \citetitle{Rabiner1972} \cite{Rabiner1972} uses the term without prior specification.
 In this thesis a more specific definition will be used \cite[p.~326]{Proakis:DSP}:
 
 > The linear time-invariant system, through its frequency response function, attenuates some frequency components of the input signal and amplifies other frequency components. Thus the system acts as a filter to the input signal.
@@ -741,7 +744,7 @@ This is analog to the description given in \cref{sec:subtractive-synthesis}, des
 
 LTI systems are used as filters because \enquote{no new spectral components are introduced} \cite{Smith:Filters} by them.
 The time-invariance property is not overly restrictive because it also holds for filters that change slowly over time.
-This is a very convenient property because if musicians were not allowed to change a subtractive synthesizers filter while playing then the result would be static and uninteresting sounds.
+This is a very convenient property because, if musicians were not allowed to change parameters of a subtractive synthesizer's filter while playing, the result would be static and uninteresting sounds.
 
 ### Linearity and Time-Invariance
 \label{subsec:lti}
@@ -753,7 +756,7 @@ F[a_1 x_1(n) + a_2x_2(n)] = a_1F[x_1(n)] + a_2F[x_2(n)]
 \label{eq:superposition}
 \end{equation}
 
-In other words, the response of system $F$ applied to two (or more) stimuli $x_{1,2}$ is equal to the sum of responses of the system applied to each stimulus individually, for any real values of $a_{1,2}$.
+In other words, the response of system $F$ applied to two (or more) stimuli $x_{1,2}$ is equal to the sum of responses of the system applied to each stimulus individually, for any real valued scalars $a_{1,2}$ and points in time $n$.
 This also shows the scaling the property of linear systems, i.e. scaling of a systems input results in an identical scaling of the response.
 A system is *time invariant*, if
 
@@ -763,7 +766,7 @@ F[x(n-k)]=y(n-k),
 \end{equation}
 
 for any time shift $k$.
-Thus the response of the system applied to a stimuli delayed by $k$ units of time is equal to the systems response delayed for the same amount.
+Thus, the response of the system applied to a stimulus delayed by $k$ units of time is equal to the systems response delayed for the same amount.
 Hence, if a system obeys both properties, linearity and time-invariance, then it is called an LTI system.
 Such a system is characterized completely by its *impulse* or *frequency response*.
 
@@ -839,9 +842,9 @@ Evaluating the systems transfer function \cref{eq:transfer-function} on the unit
 It is easy to show that evaluating the (bilateral) z-transform on the unit-circle will find the spectrum because setting $z=e^{i\omega T}$ in \cref{eq:bilateral-transform} results in the definition of the bilateral discrete-time Fourier transform:
 
 \begin{equation}
-X\left(e^{i\omega T}\right) = \sum^{\infty}_{n=-\infty} x[n]e^{-i\omega n T}.
+X\left(e^{i\omega T}\right) = \sum^{\infty}_{n=-\infty} x[n]e^{-i\omega n T}
 \label{eq:DTFT}
-\end{equation}
+\end{equation}.
 
 In the following only *causal* sequences are of interest, thus the *unilateral* versions of z-transform and discrete-time Fourier transform are used in which the summation index starts at $n=0$.
 Also, the sampling index $T$ is set to $1$ for simplicity.
@@ -851,12 +854,12 @@ Another way of obtaining an LTI systems frequency response is by applying the Fo
 H(\omega) = \sum^\infty_{n=-\infty} h[n]e^{-i\omega n}
 \end{equation}
 
-It is sufficient to evaluate the frequency response function only for $\omega \in [-\pi,\pi)$ because all frequencies are mapped into a single cycle of the unit circle and the spectrum would repeat for additional cycles anyway\footnote{see aliasing \cref{subsec:aliasing}}.
+It is sufficient to evaluate the frequency response function only for $\omega \in [-\pi,\pi)$ because all frequencies are mapped into a single cycle of the unit circle and the spectrum would repeat for additional cycles anyway[^see-aliasing].
 
 ### Magnitude- and Phase Response
 \label{subsec:magnitude-phase-response}
 
-The complex valued result of the frequency response function can be decomposed into two real valued functions \cite{Smith:Filters} the systems *magnitude response*\footnote{Sometimes improperly called *amplitude* response because amplitudes can be negative.} $|H(\omega)|$, and *phase response* $\angle H(\omega)$.
+The complex valued result of the frequency response function can be decomposed into two real valued functions \cite{Smith:Filters} the systems *magnitude response*[^magnitude-response] $|H(\omega)|$ and its *phase response* $\angle H(\omega)$, where $\angle$ denotes the complex argument.
 
 The magnitude response of a filter shows how frequencies are attenuated or amplified and the phase response specifies the phase-shift experienced by each frequency.
 In general the frequency response is of more interest because it is better suited for characterizing a filter but the phase response should not be completely ignored.
@@ -885,7 +888,7 @@ A filters cutoff frequency is commonly specified for the half-power point \cite[
 
 An ideal filter would have a sharp cut between the pass- and stopband that looks like a rectangle in the frequency response but such a filter is not realizable because it would be of infinite order.
 Hence, there is a transition between the pass- and stopband called *transition band*.
-\Cref{fig:filter-bands} shows those bands and their bandwidths $b_{pass},b_{trans}, b_{stop}$ as well as other constraints like pass- and stopband $a_{pass}, a_{stop}$ that must be specified and taken into account when designing a filter a filter..
+\Cref{fig:filter-bands} shows those bands and their respective bandwidths $b_{pass}$, $b_{trans}$, $b_{stop}$ as well as other constraints like pass- and stopband $a_{pass}$ and $a_{stop}$ that must be specified and taken into account when designing a filter.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/filter-bands.pdf}
@@ -947,7 +950,7 @@ It can also be seen that complex zeroes $q=a+i\,b$ come in pairs; if they are no
 \begin{figure}
 \centering
 \includegraphics[width=.7\textwidth]{imgs/filter-zero-fir}
-\caption{Zeroes of 12-th order lowpass FIR filter with cutoff frequency $f_c=\pi/4$}
+\caption{Zeroes of 12-th order lowpass FIR filter with cutoff frequency $f_c=\pi/4$.}
 \label{fig:filter-zero-fir}
 \end{figure}
 
@@ -1023,7 +1026,7 @@ and the inverse transformation is given by
 ### Bilinear Transform Example
 \label{subsec:bilinear-transform-example}
 
-The following steps illustrate the general procedure of designing a filter using bilinear transform at the example of a second-order Butterworth lowpass filter with cutoff frequency $f_c=\SI{4000}{\hertz}$ for a sampling rate of $f_s = 48000$, hence sampling interval $T = 1/f_s$:
+The following steps illustrate the general procedure of designing a filter using bilinear transform at the example of a second-order Butterworth lowpass filter with cutoff frequency $f_c=\SI{4000}{\hertz}$ for a sampling rate of $f_s = \SI{48}{\kilo\hertz}$, hence sampling interval $T = 1/f_s$:
  
 - Pre-warp the critical frequencies, in this case the filter's cutoff frequency $\omega_c = 2\pi f_c \si{\radian\per\second}$:
 
@@ -1060,7 +1063,7 @@ H(z)  &= \dfrac{\left(\dfrac{2}{T}0.268\right)^2}{
 \end{figure}
 
 - The pole-zero diagram \cref{fig:pole-zero-iir-example} of $H(z)$ shows that the pair of poles is located inside the unit circle, hence the filter is real-valued and stable. Also, a pair of zeros is located at the maximum frequency point which gives the lowpass characteristic.
-
+	
 \begin{figure}
 \centering
 \includegraphics[width=.7\textwidth]{imgs/filter-pole-zero-iir-example}
@@ -1089,7 +1092,7 @@ An additional advantage of TDF-II structures is that they perform well in applic
 \includegraphics[width=.48\textwidth]{imgs/Biquad_filter_DF-I}
 \hfill
 \includegraphics[width=.48\textwidth]{imgs/Biquad_filter_DF-II}
-\caption{Direct-Form I and II implementation of a second-order filter with the normalized (divided by $a_0$) difference equation $y[n]=b_{0}x[n]+b_{1}x[n-1]+b_{2}x[n-2]-a_{1}y[n-1]-a_{2}y[n-2]$ \cite{Wiki:digital-filter}}
+\caption{Direct-Form I and II implementation of a second-order filter with the normalized (divided by $a_0$) difference equation $y[n]=b_{0}x[n]+b_{1}x[n-1]+b_{2}x[n-2]-a_{1}y[n-1]-a_{2}y[n-2]$ \cite{Wiki:digital-filter}.}
 \label{fig:direct-form}
 \end{figure}
 
@@ -1392,7 +1395,7 @@ The number of harmonics is limited by the highest harmonic frequency less than t
 A multitude of ideal bandlimited methods were developed, e.g. additive synthesis (\cref{sec:additive-synthesis}), feedback delay loops (FDL) and discrete summation formulae (DSF).
 DSF's are solely using properties of trigonometric functions to synthesize the waveform and are not considered for the synthesizer of this thesis because evaluating trigonometric functions is quite CPU intensive.
 Feedback Delay Loop's are a relatively new method (first published in \citeyear{Nam2009}) and, unfortunately, are not taken into account since I have discovered this method at a very late time of editing and the implementation effort is unclear[^oscillator-ref].
-Pure additive synthesis is the most CPU intensive of those three because it requires to sum a sinusoidal oscillator for every harmonic to be synthesized,therefore a wavetable based approach is evaluated which uses lookup-tables containing bandlimited cycles of the waveform.
+Pure additive synthesis is the most CPU intensive of those three because it requires to sum a sinusoidal oscillator for every harmonic to be synthesized, therefore a wavetable based approach is evaluated which uses lookup-tables containing bandlimited cycles of the waveform.
 
 ### Wavetables
 \label{subsec:wavetables}
@@ -1440,11 +1443,11 @@ The error for zero- and first-degree interpolation of a sine wavetable with leng
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/interpolation-error.pdf}
-\caption{Error of zero-degree (nearest neighbour) and first-degree (linear) interpolation for a wavetable of 64 samples}
+\caption{Error of zero-degree (nearest neighbour) and first-degree (linear) interpolation for a wavetable of 64 samples.}
 \label{fig:interpolation-error}
 \end{figure}
 
-Polynominal interpolation scheme's, which are the only ones considered here, are determined by their order $n$, i.e. a n-th order polynomial passes through the $n+1$ nearest points in the wavetable.
+Polynominal interpolation schemes, which are the only ones considered here, are determined by their order $n$, i.e. a n-th order polynomial passes through the $n+1$ nearest points in the wavetable.
 A zero-degree (or nearest-neighbour) interpolation simply rounds the index to the next integer.
 A first-order (or linear) interpolation uses a linear function to approximate the table output
 
@@ -1459,7 +1462,7 @@ In fact, the root-mean square (RMS) lookup error decreases by $\SI{12}{\decibel}
 For sine, where the sole harmonic is also the fundamental, a single table is enough but for the geometric waveforms more tables are required.
 Each of those tables spans only frequencies in the vicinity of $f_{nat}$ because pitch shifting the table by a large factor ($>2 f_{nat}$) can introduce severe aliasing whereas shifting it to a low frequency $<0.75f_{nat}$ may result in a dull sound because too many harmonics are missing.
 Hence, a table for each octave of the desired frequency range should be used which is then selected a run time depending on the note to be played.
-A table switch causes a sudden drop in spectral energy, as can be seen in \cref{fig:sweep}, which can be perceived for slow frequency sweeps.
+A table switch causes a sudden drop in spectral energy, as can be seen in \cref{fig:wavetable-sweep}, which can be perceived for slow frequency sweeps.
 This effect can be alleviated by increasing the number of tables at the cost of memory.
 
 It is convenient to design the waveforms spectra directly in the frequency domain and convert it back into the time domain by using the inverse discrete-time fourier transform that is \cref{eq:IDFT} from the transform pair given below where $\omega = 2\pi f$ is the angular frequency as usual.
@@ -1499,7 +1502,7 @@ The following chapter explains implementation details of the software synthesize
 In the first section is explained why Rust was chosen as the implementation language and the important terms *real-time* and *latency* are defined in \Cref{sec:real-time} and \cref{sec:latency}, followed by an followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
 Thereafter, all components of the structure are described in \cref{sec:input-implementation} to \cref{sec:audio-output-implementation}.
 
-The full source code of the synthesizer and its libraries is published as open source software on github and is available in \cite{github:ytterbium}, \cite{github:rb}, \cite{github:rsoundio} and \cite{github:rosc}.
+The full source code of the synthesizer and its libraries is published as open source software available in \cite{github:ytterbium}, \cite{github:rb}, \cite{github:rsoundio} and \cite{github:rosc}.
 
 ## Why Rust?
 \label{sec:why-rust}
@@ -1692,7 +1695,7 @@ pub enum OscType {
     Inf,
 }
 \end{minted}
-\caption{Definition of OSC data types in \cite[`src/types.rs`]{github:rosc}}
+\caption{Definition of OSC data types in \cite[`src/types.rs`]{github:rosc}.}
 \label{lst:osc-type}
 \end{listing}
 
@@ -1710,27 +1713,27 @@ The root key of the grid can be shifted in a range from -3 to +3 octaves with th
 In contrast to classical MIDI keyboards it is not possible to play notes with different velocities because Android an iOS devices lack pressure sensitivity sensors.
 Multi touch support allows to play the synthesizer polyphonically by pressing multiple keys at once.
 
-![View of the piano view\label{fig:lemur-piano}](imgs/lemur-piano.png){ width=100% }
+![View of the piano panel\label{fig:lemur-piano}](imgs/lemur-piano.png){ width=100% }
 
 There are four identical oscillator control sections with separate controls for each oscillator's envelope, phase, detune and transpose parameters and a list of waveforms to choose from.
 Each oscillator can be transposed in a \textpm{} 3 octave range and detuned in a by \textpm{} one seminote at a resolution of 1 cent \cite[`src/dsp/wavetable.rs`, lines 357-372]{github:ytterbium} which is a 100th of an equal tempered semitone.
 Also, the phase offset can be controlled in a range of \SI{0}{\degree} to \SI{180}{\degree}.
 
-![View of the oscillator contol view showing the first of four oscillator control views\label{fig:lemur-oscillator}](imgs/lemur-oscillator.png){ width=100% }
+![View of the oscillator control panel showing the first of four control panels\label{fig:lemur-oscillator}](imgs/lemur-oscillator.png){ width=100% }
 
 \Cref{fig:lemur-fm} shows the FM control section where each oscillator section contains a group of sliders to control the amount of frequency modulation applied to its fundamental frequency, including feedback modulation, i.e. an oscillator is modulating its own frequency.
 In the screenshot the frequency of the first oscillator is modulated by the second which is itself modulated by the third oscillator.
 
-![View of the FM control view\label{fig:lemur-fm}](imgs/lemur-fm.png){ width=100% }
+![View of the FM control panel\label{fig:lemur-fm}](imgs/lemur-fm.png){ width=100% }
 
-The oscillator mixing view shown in \cref{fig:lemur-mixer} contains a slider for amplitude control and a bipolar (zero at center position) slider to set the stereo panning for each oscillator.
+The oscillator mixing panel shown in \cref{fig:lemur-mixer} contains a slider for amplitude control and a bipolar (zero at center position) slider to set the stereo panning for each oscillator.
 
-![View of the mixer view\label{fig:lemur-mixer}](imgs/lemur-mix.png){ width=100% }
+![View of the mixer panel\label{fig:lemur-mixer}](imgs/lemur-mix.png){ width=100% }
 
-Parameters of the multi-mode filter can be set in the filter view.
+Parameters of the multi-mode filter can be set in the filter control panel.
 It contains a drop-down list for selecting the filter mode and a two dimensional control field to set the filter's cutoff frequency on its x-axis and the resonance control on its y-axis.
 
-![View of the mixer view\label{fig:lemur-filter}](imgs/lemur-filter.png){ width=100% }
+![View of the mixer panel\label{fig:lemur-filter}](imgs/lemur-filter.png){ width=100% }
 
 ## Wavetable Oscillator
 \label{sec:wavetable-oscillator-implementation}
@@ -1762,7 +1765,7 @@ Waveform::Saw => {
 }
 \end{minted}
 \label{lst:sawtooth-spectrum}
-\caption{Calculation of Fourier coefficients for sawtooth waveform definition in the frequency domain \cite[`src/dsp/waveform.rs`, lines 163-172]{github:ytterbium}}
+\caption{Calculation of Fourier coefficients for sawtooth waveform definition in the frequency domain \cite[`src/dsp/waveform.rs`, lines 163-172]{github:ytterbium}.}
 \end{listing}
 
 Both spectrograms shown in \cref{fig:wavetable-sweep} are calculated from frequency sweeps to which a Hann window was applied and that were generated from the wavetable oscillator as part of the unit test set.
@@ -1775,7 +1778,7 @@ However, this should be considered for effects with pulsating pitch changes like
 \includegraphics[width=\textheight]{imgs/ytterbium-spectrum-legend.png}
 \includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-Saw-sweep.png}
 \includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-Square-sweep.png}
-\caption{Spectrogram of a frequency sweep from 20Hz to 20kHz in the sawtooth (upper) and square (lower) wavetable}
+\caption{Spectrogram of a frequency sweep from 20Hz to 20kHz in the sawtooth (upper) and square (lower) wavetable. The x-axis denotes time in seconds whereas the y-axis represents frequencies in a range from 0 to $\SI{24}{\kilo\hertz}$.}
 \label{fig:wavetable-sweep}
 \end{sidewaysfigure}
 
@@ -1786,7 +1789,7 @@ The increasing amount of harmonic content is clearly visible as well as the dist
 \includegraphics[width=\textheight]{imgs/ytterbium-spectrum-legend.png}
 \includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-fm.png}
 \label{fig:sweep-fm}
-\caption{Spectrogram of a frequency sweep for sine modulator and carrier with increasing modulation amount}
+\caption{Spectrogram of a frequency sweep for sine modulator and carrier with increasing modulation amount.}
 \end{sidewaysfigure}
 
 ## Filter
@@ -1795,7 +1798,7 @@ The increasing amount of harmonic content is clearly visible as well as the dist
 The multi-mode biquad filter \cite[`src/dsp/filter.rs`]{github:ytterbium} is a direct implementation of the filter design from \citeauthor{Bristow:Cookbook}'s EQ Cookbook \cite{Bristow:Cookbook}.
 \citeauthor{Bristow:Cookbook}'s filter is derived from an analog prototype using bilinear transform (see \cref{sec:iir-filters} and \cref{subsec:bilinear-transform}) and is a stable and popular design which is also used in the biquad implementation of the WebAudio API \cite{github:webaudio-api} which got adopted by firefox \cite{webaudio:biquad:firefox} and chromium \cite{webaudio:biquad:chromium} browsers.
 
-Calculation of coefficients for the biquad filter is shown in \cref{lst:filter-coeff} where `w` is the cutoff frequency expressed as angular frequency[^angular-frequency], `q` is the resonance parameter and `filter_type` is an `enum` variant that is matched against the supported filter types \cref[line 11]{lst:filter-coeff} to select the its zero coefficients corresponding to the desired mode.
+Calculation of coefficients for the biquad filter is shown in \cref{lst:filter-coeff} where `w` is the cutoff frequency expressed as angular frequency[^angular-frequency], `q` is the resonance parameter and `filter_type` is an `enum` variant that is matched against the supported filter types (line 11 in \cref{lst:filter-coeff}) to select the its zero coefficients corresponding to the desired mode.
 
 \begin{listing}
 \begin{minted}[linenos]{rust}
@@ -1838,7 +1841,7 @@ fn coeffs(w: Float, q: Float, filter_type: FilterType)
     (As, Bs)
 }
 \end{minted}
-\caption{Calculation of the biquad filter's coefficients \cite[`src/dsp/filter.rs`, lines 47-78]{github:ytterbium}}
+\caption{Calculation of the biquad filter's coefficients \cite[`src/dsp/filter.rs`, lines 47-78]{github:ytterbium}.}
 \label{lst:filter-coeff}
 \end{listing}
 
@@ -1849,7 +1852,7 @@ The parameter sweep of the spectrograms is generated by the filter's unit test t
 \includegraphics[width=\textheight]{imgs/ytterbium-spectrum-legend.png}
 \includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-LP-filter.png}
 \includegraphics[width=\textheight]{imgs/ytterbium-0.1.0-BP-filter.png}
-\caption{Spectrogram of a white noise filtered by a lowpass (upper) and bandpass (lower) biquad with increasing filter cutoff and constant neutral filter resonance}
+\caption{Spectrogram of a white noise filtered by a lowpass (upper) and bandpass (lower) biquad with increasing filter cutoff and constant neutral filter resonance.}
 \label{fig:filter-sweep}
 \end{sidewaysfigure}
 
@@ -1918,7 +1921,7 @@ Implementing a safe Rust wrapper for \citetitle{github:libsoundio} has shown to 
 
 This work presented an overview of synthesis techniques and algorithms suitable for the implementation of a polyphonic real-time audio synthesizer.
 The evaluation of the synthesizer prototype showed that the chosen techniques achieved the required amount of audio quality and are efficient enough so that the instrument can be played with very low latency through MIDI and OSC controller hard- or software.
-Also, Rust proved to be an excellent choice for the implementation of real-time audio software, even though the language's ecosystem still lacks a mature signal processing libraries.
+Also, Rust proved to be an excellent choice for the implementation of real-time audio software, even though the language's ecosystem still lacks mature signal processing libraries.
 
 ## Optimizations
 \label{sec:optimizations}
@@ -1957,7 +1960,7 @@ The closing sentence is a quote from my presentation of the master's thesis:
 	This also applies to *OSC Sender* and *OSC Client*.
 	OSC applications often act as server and receiver, hence no clear distinction between those roles can be made.
 
-[^euler-ids]: Eulers identities: $\cos = (e^{i\phi} + e^{-i\phi})/2$ and $\sin = (e\,i^{i\phi} + e\,i^{-i\phi})/2$.
+[^euler-ids]: Eulers identities: $\cos = (e^{i\phi} + e^{-i\phi})/2$ and $\sin = (e^{i\phi} + e^{-i\phi})/(2i)$.
 
 [^phase-inversion]: $-\sin(\phi)=\sin(-\phi)$
 
