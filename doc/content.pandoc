@@ -57,8 +57,6 @@ The *MIDI 1.0 Specification* \cite{MIDI10} provides a high level description of 
 Transmitting *control data* is the purpose of the MIDI protocol, and not, like it is sometimes confused, to transmit audio data[^midi-audio].
 Control data can be thought of as the press of a key, turning a knob, or an instruction to change the clock speed of a song.
 
-[^midi-audio]: It is possible to transmit audio data over MIDI by using *System Exclusive* (SysEx) messages, but this can not be done in real-time and is often used to replace or update samples or wavetables in hardware synthesizers.
-
 The work on the MIDI specification began in 1981 by a consortium of Japanese and American synthesizer manufacturers, the MIDI Manufacturers Association (MMA).
 In August 1983, the version 1.0 was published \cite[p.~974]{Roads:CMT}.
 This year, 2016, the MMA established The MIDI Association (TMA).
@@ -77,8 +75,6 @@ Asynchronous serial communication is used to transfer *MIDI messages*, thus the 
 A MIDI message is composed of a *status byte* which is followed by up to two[^sysex] *data byte*s.
 Both types are differentiated by their most significant bit (MSB), `1` for status- and `0` for data bytes.
 Consequently, the usable payload size is reduced to 7 bit, in other words, values can range from 0 to 127.
-
-[^sysex]: System Exclusive (SysEx) messages can be made up of more than two data-bytes, in fact they are build by a sequence of data bytes followed by an *End of Exclusive* (EOX) message to mark the end of the stream. This type of message does not contain any musical control data, in general it is used to upload binary data, like firmware updates or samples, to a MIDI device.
 
 \Cref{fig:midi-status} shows the structure of a status byte.
 The message type is denoted by three bits (`T`) and the remaining four bits are used to denote the channel number (`C`), hence there are sixteen different channels.
@@ -203,8 +199,6 @@ $$
 The time to transmit a single note-on event $t_\text{Note-On}$ takes $\approx 1\,\text{ms}$, this means that the last transmitted note of an $n$-key chord arrives with $n \cdot 0.96\,\text{ms}$ delay, e.g. the last note of a pentachord (5 keys) will be received $5 \cdot 0.96\,\text{ms} = 4.8\,\text{ms}$ later than the first one.
 This may result in a *comb filter*[^comb-filter] like distortion of the synthesized chord sound.
 
-[^comb-filter]: A comb filter adds a delayed copy of the signal to itself causing addition or subtraction in the signal. The filters frequency response shows regularly spaced notches, might resemble the shape of a comb.
-
 ## Open Sound Control
 \label{sec:osc}
 
@@ -260,11 +254,6 @@ Address pattern can contain basic regular expression with single-/multi-characte
 An OSC Receiver's[^osc-naming] address space forms a tree structure with branch nodes called *OSC Containers* and leaves are named *OSC Methods*.
 Methods are *`italicized`* in the tree structure example of \cref{fig:osc-address-space-example}.
 The address of an OSC method starts with a `/`, followed by any container name along the path in order from the root of the tree, joined by forward slashes `/` and the method's name, e.g. `/oscillator/1/phase`.
-
-[^osc-naming]:
-	The term *OSC Receiver* and *OSC Server* is interchangeable.
-	This also applies to *OSC Sender* and *OSC Client*.
-	OSC applications often act as server and receiver, hence no clear distinction between those roles can be made.
 
 \begin{figure}
 	\centering
@@ -379,7 +368,7 @@ Clearly, $\omega_2$ is above the Nyquist frequency $\omega_{\text{Ny}}=\pi$, thu
 This effect is called *aliasing* or *foldover* and is an inevitable result of sampling or sample rate conversion, hence signal components with frequencies above Nyquist must be removed or reduced before fed into the sampling process.
 The effect of foldover in the frequency spectrum is shown in \cref{fig:foldover}.
 
-The alias $f_a$ for a frequency $f$ and a sampling frequency $f_s$ can be calculated as shown in \cref{eq:aliasing-frequency}\footnote{\citeauthor{Dashow1978} presented a method for generating non-harmonic spectra using foldover frequencies \cite[p.~82]{Dashow1978}.}.
+The alias $f_a$ for a frequency $f$ and a sampling frequency $f_s$ can be calculated as shown in \cref{eq:aliasing-frequency}[^foldover-ref].
 
 \begin{equation}
 f_a =
@@ -427,7 +416,7 @@ f(t) = a_0/2 + \sum^\infty_{k=1}a_k \cos(2\pi k t + \phi_k) + \sum^\infty_{k=1}b
 \end{equation}
 
 where $a_k$ and $b_k$ are coefficients for the strength of the k-th harmonic. The harmonics phase is specified $\phi_k$ and $\omega_k=2\pi{}k$ sets its angular frequency.
-By substituting\footnote{Eulers identities: $\cos = (e^{i\phi} + e^{-i\phi})/2$ and $\sin = (e\,i^{i\phi} + e\,i^{-i\phi})/2$} eulers equation (\cref{eq:eulers-equation})
+By substituting[^euler-ids] eulers equation (\cref{eq:eulers-equation})
 
 \begin{equation}
 e^{i\phi} = \cos(\phi)+i\sin(\phi)
@@ -665,7 +654,7 @@ For $I=0$ there is no modulation, but non-zero values will result in frequencies
 
 > The number of side frequencies which occur is related to the modulation index in such a way that as $I$ increases from zero, energy is \enquote{stolen} from the carrier and distributed among an increasing number of side frequencies.
 
-This behavior is shown in \cref{fig:fm-bandwidth} for different modulation indices by constant modulation and carrier frequency. Negative amplitudes for frequency components indicate *phase inversion*\footnote{$-\sin(\phi)=\sin(-\phi)$}.
+This behavior is shown in \cref{fig:fm-bandwidth} for different modulation indices by constant modulation and carrier frequency. Negative amplitudes for frequency components indicate *phase inversion*[^phase-inversion].
 
 \begin{figure}
 \centering
@@ -678,7 +667,7 @@ Specific carrier and modulation frequency ratios and modulation index values wil
 Those negative frequency components will be reflected (aliased) around $\SI{0}{\hertz}$.
 Reflected sideband components will either increase or---if they are phase inverted---decrease the energy in the spectrum.
 
-Harmonic spectra\footnote{Overtones are an integer multiple of waves the fundamental frequency.} will be generated if the ratio of carrier and modulation frequency is a rational number.
+Harmonic spectra[^overtones] will be generated if the ratio of carrier and modulation frequency is a rational number.
 Ratios that are irrational numbers, e.g. $1/\sqrt{2}$, will result in inharmonic spectra because the reflected sideband frequencies will fall inbetween the positive frequency components.
 
 Carrier and sideband component amplitudes can be determined analytically by evaluating n-th order Bessel functions $J_i$ of the first kind with the modulation index as argument.
@@ -788,7 +777,7 @@ y[n] = \sum^{M}_{i=0}b_i x[n-i]-\sum^{N}_{j=1}a_j y[n-j]
 \label{eq:difference-equation}
 \end{equation}
 
-where $x$ denotes the input signal\footnote{The term sequence and signal will be used interchangeably.}, $y$ the output signal, and the filter's *coefficients* are the constants $a_j$ and $b_i$.
+where $x$ denotes the input signal[^signal-sequence], $y$ the output signal, and the filter's *coefficients* are the constants $a_j$ and $b_i$.
 A signal therefore is a *sequence* of real numbers denoted as a function of integer index $x[n]$ where $n$ denotes the *n*-th sample.
 Coefficients $a_j, b_i$ must be in $\mathbb{R}$ to obtain a *real valued filter* that has a real valued output for any given real valued input signal.
 Another requirement of the filter is to be *causal*, i.e. it does not depend on future values and only uses past input and output values to calculate its current output value, otherwise the filter can not be realized.
@@ -1368,7 +1357,7 @@ where $w(n)$ is a window function.
 The choice of the window function determines the attenuation of harmonics in the spectrum.
 This is advantageous for frequency sweeps in contrast to exactly bandlimited methods where harmonics pop in and out which can cause unwanted transients.
 Aliasing is reduced by increasing the window length, in fact, a doubling in length approximately halves the transition band where most of the aliasing occurs.
-\citeauthor{Stilson1996a} used a blackman window that spanned 32 zero crossings\footnote{The $\sinc$ function has zeros at $n*\pi, n \in \mathbb{Z}$} of the $\sinc$ function \cite[fig.~10]{Stilson1996a} which attenuated aliasing to about $\SI{-90}{\decibel}$ for 80% of the spectrum.
+\citeauthor{Stilson1996a} used a blackman window that spanned 32 zero crossings[^zero-crossing] of the $\sinc$ function \cite[fig.~10]{Stilson1996a} which attenuated aliasing to about $\SI{-90}{\decibel}$ for 80% of the spectrum.
 The paper also proposed to use some oversampling to get a guard band in which the transition band can be moved by using a appropriate window length, e.g. for a sampling rate of $\SI{48}{\kilo\hertz}$ and a window length of 64 $\sinc$ zero crossings the transition band would span 10% of the spectrum which gives a nearly alias-free frequency range up to $0.9 \cdot\SI{24}{\kilo\hertz} = \SI{21.6}{\kilo\hertz}$.
 
 A disadvantage of BLIT-SWS method is that the CPU consumption is proportional to the frequency because for each period a impulse must be inserted and replaced by the impulse response of the windowed filter ($\sinc$).
@@ -1402,7 +1391,7 @@ Ideal bandlimited methods generate waveforms with a finite number of harmonics.
 The number of harmonics is limited by the highest harmonic frequency less than the Nyquist limit, hence, the waveforms are completly alias-free.
 A multitude of ideal bandlimited methods were developed, e.g. additive synthesis (\cref{sec:additive-synthesis}), feedback delay loops (FDL) and discrete summation formulae (DSF).
 DSF's are solely using properties of trigonometric functions to synthesize the waveform and are not considered for the synthesizer of this thesis because evaluating trigonometric functions is quite CPU intensive.
-Feedback Delay Loop's are a relatively new method (first published in \citeyear{Nam2009}) and, unfortunately, are not taken into account since I have discovered this method at a very late time of editing and the implementation effort is unclear\footnote{The interested reader can refer to \cite{Moorer1976} for description of DSF and \cite{Nam2009} for FDL.}.
+Feedback Delay Loop's are a relatively new method (first published in \citeyear{Nam2009}) and, unfortunately, are not taken into account since I have discovered this method at a very late time of editing and the implementation effort is unclear[^oscillator-ref].
 Pure additive synthesis is the most CPU intensive of those three because it requires to sum a sinusoidal oscillator for every harmonic to be synthesized,therefore a wavetable based approach is evaluated which uses lookup-tables containing bandlimited cycles of the waveform.
 
 ### Wavetables
@@ -1555,8 +1544,6 @@ The latency is imperceptible for the user if the delay between the input event a
 Furthermore, there is an even stronger latency limit of $\approx\SI{2}{\milli\second}$, that is the *temporal resolution* of the human hearing, as shown by \cite[p.~294]{FastlZwicker} using psycho acoustic measurements.
 However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = \SI{343.2}{\meter\per\second}$ at normal temperature [^stdTemp] and a common listening distance of $d = \SI{2}{\meter}$ is about 3 times larger than the temporal resolution $d/v = \SI{2}{\meter}/\SI{343.2}{\meter\per\second} = \SI{5.82}{\milli\second}$.
 Therefore, achieving a system latency of less than $\SI{24}{\milli\second}$ is favorable.
-
-[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at 1\thinspace{}atm absolute pressure.
 
 The sum of two delayed audio signals can act like a comb filter \cite[p.~1]{AES:Latency}, such that even very short latencies can cause spectral artifacts in applications that monitor input signals.
 Fortunately, there is no input audio signal for this synthesizer, thus only temporal issues must be taken into account.
@@ -1808,7 +1795,7 @@ The increasing amount of harmonic content is clearly visible as well as the dist
 The multi-mode biquad filter \cite[`src/dsp/filter.rs`]{github:ytterbium} is a direct implementation of the filter design from \citeauthor{Bristow:Cookbook}'s EQ Cookbook \cite{Bristow:Cookbook}.
 \citeauthor{Bristow:Cookbook}'s filter is derived from an analog prototype using bilinear transform (see \cref{sec:iir-filters} and \cref{subsec:bilinear-transform}) and is a stable and popular design which is also used in the biquad implementation of the WebAudio API \cite{github:webaudio-api} which got adopted by firefox \cite{webaudio:biquad:firefox} and chromium \cite{webaudio:biquad:chromium} browsers.
 
-Calculation of coefficients for the biquad filter is shown in \cref{lst:filter-coeff} where `w` is the cutoff frequency expressed as angular frequency\footnote{As usual, $w = (2\pi f_c)/f_s$ where $f_c$ is the cutoff frequency and $f_s$ is the sample rate in Hertz.}, `q` is the resonance parameter and `filter_type` is an `enum` variant that is matched against the supported filter types \cref[line 11]{lst:filter-coeff} to select the its zero coefficients corresponding to the desired mode.
+Calculation of coefficients for the biquad filter is shown in \cref{lst:filter-coeff} where `w` is the cutoff frequency expressed as angular frequency[^angular-frequency], `q` is the resonance parameter and `filter_type` is an `enum` variant that is matched against the supported filter types \cref[line 11]{lst:filter-coeff} to select the its zero coefficients corresponding to the desired mode.
 
 \begin{listing}
 \begin{minted}[linenos]{rust}
@@ -1895,7 +1882,7 @@ pub struct SpscRb<T> {
 \end{listing}
 
 It showed, by benchmarking the throughput of the ring buffer implementation, that the use of synchronization primitives did not introduce a significant amount of runtime overhead.
-In the benchmark $2~880~000$ samples were pushed through the buffer \cite[`benches/bench.rs`]{github:rb}, which equates to one minute of audio data at $\SI{48}{\kilo\hertz}$ sampling rate, in $\SI{13915402}{\nano\second} \approx \SI{14}{\milli\second}$\footnote{The same machine was used for the benchmark as for the latency test in \cref{subsec:system-latency}.} which is by several orders of magnitude faster than the required throughput-rate of the synthesizer that is equal to its sample rate.
+In the benchmark $2~880~000$ samples were pushed through the buffer \cite[`benches/bench.rs`]{github:rb}, which equates to one minute of audio data at $\SI{48}{\kilo\hertz}$ sampling rate, in $\SI{13915402}{\nano\second} \approx \SI{14}{\milli\second}$[^benchmark-machine] which is by several orders of magnitude faster than the required throughput-rate of the synthesizer that is equal to its sample rate.
 Hence, the ring buffer implementation is suitable for use in real-time audio applications.
 
 <!--NOTE
@@ -1951,3 +1938,43 @@ I underestimated the amount of work that comes with such a project, especially f
 The closing sentence is a quote from my presentation of the master's thesis:
 
 > Implementing an audio synthesizer is serious work, if done right.
+
+<!-- FOOTNOTES -->
+
+[^foldover-ref]: \citeauthor{Dashow1978} presented a method for generating non-harmonic spectra using foldover frequencies \cite[p.~82]{Dashow1978}.
+
+[^midi-audio]:
+	It is possible to transmit audio data over MIDI by using *System Exclusive* (SysEx) messages, but this can not be done in real-time and is often used to replace or update samples or wavetables in hardware synthesizers.
+
+[^sysex]:
+	System Exclusive (SysEx) messages can be made up of more than two data-bytes, in fact they are build by a sequence of data bytes followed by an *End of Exclusive* (EOX) message to mark the end of the stream. This type of message does not contain any musical control data, in general it is used to upload binary data, like firmware updates or samples, to a MIDI device.
+
+[^comb-filter]:
+	A comb filter adds a delayed copy of the signal to itself causing addition or subtraction in the signal. The filters frequency response shows regularly spaced notches, might resemble the shape of a comb.
+
+[^osc-naming]:
+	The term *OSC Receiver* and *OSC Server* is interchangeable.
+	This also applies to *OSC Sender* and *OSC Client*.
+	OSC applications often act as server and receiver, hence no clear distinction between those roles can be made.
+
+[^euler-ids]: Eulers identities: $\cos = (e^{i\phi} + e^{-i\phi})/2$ and $\sin = (e\,i^{i\phi} + e\,i^{-i\phi})/2$.
+
+[^phase-inversion]: $-\sin(\phi)=\sin(-\phi)$
+
+[^overtones]: Overtones are an integer multiple of waves the fundamental frequency.
+
+[^signal-sequence]: The term sequence and signal will be used interchangeably.
+
+[^magnitude-response]: Sometimes improperly called *amplitude* response because amplitudes can be negative.
+
+[^see-aliasing]: see aliasing \cref{subsec:aliasing}
+
+[^zero-crossing]: The $\sinc$ function has zeros at $n*\pi, n \in \mathbb{Z}$
+
+[^oscillator-ref]: The interested reader can refer to \cite{Moorer1976} for description of DSF and \cite{Nam2009} for FDL.
+
+[^stdTemp]: The *normal temperature* is defined by the National Institute of Standards and Technology (NIST) as $20°C$ at 1\thinspace{}atm absolute pressure.
+
+[^benchmark-machine]: The same machine was used for the benchmark as for the latency test in \cref{subsec:system-latency}.
+
+[^angular-frequency]: As usual, $w = (2\pi f_c)/f_s$ where $f_c$ is the cutoff frequency and $f_s$ is the sample rate in Hertz.
