@@ -68,13 +68,13 @@ MIDI is used in nearly every music electronic device, like synthesizers, sampler
 
 The MIDI protocol specifies a standard transmission rate of 31.250 baud.
 This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of 1MHz by 32 \cite[p.~976]{Roads:CMT}.
-It uses an 8b/10b encoding, i.e. 8 bits of data are transmitted as a 10 bit word.
-A data byte is enclosed by a start- and stop bit which in turn results in the 10 bit encoding.
+It uses an 8b/10b encoding, i.e. $\SI{8}{\bit}$ of data are transmitted as a $\SI{10}{\bit}$ word.
+A data byte is enclosed by a start and stop bit which in turn results in the $\SI{10}{\bit}$ encoding.
 Asynchronous serial communication is used to transfer *MIDI messages*, thus the start and stop bit.
 
 A MIDI message is composed of a *status byte* which is followed by up to two[^sysex] *data byte*s.
 Both types are differentiated by their most significant bit (MSB), `1` for status- and `0` for data bytes.
-Consequently, the usable payload size is reduced to 7 bit, in other words, values can range from 0 to 127.
+Consequently, the usable payload size is reduced to $\SI{7}{\bit}$, in other words, values can range from 0 to 127.
 
 \Cref{fig:midi-status} shows the structure of a status byte.
 The message type is denoted by three bits (`T`) and the remaining four bits are used to denote the channel number (`C`), hence there are sixteen different channels.
@@ -155,7 +155,7 @@ Only the latter contain musical control information and therefore are of interes
 
 \Cref{tab:voice-messages} gives an overview of the types on voice messages.
 Corresponding Note-On and Off messages do not necessarily follow one after another, therefore, to relate associated messages, pitch information is contained in the Note-Off as well.
-Pitch is encoded as a 7-bit value in note messages, hence there is a range of 128 pitches or about 10 octaves.
+Pitch is encoded as a \SI{7}{\bit} value in note messages, hence there is a range of 128 pitches or about 10 octaves.
 MIDI's pitch representation was designed with an *chromatic western music scale* in mind.
 A *chromatic scale* has 12 pitches per octave with one semitone difference between each pitch, that is a ratio of $2^{1/12}$ between successive notes.
 An interval of one octave is equivalent to a doubling or halving (in the negative case) in frequency.
@@ -173,14 +173,14 @@ Middle C, pitch number 60 (C5), is used as reference.
 
 \Cref{eq:midi-pitch} shows how to calculate the frequency $f$ for a given MIDI pitch $p$, and vice versa, where $f_\text{tune}$ is the tuning frequency and $p_\text{ref}$ is the reference pitch number.
 Musical instruments are commonly tuned to the *Concert A*, the note A above middle C or MIDI pitch 69.
-The default tuning of Concert A is 440 Hz \cite{ISO16:1975}.
-The following example shows how to calculate the frequency for middle C by using the *Concert A* tuned to 440 Hz as reference pitch in \cref{eq:midi-pitch}:
+The default tuning of Concert A is \SI{440}{\hertz} \cite{ISO16:1975}.
+The following example shows how to calculate the frequency for middle C by using the *Concert A* tuned to \SI{440}{\hertz} as reference pitch in \cref{eq:midi-pitch}:
 
 $$
 \begin{aligned}
-f	&= 440\,\text{Hz}\cdot 2^{(60-69)/12}\\
-	&= 440\,\text{Hz}\cdot 2^{-9/12}\\
-	&\approx 261.626\,\text{Hz}
+f	&= \SI{440}{\hertz}\cdot 2^{(60-69)/12}\\
+	&= \SI{440}{\hertz}\cdot 2^{-9/12}\\
+	&\approx \SI{261.626}{\hertz}
 \end{aligned}
 $$
 
@@ -224,22 +224,22 @@ A connection less transport is sufficient because OSC sender and receiver are al
     \label{tab:osc-data-types}
     \begin{tabular}{@{}cp{7.5cm}cc@{}}
     \toprule
-    Tag     & Description                                                      & 1.0 Required & 1.1 Required \\ \midrule
-    i       & 32-bit two's complement integer                                  & ✔            & ✔            \\
-    f       & IEEE 754 single precision (32-bit)                               & ✔            & ✔            \\
-    s       & null-terminated sequence of ASCII characters                     & ✔            & ✔            \\
-    b       & binary blob with size information                                & ✔            & ✔            \\
-    h       & 64-bit big-endian two's complement integer                       &              &              \\
-    t       & OSC-timetag in NTP format                                        &              & ✔            \\
-    d       & IEEE 754 double precision (64-bit)                               &              &              \\
-    S       & alternate string type                                            &              &              \\
-    c       & ASCII character                                                  &              &              \\
-    r       & RGBA color (8-bit per channel)                                   &              &              \\
-    m       & 4 byte MIDI message. From MSB to LSB: port, status, data1, data2 &              &              \\
-    T/F     & true, false boolean values                                       &              & ✔            \\
-    N       & Nil                                                              &              & ✔            \\
-    I       & Infinitum (1.0)/Impulse(1.1) used as event trigger               &              & ✔            \\
-    {[},{]} & Array delimiters                                                 &              &              \\ \bottomrule
+    Tag     & Description                                                                & 1.0 Required & 1.1 Required \\ \midrule
+    i       & \SI{32}{\bit} two's complement integer                                     & ✔           & ✔            \\
+    f       & IEEE 754 single precision (\SI{32}{\bit})                                  & ✔           & ✔            \\
+    s       & null-terminated sequence of ASCII characters                               & ✔           & ✔            \\
+    b       & binary blob with size information                                          & ✔           & ✔            \\
+    t       & OSC-timetag in NTP format                                                  &              & ✔            \\
+    T/F     & boolean values: true, false                                                &              & ✔            \\
+    N       & Nil                                                                        &              & ✔            \\
+    I       & Infinitum (1.0)/Impulse(1.1) used as event trigger                         &              & ✔            \\
+    d       & IEEE 754 double precision (\SI{64}{\bit})                                  &              &              \\
+    h       & \SI{64}{\bit} big-endian two's complement integer                          &              &              \\
+    S       & alternate string type                                                      &              &              \\
+    c       & ASCII character                                                            &              &              \\
+    r       & RGBA color (\SI{8}{\bit} per channel)                                      &              &              \\
+    m       & $\SI{4}{\byte}$ MIDI message (from MSB to LSB): port, status, data1, data2 &              &              \\
+    {[},{]} & Array delimiters                                                           &              &              \\ \bottomrule
     \end{tabular}
 \end{table}
 
