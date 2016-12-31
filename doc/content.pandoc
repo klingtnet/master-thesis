@@ -66,8 +66,8 @@ MIDI is used in nearly every music electronic device, like synthesizers, sampler
 ### MIDI Protocol
 \label{subsec:midi-protocol}
 
-The MIDI protocol specifies a standard transmission rate of 31.250 baud.
-This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of 1MHz by 32 \cite[p.~976]{Roads:CMT}.
+The MIDI protocol specifies a standard transmission rate of $\SI{31250}{\bit\per\second}$.
+This may seem like an unusual choice for the transmission rate, but it was derived by dividing the common clock frequency of $\SI{1}{\mega\hertz}$ by 32 \cite[p.~976]{Roads:CMT}.
 It uses an 8b/10b encoding, i.e. $\SI{8}{\bit}$ of data are transmitted as a $\SI{10}{\bit}$ word.
 A data byte is enclosed by a start and stop bit which in turn results in the $\SI{10}{\bit}$ encoding.
 Asynchronous serial communication is used to transfer *MIDI messages*, thus the start and stop bit.
@@ -519,11 +519,11 @@ The sound produced by an musical instrument is usually not static and changes in
 To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizer's sound engine, e.g. the cutoff of a frequency filter.
 In \cref{fig:piano-c4} the time-varying behavior of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
 
-\begin{figure}
+\begin{sidewaysfigure}
 \includegraphics[width=\textwidth]{imgs/piano_c4_small.png}
 \caption{Waveform plot of sampled C\textsubscript{4} note played on a piano \cite{freesound:piano}.}
 \label{fig:piano-c4}
-\end{figure}
+\end{sidewaysfigure}
 
 There are various types of envelope generators that range from simple two stage models, for fading the sound in and out, to ones which have an arbitrary number of stages and envelope shapes.
 A commonly used model with a reasonable amount of controllable parameters is the so called ADSR envelope, which stands for the four different stages of the envelope which are *Attack*, *Decay*, *Sustain* and *Release*.
@@ -976,11 +976,11 @@ The effect of transfer function poles in the $z$-plane is the opposite of zeros,
 Musical synthesizers often allow the user to specify a *resonance* parameter for the filter cutoff frequency, where a low resonance results in smooth transition transition from the pass- to the transition band whereas a high value creates a peak at the cutoff frequency as shown for different resonance values in the magnitude response of a IIR second-order lowpass filter in \cref{fig:filter-resonance}.
 Such a resonance parameter is easy to realize for IIR filters.
 
-\begin{figure}
+\begin{sidewaysfigure}
 \includegraphics[width=\textwidth]{imgs/filter-resonance}
 \caption{Magnitude response of a recursive second-order lowpass filter for different resonance values.}
 \label{fig:filter-resonance}
-\end{figure}
+\end{sidewaysfigure}
 
 IIR filters are very sensitive to numerical rounding error, where the sensitivity depends on their order and implementation structure \cref{sec:iir-structure}.
 Therefore, second-order systems, so called *biquads*, are used as building blocks for higher-order filters (order $>= 4$) because the filters sensitiviy to quantization increases with its order \cite[p.~132,589]{Proakis:DSP}.
@@ -1533,7 +1533,7 @@ The definition of real-time used in the context of this thesis is of \citeauthor
 
 > A real-time process is one for which, on the average, the computing associated with each sampling interval can be completed in a time less than or equal to the sampling interval.
 
-Based on this definition, the time to compute a single sampl should not exceed $1/f_s = \SI{20.833}{\micro\second}$ for a common sampling rate of $f_s = \SI{48}{\kilo\hertz}$.
+Based on this definition, the time to compute a single sample should not exceed $1/f_s = \SI{20.833}{\micro\second}$ for a common sampling rate of $f_s = \SI{48}{\kilo\hertz}$.
 Nonetheless, sample calculation time should be much shorter than this limit to compensate for delays introduced by the operating system, e.g. context switches caused by the process scheduler.
 Multimedia applications can greatly benefit from a custom process scheduler like \citeauthor{Kolivas:MuQSS}'s *Brainfuck Scheduler* or the more recent implementation called *Multiple Queue Skiplist Schedule* \cite{Kolivas:MuQSS} because those schedulers are optimized for process responsiveness on symmetric multiprocessing platforms like desktops or laptops unlike the default *Completely Fair Scheduler* \cite{Molinar:CFS} which aims to maximizes for overall CPU utilization and must fit for a wide variety of use cases.
 
@@ -1545,7 +1545,7 @@ The *responsiveness* of an electronic musical instrument is mainly determined by
 An instrument is the more responsive, the less latency between an input event and the corresponding sound output it has.
 The latency is imperceptible for the user if the delay between the input event and audio output stimuli is less than $\SI{24}{\milli\second}$ \cite{NasaLatency}.
 Furthermore, there is an even stronger latency limit of $\approx\SI{2}{\milli\second}$, that is the *temporal resolution* of the human hearing, as shown by \cite[p.~294]{FastlZwicker} using psycho acoustic measurements.
-However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = \SI{343.2}{\meter\per\second}$ at normal temperature [^stdTemp] and a common listening distance of $d = \SI{2}{\meter}$ is about 3 times larger than the temporal resolution $d/v = \SI{2}{\meter}/\SI{343.2}{\meter\per\second} = \SI{5.82}{\milli\second}$.
+However, it is not realistic to use this as an upper limit for the synthesizer's system latency, considering that the sound propagation delay from a speaker to a listener at a speed of sound $v = \SI{343.2}{\meter\per\second}$ at normal temperature[^stdTemp] and a common listening distance of $d = \SI{2}{\meter}$ is about 3 times larger than the temporal resolution $d/v = \SI{2}{\meter}/\SI{343.2}{\meter\per\second} = \SI{5.82}{\milli\second}$.
 Therefore, achieving a system latency of less than $\SI{24}{\milli\second}$ is favorable.
 
 The sum of two delayed audio signals can act like a comb filter \cite[p.~1]{AES:Latency}, such that even very short latencies can cause spectral artifacts in applications that monitor input signals.
@@ -1575,7 +1575,7 @@ l = l_{in}+\frac{b_{syn}+b_{out}}{f_s}
 
 where $l_{in}$ is the input latency, $f_s$ the sample rate and $b_{syn}, b_{out}$ are the synthesizer's and sound card's buffer sizes in samples.
 Given a sample rate of $\SI{48}{\kilo\hertz}$, an input latency of $\SI{1.3}{\milli\second}$ and buffer sizes of $b_{syn}=512, b_{out}=256$ inserted in \cref{eq:delay-approximation} results in a system latency
-$l 	= \SI{1.3}{\milli\second}+(512 + 256)\cdot\SI{48}{\kilo\hertz}^{-1}
+$l 	= \SI{1.3}{\milli\second}+(512 + 256)\cdot(\SI{48}{\kilo\hertz})^{-1}
 	= \SI{17.3}{\milli\second}$
 that is about \textthreequarters{} of the $\SI{24}{\milli\second}$ limit and thus sufficiently small to be unperceivable.
 Both buffer sizes were used without buffer underruns on the development machine, a HP elitebook 8460p equipped with an intel\textregistered{} i5-2520M running Arch Linux kernel 4.8.15-2-ck-sandybridge and JACK2 \cite{Jack2} as audio backend.
@@ -1703,14 +1703,14 @@ pub enum OscType {
 \label{subsec:lemur}
 
 A multitouch capable graphical user interface (GUI) for the synthesizer is provided by the implemenation of a custom controller patch for liine's Lemur application \cite{LiineLemur}.
-Lemur resembles the control surface of Jazzmutant's Lemur, a multi touch capable OSC control surface hardware device, but runs on Android on iOS devices instead.
+Lemur resembles the control surface of Jazzmutant's Lemur, a multi touch capable OSC control surface hardware device, but runs on Android or iOS devices instead.
 Control information is send as OSC Bundles which contain one or more OSC Messages containing the actual control signal.
 The custom control interface shown in \cref{fig:lemur-piano} to \cref{fig:lemur-filter} was implemented using Lemur's control surface editor and makes use of the integrated scripting language.
 
 \Cref{fig:lemur-piano} shows the piano grid of the control surface with 8 key rows of 12 keys each.
 A row represents a single octave of a musical keyboard with black and white keys where the lowest key is colored blue.
 The root key of the grid can be shifted in a range from -3 to +3 octaves with the slider shown on the right.
-In contrast to classical MIDI keyboards it is not possible to play notes with different velocities because Android an iOS devices lack pressure sensitivity sensors.
+In contrast to classical MIDI keyboards it is not possible to play notes with different velocities because, Android and iOS devices lack pressure sensitivity sensors.
 Multi touch support allows to play the synthesizer polyphonically by pressing multiple keys at once.
 
 ![View of the piano panel\label{fig:lemur-piano}](imgs/lemur-piano.png){ width=100% }
@@ -1796,7 +1796,7 @@ The increasing amount of harmonic content is clearly visible as well as the dist
 \label{sec:filter-implementation}
 
 The multi-mode biquad filter \cite[`src/dsp/filter.rs`]{github:ytterbium} is a direct implementation of the filter design from \citeauthor{Bristow:Cookbook}'s EQ Cookbook \cite{Bristow:Cookbook}.
-\citeauthor{Bristow:Cookbook}'s filter is derived from an analog prototype using bilinear transform (see \cref{sec:iir-filters} and \cref{subsec:bilinear-transform}) and is a stable and popular design which is also used in the biquad implementation of the WebAudio API \cite{github:webaudio-api} which got adopted by firefox \cite{webaudio:biquad:firefox} and chromium \cite{webaudio:biquad:chromium} browsers.
+\citeauthor{Bristow:Cookbook}'s filter is derived from an analog prototype using bilinear transform (see \cref{sec:iir-filters} and \cref{subsec:bilinear-transform}) and is a stable and popular design which is also used in the biquad implementation of the WebAudio API \cite{github:webaudio-api} which got adopted by chromium \cite{webaudio:biquad:chromium} and firefox \cite{webaudio:biquad:firefox} browsers.
 
 Calculation of coefficients for the biquad filter is shown in \cref{lst:filter-coeff} where `w` is the cutoff frequency expressed as angular frequency[^angular-frequency], `q` is the resonance parameter and `filter_type` is an `enum` variant that is matched against the supported filter types (line 11 in \cref{lst:filter-coeff}) to select the its zero coefficients corresponding to the desired mode.
 
@@ -1895,9 +1895,9 @@ throughput-rate the total rate at which digital information is processed by a di
 ## Audio Output
 \label{sec:audio-output-implementation}
 
-There is a variety of different audio backend API's, e.g. CoreAudio for Apple's MacOS, WASAPI is one of the audio API's for Microsoft Windows and Linux has JACK, ALSA, PulseAudio and others.
-Implementing a separate binding for each of those C API's is error prone and makes the portability of the code more difficult.
-Therefore, it is convenient to use a wrapper that provides a cross-platform abstraction for those audio backend API's.
+There is a variety of different audio backend APIs, e.g. CoreAudio for Apple's macOS, WASAPI is one of the audio APIs for Microsoft Windows and Linux has JACK, ALSA, PulseAudio and others.
+Implementing a separate binding for each of those C APIs is error prone and makes the portability of the code more difficult.
+Therefore, it is convenient to use a wrapper that provides a cross-platform abstraction for those audio backend APIs.
 
 A popular choise which provides Windows, Mac and Linux support is \citetitle{portaudio} \cite{portaudio} and, with rust-portaudio, a Rust binding for this library was also available at the time of writing.
 Nonetheless, with \citetitle{github:rsoundio} \cite{github:rsoundio}, a Rust binding for \citetitle{github:libsoundio} \cite{github:libsoundio}, another cross-platform library, was implemented.
