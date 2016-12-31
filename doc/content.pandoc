@@ -107,25 +107,25 @@ Only the latter contain musical control information and therefore are of interes
 \node[msg]{MIDI Message}
 	child { node [msg]{System Message}
 		child { node [msg]{System Exclusive\\Message}
-			edge from parent node [above] {\texttt{F0}}
+			edge from parent node [above] {F0}
 		}
 		child { node [msg]{System Common\\Message}
-			edge from parent node [above] {\texttt{F1-F7}}
+			edge from parent node [above] {F1-F7}
 		}
 		child { node [msg]{System Real-Time\\Message}
-			edge from parent node [above] {\texttt{F8-FF}}
+			edge from parent node [above] {F8-FF}
 		}
-		edge from parent node [above] {\texttt{F0-FF}}
+		edge from parent node [above] {F0-FF}
 	}
 	child { node [msg]{Channel Message}
 		child { node [msg]{Channel Voice\\Message}
-			edge from parent node [above] {\texttt{8x-Ex}}
+			edge from parent node [above] {8x-Ex}
 		}
 		child { node [msg]{Channel Mode\\Message}
-			edge from parent node [above] {\texttt{Bx}}
-			edge from parent node [below] {\texttt{Data1: 79-7F}}
+			edge from parent node [above] {Bx}
+			edge from parent node [below] {Data1: 79-7F}
 		}
-		edge from parent node [above] {\texttt{8x-Ex}}
+		edge from parent node [above] {8x-Ex}
 	}
 	;
 	\end{tikzpicture}
