@@ -344,7 +344,7 @@ Let $f_s=1/T$ be the sample rate and $f$ the frequency in Hz ($s^{-1}$), then th
 
 The oscillators highest frequency is limited to $f_s/2$ or $\omega = \pi$, which is called *Nyquist frequency*.
 In general, the (Nyquist-Shannon) *sampling-theorem* states that a signal can be exactly reconstructed from its digitization if its entire frequency spectrum lies below the Nyquist frequency \cite[p.~244]{Benson2008}.
-In other words, it ensures that there are at least two sample points for any frequency contained in the sampled signal.
+In other words, it ensures that there are at least two sample points for any period of a frequency component contained in the sampled signal.
 
 ### Aliasing
 \label{subsec:aliasing}
@@ -361,18 +361,16 @@ Clearly, $\omega_2$ is above the Nyquist frequency $\omega_{\text{Ny}}=\pi$, thu
 This effect is called *aliasing* or *foldover* and is an inevitable result of sampling or sample rate conversion, hence signal components with frequencies above Nyquist must be removed or reduced before fed into the sampling process.
 The effect of foldover in the frequency spectrum is shown in \cref{fig:foldover}.
 
-The alias $f_a$ for a frequency $f$ and a sampling frequency $f_s$ can be calculated as shown in \cref{eq:aliasing-frequency}[^foldover-ref].
+The alias $f_a$ for a frequency $f$ and a sampling frequency $f_s$ can be calculated as shown in \cref{eq:aliasing-frequency}[^foldover-ref], where $N = \lfloor{}f/f_s\rfloor{}$
 
 \begin{equation}
 f_a =
 \begin{cases}
-|N\,f_s - f|,& \text{if }N\text{ is even}\\
-|(N+1)f_s - f|,& \text{otherwise}
+|N\,f_s - f|& \text{if }N\text{ is even}\\
+|(N+1)f_s - f|& \text{otherwise}
 \end{cases}
 \label{eq:aliasing-frequency}
 \end{equation}
-
-, where $N = \lfloor{}f/f_s\rfloor{}$.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/foldover}
@@ -512,11 +510,11 @@ The sound produced by an musical instrument is usually not static and changes in
 To simulate these *time-varying* waveforms a function of time, the envelope generator, is used to controls parameters of an oscillator or other parts of a synthesizer's sound engine, e.g. the cutoff of a frequency filter.
 In \cref{fig:piano-c4} the time-varying behavior of sounds produced by musical instruments is illustrated by an example of waveform plot of a C\textsubscript{4} note played on piano.
 
-\begin{sidewaysfigure}
+\begin{figure}
 \includegraphics[width=\textwidth]{imgs/piano_c4_small.png}
 \caption{Waveform plot of sampled C\textsubscript{4} note played on a piano \cite{freesound:piano}.}
 \label{fig:piano-c4}
-\end{sidewaysfigure}
+\end{figure}
 
 There are various types of envelope generators that range from simple two stage models, for fading the sound in and out, to ones which have an arbitrary number of stages and envelope shapes.
 A commonly used model with a reasonable amount of controllable parameters is the so called ADSR envelope, which stands for the four different stages of the envelope which are *Attack*, *Decay*, *Sustain* and *Release*.
@@ -652,12 +650,12 @@ For $I=0$ there is no modulation, but non-zero values will result in frequencies
 
 This behavior is shown in \cref{fig:fm-bandwidth} for different modulation indices by constant modulation and carrier frequency. Negative amplitudes for frequency components indicate *phase inversion*[^phase-inversion].
 
-\begin{figure}
+\begin{sidewaysfigure}
 \centering
 \includegraphics[width=\textwidth]{imgs/fm-bandwidth}
 \caption{Magnitude spectra for frequency modulated carrier frequency $c_f$ at different modulation indices $I$ and constant modulation frequency $m_f$. Bandwidth increases symmetrically around $c_f$ with $I$.}
 \label{fig:fm-bandwidth}
-\end{figure}
+\end{sidewaysfigure}
 
 Specific carrier and modulation frequency ratios and modulation index values will produce sideband frequencies that fall into the negative spectrum.
 Those negative frequency components will be reflected (aliased) around $\SI{0}{\hertz}$.
@@ -671,7 +669,7 @@ A quick estimation for the resulting bandwidth of different modulation indices i
 
 \begin{figure}
 \includegraphics[width=\textwidth]{imgs/fm-bessel}
-\caption{Bandwidth estimation for modulation indices $I$ ranging from 0 through 20 by evaluating Bessel functions $J_0$ through $J_{15}$ and showing resulting sideband frequency $s_f$ amplitudes $s_A$ \cite[p.~5]{Chowning:FM}.}
+\caption{Bandwidth estimation for modulation indices $I$ ranging from 0 through 20 by evaluating Bessel functions $J_0$ through $J_{15}$ showing resulting sideband frequencies $s_f$ and amplitudes $s_A$ \cite[p.~5]{Chowning:FM}.}
 \label{fig:fm-bessel}
 \end{figure}
 
