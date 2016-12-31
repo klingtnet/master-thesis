@@ -76,16 +76,9 @@ A MIDI message is composed of a *status byte* which is followed by up to two[^sy
 Both types are differentiated by their most significant bit (MSB), `1` for status- and `0` for data bytes.
 Consequently, the usable payload size is reduced to $\SI{7}{\bit}$, in other words, values can range from 0 to 127.
 
-\Cref{fig:midi-status} shows the structure of a status byte.
-The message type is denoted by three bits (`T`) and the remaining four bits are used to denote the channel number (`C`), hence there are sixteen different channels.
+The structure of a MIDI status byte is as follows `0TTTCCCC` , where `T` denotes the three message type bits and `C` the remaining four bits that indicate the channel number.
+Hence, there are sixteen different channels addressable.
 MIDI channels allow to route different logical streams over one physical MIDI connection, e.g. to reach a different, daisy-chained MIDI device or to control different timbres of a multitimbral synthesizer.
-
-\begin{figure}
-    \centering
-	$0\quad\underbrace{T\quad{}T\quad{}T}_{\text{message type}}\quad\overbrace{C\quad{}C\quad{}C\quad{}C}^{\text{channel number}}$
-	\caption{Structure of a MIDI status byte.}
-	\label{fig:midi-status}
-\end{figure}
 
 MIDI messages are divided in two categories, *channel* and *system* messages.
 Only the latter contain musical control information and therefore are of interest for this thesis.
