@@ -1489,8 +1489,9 @@ Nonetheless, a mixed approach that uses BLEP based oscillators for geometric wav
 # Implementation Details and Evaluation
 \label{ch:implementation-evaluation}
 
-The following chapter explains implementation details of the software synthesizer that was developed in this thesis and evaluates the implementation with respect to latency in \cref{subsec:system-latency}, aliasing behaviour of the wavetable oscillators in \cref{sec:wavetable-oscillator-implementation} and the time-varying behaviour of the multi-mode filter in \cref{sec:filter-implementation}.
-In the first section is explained why Rust was chosen as the implementation language and the important terms *real-time* and *latency* are defined in \Cref{sec:real-time} and \cref{sec:latency}, followed by an followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
+The following chapter explains implementation details of the software synthesizer that was developed in this thesis.
+It also evaluates the implementation with respect to latency in \cref{subsec:system-latency}, aliasing behaviour of the wavetable oscillators in \cref{sec:wavetable-oscillator-implementation} and the time-varying behaviour of the multi-mode filter in \cref{sec:filter-implementation}.
+The decision to chose Rust as the implementation language is discussed in the first section and the important terms *real-time* and *latency* are defined in \Cref{sec:real-time} and \cref{sec:latency}, followed by an overview of the synthesizer's structure in \cref{sec:synthesizer-structure}.
 Thereafter, all components of the structure are described in \cref{sec:input-implementation} to \cref{sec:audio-output-implementation}.
 
 The full source code of the synthesizer and its libraries is published as open source software available in \cite{github:ytterbium}, \cite{github:rb}, \cite{github:rsoundio} and \cite{github:rosc}.
@@ -1499,11 +1500,11 @@ The full source code of the synthesizer and its libraries is published as open s
 \label{sec:why-rust}
 
 Real time audio applications must finish their signal processing in tight time bounds to ensure that the sound card can output a continuous audio stream.
-Missing such a bound will result in unpleasant sound glitches, and---in the worst case---renders a whole song recording useless.
+Missing such a time limit will result in unpleasant sound glitches, and---in the worst case---renders a whole song recording useless.
 Additionally, the time bounds must be as tight as possible to reduce the latency (see \cref{sec:latency}) between user input (playing a note) and output of the calculated signal from the speaker.
-Therefore, (memory-)managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce non deterministic program stops while examining the state of variable references, will not receive any further consideration.
+Therefore, memory-managed languages like [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Go](https://golang.org) or [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) that use a garbage collector, which can produce non deterministic program stops while examining the state of variable references, have not received any further consideration.
 Interpreted languages like [Python](https://www.python.org/) or [Ruby](https://www.ruby-lang.org/en/) face the same problems as compiled managed languages by also having increased runtime costs.
-Audio application development in those languages is still possible but commonly requires to write the signal processing as C modules and interface with them through the languages foreign function interface (FFI) (e.g. pyo \cite{pyo} uses this approach). 
+Audio application development in those languages is still possible but commonly requires to write the signal processing as C modules and interface with them through the language's foreign function interface (FFI) (e.g. pyo \cite{pyo} uses this approach).
 Unmanaged languages like [C](https://en.wikipedia.org/wiki/C_(programming_language)) and [C++](https://en.wikipedia.org/wiki/C%2B%2B) offer the control over memory that is needed to make reliable claims about the runtime behavior while avoiding the overhead of an additional runtime environment.
 This comes with a downside in memory safety and introduces a whole new class of possible bugs compared to managed languages.
 Those bugs are very likely to cause *undefined behavior* or to crash the program. Unfortunately, they are also very hard to debug.
@@ -1512,9 +1513,8 @@ One of the major selling points of [Rust](https://rust-lang.org) is guaranteed m
 These goals are achieved through a variety of concepts, like ownership, lifetimes and borrowing, to know at compile when memory can be safely freed, and to enforce that there is only a single mutable access to any variable at any given time in the run of the program.
 Explaining these concepts is outside the scope of this thesis and the official [Rust Book](https://doc.rust-lang.org/book/ownership.html) \cite{RustBook} does a great job doing this in detail, hence, this is left as an exercise for the interested reader.
 
-The [Max Planck Institute for Software Systems](http://plv.mpi-sws.org/) has started the \cite{RustBelt} RustBelt research project in 2015 to develop formal foundations for the Rust programming language.
-One of the main goals of the research group is to formally investigate if the claims made about data-race freedom, memory and type safety actually hold.
-As of the time of writing there is no evidence that the claims are untrue, therefore it's assumed that they actually hold.
+The [Max Planck Institute for Software Systems](http://plv.mpi-sws.org/) has started the RustBelt \cite{RustBelt} research project in 2015 to develop formal foundations for the Rust programming language.
+One of the main goals of the research group is to formally investigate if the claims made about data-race freedom, memory and type safety actually hold[^rust-claims].
 
 ## Real-Time
 \label{sec:real-time}
@@ -1972,3 +1972,5 @@ The closing sentence is a quote from my presentation of the master's thesis:
 [^benchmark-machine]: The same machine was used for the benchmark as for the latency test in \cref{subsec:system-latency}.
 
 [^angular-frequency]: As usual, $w = (2\pi f_c)/f_s$ where $f_c$ is the cutoff frequency and $f_s$ is the sample rate in Hertz.
+
+[^rust-claims]: As of the time of writing there is no evidence that the claims are untrue, therefore it's assumed that they actually hold.
