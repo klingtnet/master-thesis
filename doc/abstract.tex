@@ -5,45 +5,35 @@
 
 \section*{English}
 
-Due to increasing computing power, real-time synthesis was made possible on general purpose computers in the early 2000s without the need for special DSP processors or other expensive audio hardware.
-Since then, a large number of vastly different software synthesizers was developed, both commercial as well as free or open source projects.
+Software Audiosynthesizers have gained in popularity over the past 10 years and it is impossible to imagine professional or home studios without them.
+This popularity is mostly justified by the high computing power, which is available everywhere on PCs and mobile devices and makes real-time audio synthesis usable.
+The aim of this work is the detailed description of basic synthesizer components and the investigation of suitable algorithms and techniques for their realization.
 
-Despite the huge amount of computing power that is recently available even on commodity hardware, the development is still a challenging task because musicians expect an nearly instantaneous response from their instrument and dropped audio frames cause click sound which could make a whole recording useless.
-Therefore, audio software must make very efficient use of processing and power while achieving the best possible amount of audio quality.
+In the first part, input protocols are considered and the fundamental building blocks of a synthiser are introduced.
+Subsequently, different synthesis techniques are explained and the decision for the choice of the subtractive synthesis is explained.
 
-The set of problems that arise when developing a software synthesizer is quite large.
-It includes timing and synchronization problems that occur because the short time windows in which computations are required to finish.
-Another class of problems are sound artifacts like aliasing which must be avoided by choosing appropriate algorithms.
+The second part deals with signal processing topics of the individual synthesizer components.
+The basics of digital filters are explained and FIR and IIR filters are compared.
+Thereafter, the audio quality and efficiency of various waveform synthesis methods is evaluated, i. a. band-limited impulse trains (BLIT) and wavetables.
+Implementation details are explained in chapter 7 and the components of the synthesizer application are evaluated.
 
-Audio software is usually implemented in programming languages with manual memory managment (unmanaged languages) like C or C++ for which a great number of frameworks already exist.
-Rust, on the other hand, is a promising new programming language that claims to be thread-safe, guarantees memory safety (unlike C and C++) and has little runtime cost because a garbage collector is not required.
-This makes Rust a great candidate for the development of modern audio software.
-But, due to the language's ecosystem still being in its early days, a lot of libraries had to be implemented from scratch.
-
-The aim of this thesis is to evaluate available methods and algorithms for the use in a real-time polyphonic FM synthesizer and to implement a prototype that can be played with conventional audio controller hardware.
-
-In the end, possible optimizations are proposed and the state of the implementation prototype is evaluated.
+It was found through the investigation of the synthesizer implementation that the selected techniques and algorithms have high audio quality and low calculation costs, in particular Rust has proven to be a very suitable choice for the development of real-time applications.
 
 \section*{German}
 
-Aufgrund stetig zunehmender Rechenleistung wurde Anfang der 2000er Jahre Echtzeitaudiosynthese auf PCs ermöglicht, ohne dass spezielle DSP-Prozessoren oder andere teure Audiogeräte erforderlich wären.
-Seither wurde eine große Anzahl unterschiedlichster Software-Synthesizer entwickelt, sowohl kommerzielle als auch Open-Source Projekte.
+Software Audiosynthesizer haben in den letzten 10 Jahren enorm an Popularität gewonnen und sind in vielen Profi- und Heimstudios nicht mehr wegzudenken.
+Diese Popularität ist durch die hohe Rechenleistung begründet, welche auf PCs und mobilen Geräten überall zur Verfügung steht und Echtzeitaudiosynthese nutzbar macht.
+Das Ziel dieser Arbeit ist die ausführliche Beschreibung grundlegender Synthesizerkomponenten und die Untersuchung geeigneter Algorithmen und Techniken für deren Realisierung.
 
-Trotz der enormen Menge an Rechenleistung, die auf moderner Endanwenderhardware zur Verfügung steht, ist die Entwicklung von Audiosoftware noch immer eine anspruchsvolle Aufgabe, da Musiker eine nahezu unmittelbare Reaktion von dem Instrument erwarten und große Verzögerungen in der Echtzeitsignalberechnung eine ganze Aufnahme nutzlos machen könnte.
-Daher muss Audiosoftware möglichst effizient mit der Rechenleistung umgehen und gleichzeitig ein Höchstmaß an Audioqualität bieten.
+Im ersten Teil der Arbeit werden Eingabeprotokolle betrachtet und die fundamentalen Bausteine eines Synthersizers eingeführt.
+Anschließend werden verschiedene Synthesetechniken erläutert und die Entscheidung für die Wahl der subtraktiven Synthese begründet.
 
-Die Menge an Problemen die bei der Entwicklung eines Softwaresynthesizers ensteht ist recht groß.
-Es können u. a. aufgrund der geringen Zeitfenster für die Berechnungen Zeit- und Synchronisationsprobleme auftreten.
-Eine andere Klasse von Problemen sind Signalartefakte wie Aliasing welche durch die Verwendung adäquater Algorithmen verringert oder vermieden werden können.
+Der zweite Teil beschäftigt sich mit der Signalverarbeitung innerhalb der einzelnen Synthesizerkomponenten.
+Die Grundlagen von digitalen Filtern werden erläutert und FIR mit IIR Filtern verglichen.
+Nachfolgend wird die Audioqualität und Effizienz verschiedener Wellenformsynthesemethoden, u.a. bandbeschränkte Impulsfolgen (BLIT) und Wavetables, evaluiert.
+Implementierungsdetails werden im 7. Kapitel erläutert und die Komponenten des entwickelten Synthesizers ausgewertet.
 
-Audiosoftware wird üblicherweise in Sprachen mit manuellen Speichermanagement wie C oder C++ entwickelt, für welche bereits eine große Anzahl an Bibliotheken existiert.
-Rust, andererseits, ist eine vielversprechende neue Programmiersprache welche behauptet Thread- und Speichersicherheit zu garantieren bei gleichzeitig geringen Laufzeitkosten da kein Garbage Collector notwendig ist.
-Das macht Rust zu einem grossartigen Kandidaten für die Entwicklung von moderner Audiosoftware.
-Dennoch, aufgrund des geringen Alters des Rust-Ökosystems müssen viele Bibliotheken von neuem entwickelt werden.
-
-Das Ziel dieser Arbeit ist die Entwicklung und Evaluierung von vorhandenen Methoden und Algorithmen für die Verwendung in polyphonen Echtzeit FM Synthesizern, sowie die Implementierung eines Prototypen welcher mit üblicher Audio Controller Hardware gespielt werden kann.
-
-Abschließend werden mögliche Optimierungen vorgestellt und der Ist-Zustand des Synthesizerprototypen evaluiert.
+Es zeigte sich durch Untersuchung der Synthesizerimplementation, dass die ausgewählten Techniken und Algorithmen eine hohe Audioqualität bei gleichzeitig niedrigen Berechnungskosten haben, insbesondere Rust hat sich als sehr geeignete Wahl für die Entwicklung von Echtzeitanwendungen erwiesen.
 
 \begin{center}
 	{\sffamily
