@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.com/klingtnet/master-thesis.svg?token=drwE1YPs35oqracubtuf&branch=master)](https://travis-ci.com/klingtnet/master-thesis)
 
+[Publication](http://nbn-resolving.de/urn:nbn:de:bsz:15-qucosa2-172347)
+
 ## Build
 
 There are prebuild versions of the document available in the [release section](https://github.com/klingtnet/master-thesis/releases).
